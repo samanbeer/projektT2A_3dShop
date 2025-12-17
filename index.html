@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="cs" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Tisk | Moderní řešení</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="glass-nav">
+        <div class="logo">3D Maker</div>
+        <ul>
+            <li><a href="index.html">Domů</a></li>
+            <li><a href="reference.html">Reference & Filamenty</a></li>
+            <li><button id="theme-toggle">🌓 Režim</button></li>
+        </ul>
+    </nav>
+
+    <header class="hero">
+        <h1 data-aos="fade-down">Precizní 3D tisk na zakázku</h1>
+        <p data-aos="fade-up">Od prototypů až po finální výrobky.</p>
+    </header>
+
+    <main class="container">
+        <section class="products">
+            <h2 data-aos="fade-right">Naše Produkty</h2>
+            <div class="grid">
+                <div class="card glass" data-aos="zoom-in">
+                    <h3>Produkt 1</h3>
+                    <p>Zde doplň krátký popis tvého prvního produktu nebo služby.</p>
+                </div>
+
+                <div class="card glass" data-aos="zoom-in" data-aos-delay="200">
+                    <h3>Produkt 2</h3>
+                    <p>Zde doplň krátký popis tvého druhého produktu nebo služby.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="info glass" data-aos="fade-up">
+            <h2>O nás a našich tiskárnách</h2>
+            <p>Zde napiš informace o vaší firmě, jaké tiskárny používáte (např. Prusa, Bambu Lab) a co vše dokážete vyrobit.</p>
+        </section>
+    </main>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="script.js"></script>
+    <script>AOS.init();</script>
+</body>
+</html>
