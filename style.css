@@ -1,0 +1,55 @@
+/* --- STYLY PRO TABULKU REFERENCE --- */
+
+/* Obal pro tabulku, aby na mobilu scrollovala do boku */
+.table-container {
+    overflow-x: auto;
+}
+
+.filament-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 500px; /* Zajistí, že se na mobilu nescvrkne moc */
+}
+
+.filament-table th {
+    text-align: left;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-bottom: 2px solid var(--glass-border);
+}
+
+.filament-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.filament-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* --- BAREVNÉ ŠTÍTKY MNOŽSTVÍ --- */
+.status-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: white;
+}
+
+/* Zelená pro hodně materiálu */
+.status-badge.high {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    box-shadow: 0 2px 5px rgba(46, 204, 113, 0.4);
+}
+
+/* Oranžová pro střed */
+.status-badge.mid {
+    background: linear-gradient(135deg, #f1c40f, #f39c12);
+    box-shadow: 0 2px 5px rgba(241, 196, 15, 0.4);
+}
+
+/* Červená pro docházející */
+.status-badge.low {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    box-shadow: 0 2px 5px rgba(231, 76, 60, 0.4);
+}
