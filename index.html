@@ -1,49 +1,68 @@
 <!DOCTYPE html>
-<html lang="cs" data-theme="light">
+<html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Tisk | Moderní řešení</title>
+    <title>3D Maker | Zakázkový tisk</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 <body>
 
     <nav class="glass-nav">
-        <div class="logo">3D Maker</div>
-        <ul>
-            <li><a href="index.html">Domů</a></li>
-            <li><a href="reference.html">Reference & Filamenty</a></li>
-            <li><button id="theme-toggle">🌓 Režim</button></li>
-        </ul>
+        <div class="logo">3D MAKER</div>
+        <div class="nav-links">
+            <a href="index.html" class="active">Domů</a>
+            <a href="reference.html">Materiály & Reference</a>
+        </div>
+        <div class="nav-actions">
+            <button class="btn-icon" id="theme-toggle"><i class="fa-solid fa-moon"></i></button>
+            <a href="#contact" class="btn btn-primary">Poptat tisk</a>
+        </div>
     </nav>
 
     <header class="hero">
-        <h1 data-aos="fade-down">Precizní 3D tisk na zakázku</h1>
-        <p data-aos="fade-up">Od prototypů až po finální výrobky.</p>
+        <div class="hero-content" data-aos="fade-up">
+            <h1>PRECIZNÍ 3D TISK NA ZAKÁZKU</h1>
+            <p>Od digitálního modelu po fyzický produkt. Tiskneme z PLA, PETG, ASA a flexibilních materiálů s důrazem na detail.</p>
+            <div class="hero-buttons">
+                <a href="" class="btn btn-outline">Ukázky práce</a>
+                <a href="#contact" class="btn btn-primary">Chci nacenit projekt</a>
+            </div>
+        </div>
     </header>
 
-    <main class="container">
-        <section class="products">
-            <h2 data-aos="fade-right">Naše Produkty</h2>
-            <div class="grid">
-                <div class="card glass" data-aos="zoom-in">
-                    <h3>Produkt 1</h3>
-                    <p>Zde doplň krátký popis tvého prvního produktu nebo služby.</p>
-                </div>
-
-                <div class="card glass" data-aos="zoom-in" data-aos-delay="200">
-                    <h3>Produkt 2</h3>
-                    <p>Zde doplň krátký popis tvého druhého produktu nebo služby.</p>
+    <section class="container">
+        <h2 style="margin-bottom: 2rem;">Vybrané realizace</h2>
+        <div class="portfolio-grid">
+            
+            <div class="portfolio-item" data-aos="zoom-in">
+                <img src="https://images.unsplash.com/photo-1615655114865-4cc1bda5901e?q=80&w=800&auto=format&fit=crop" alt="Prototyp dílu">
+                <div class="portfolio-overlay">
+                    <h3>Mechanický díl převodovky</h3>
+                    <p style="color: var(--accent);">Materiál: ASA (Odolné)</p>
                 </div>
             </div>
-        </section>
 
-        <section class="info glass" data-aos="fade-up">
-            <h2>O nás a našich tiskárnách</h2>
-            <p>Zde napiš informace o vaší firmě, jaké tiskárny používáte (např. Prusa, Bambu Lab) a co vše dokážete vyrobit.</p>
-        </section>
-    </main>
+            <div class="portfolio-item" data-aos="zoom-in" data-aos-delay="100">
+                <img src="https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800&auto=format&fit=crop" alt="Dekorace">
+                <div class="portfolio-overlay">
+                    <h3>Designová Váza Voronoi</h3>
+                    <p style="color: var(--accent);">Materiál: PLA Silk Gold</p>
+                </div>
+            </div>
+
+             <div class="portfolio-item" data-aos="zoom-in" data-aos-delay="200">
+                <img src="https://images.unsplash.com/photo-1622675363311-ac97f3a97933?q=80&w=800&auto=format&fit=crop" alt="Figurka">
+                <div class="portfolio-overlay">
+                    <h3>Herní miniatura 28mm</h3>
+                    <p style="color: var(--accent);">Materiál: Resin (SLA)</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="script.js"></script>
