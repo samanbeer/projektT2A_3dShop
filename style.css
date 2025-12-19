@@ -1,55 +1,185 @@
-/* --- STYLY PRO TABULKU REFERENCE --- */
+/* --- IMPORT FONTŮ --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@500;700&display=swap');
 
-/* Obal pro tabulku, aby na mobilu scrollovala do boku */
-.table-container {
-    overflow-x: auto;
+:root {
+    /* Hlavní paleta - Dark Mode Tech */
+    --bg-color: #1e1e2e;          /* Tmavě modro-šedá */
+    --card-bg: #262638;           /* O něco světlejší pro karty */
+    --text-main: #e0e0e0;         /* Off-white */
+    --text-muted: #a0a0b0;        /* Šedá pro popisky */
+    
+    /* Akcenty */
+    --accent: #fa6831;            /* Prusa Orange */
+    --accent-glow: rgba(250, 104, 49, 0.4);
+    --neon-blue: #00f2ff;         
+    
+    /* Progress Bar barvy */
+    --status-ok: #2ecc71;
+    --status-mid: #f1c40f;
+    --status-low: #e74c3c;
+
+    /* Glassmorphism */
+    --glass-bg: rgba(30, 30, 46, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.08);
 }
 
-.filament-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 500px; /* Zajistí, že se na mobilu nescvrkne moc */
+/* Globální reset */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    line-height: 1.6;
+    overflow-x: hidden;
 }
 
-.filament-table th {
-    text-align: left;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    border-bottom: 2px solid var(--glass-border);
+h1, h2, h3, .logo {
+    font-family: 'Orbitron', sans-serif; /* Technický font */
+    letter-spacing: 1px;
 }
 
-.filament-table td {
-    padding: 1rem;
+a { text-decoration: none; color: inherit; transition: 0.3s; }
+ul { list-style: none; }
+
+/* --- HLAVIČKA (Sticky Nav) --- */
+.glass-nav {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--glass-border);
 }
 
-.filament-table tr:last-child td {
-    border-bottom: none;
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 0 10px var(--accent-glow);
 }
 
-/* --- BAREVNÉ ŠTÍTKY MNOŽSTVÍ --- */
-.status-badge {
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: bold;
+.nav-links { display: flex; gap: 2rem; }
+.nav-links a:hover, .nav-links a.active { color: var(--accent); }
+
+.nav-actions { display: flex; gap: 1rem; align-items: center; }
+
+/* Tlačítka */
+.btn {
+    padding: 0.6rem 1.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-family: 'Orbitron', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: var(--accent);
     color: white;
+    border: none;
+    box-shadow: 0 4px 15px var(--accent-glow);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); }
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--accent);
+    color: var(--accent);
+}
+.btn-outline:hover { background: var(--accent); color: white; }
+
+.btn-icon { background: none; border: none; color: var(--text-main); font-size: 1.2rem; cursor: pointer; }
+
+/* --- HERO SEKCE --- */
+.hero {
+    height: 85vh;
+    background: linear-gradient(rgba(18,18,18,0.7), rgba(30,30,46,0.9)), 
+                url('https://images.unsplash.com/photo-1631541909061-71e349d1f2b1?q=80&w=1920&auto=format&fit=crop'); /* Placeholder 3D tiskárny */
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 20px;
 }
 
-/* Zelená pro hodně materiálu */
-.status-badge.high {
-    background: linear-gradient(135deg, #2ecc71, #27ae60);
-    box-shadow: 0 2px 5px rgba(46, 204, 113, 0.4);
+.hero-content h1 { font-size: 3rem; margin-bottom: 1rem; color: #fff; }
+.hero-content p { font-size: 1.2rem; color: var(--text-muted); margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; }
+.hero-buttons { display: flex; gap: 1rem; justify-content: center; }
+
+/* --- MATERIAL CARDS (GRID) --- */
+.container { max-width: 1200px; margin: 4rem auto; padding: 0 20px; }
+
+.materials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
 }
 
-/* Oranžová pro střed */
-.status-badge.mid {
-    background: linear-gradient(135deg, #f1c40f, #f39c12);
-    box-shadow: 0 2px 5px rgba(241, 196, 15, 0.4);
+.material-card {
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s;
 }
 
-/* Červená pro docházející */
-.status-badge.low {
-    background: linear-gradient(135deg, #e74c3c, #c0392b);
-    box-shadow: 0 2px 5px rgba(231, 76, 60, 0.4);
+.material-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+
+.mat-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+.spool-icon { font-size: 2rem; }
+
+.mat-info h3 { margin-bottom: 0.2rem; font-size: 1.2rem; }
+.mat-info p { font-size: 0.9rem; color: var(--text-muted); }
+
+/* Progress Bar */
+.progress-wrapper { margin: 1rem 0; }
+.progress-bg { background: rgba(255,255,255,0.1); height: 8px; border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+
+.mat-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+.tag {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    color: var(--text-muted);
 }
+
+/* --- PORTFOLIO (MASONRY EFEKT) --- */
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.portfolio-item {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 4/3; /* Poměr stran fotky */
+    cursor: pointer;
+}
+
+.portfolio-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+
+.portfolio-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    padding: 2rem 1rem 1rem;
+    transform: translateY(100%);
+    transition: 0.3s;
+}
+
+.portfolio-item:hover img { transform: scale(1.1); }
+.portfolio-item:hover .portfolio-overlay { transform: translateY(0); }

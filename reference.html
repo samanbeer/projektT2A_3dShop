@@ -1,57 +1,35 @@
 <!DOCTYPE html>
-<html lang="cs" data-theme="light">
+<html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reference & Materiály | 3D Maker</title>
+    <title>Materiály | 3D Maker</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 <body>
 
     <nav class="glass-nav">
-        <div class="logo">3D Maker</div>
-        <ul>
-            <li><a href="index.html">Domů</a></li>
-            <li><a href="reference.html" class="active">Reference & Filamenty</a></li>
-            <li><button id="theme-toggle">🌓 Režim</button></li>
-        </ul>
+        <div class="logo">3D MAKER</div>
+        <div class="nav-links">
+            <a href="index.html">Domů</a>
+            <a href="reference.html" class="active">Materiály & Reference</a>
+        </div>
+        <div class="nav-actions">
+            <button class="btn-icon" id="theme-toggle"><i class="fa-solid fa-moon"></i></button>
+            <a href="index.html#contact" class="btn btn-primary">Poptat tisk</a>
+        </div>
     </nav>
 
     <main class="container">
-        
         <header style="text-align: center; margin-bottom: 3rem;" data-aos="fade-down">
-            <h1>Dostupné materiály</h1>
-            <p>Aktuální přehled filamentů skladem pro vaše zakázky.</p>
+            <h1>DOSTUPNÉ MATERIÁLY</h1>
+            <p style="color: var(--text-muted);">Aktuální stav našeho skladu filamentů.</p>
         </header>
 
-        <section class="glass" data-aos="fade-up">
-            <div class="table-container">
-                <table class="filament-table">
-                    <thead>
-                        <tr>
-                            <th>Materiál</th>
-                            <th>Barva</th>
-                            <th>Dostupné množství</th>
-                        </tr>
-                    </thead>
-                    <tbody id="filament-list">
-                        </tbody>
-                </table>
+        <div id="materials-container" class="materials-grid">
             </div>
-        </section>
-
-        <section style="margin-top: 3rem;">
-            <h2 data-aos="fade-right">Ukázky naší práce</h2>
-            <div class="grid">
-                <div class="card glass" data-aos="zoom-in">
-                    <p>Místo pro fotku reference 1</p>
-                </div>
-                <div class="card glass" data-aos="zoom-in" data-aos-delay="100">
-                    <p>Místo pro fotku reference 2</p>
-                </div>
-            </div>
-        </section>
 
     </main>
 

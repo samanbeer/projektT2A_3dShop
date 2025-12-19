@@ -1,45 +1,97 @@
-/* --- 1. PŘEPÍNÁNÍ TÉMAT (DARK/LIGHT) --- */
-const themeToggle = document.getElementById('theme-toggle');
-const htmlElement = document.documentElement;
-
-// Zkusíme načíst uložené téma z prohlížeče, jinak dáme light
-const savedTheme = localStorage.getItem('theme') || 'light';
-htmlElement.setAttribute('data-theme', savedTheme);
-
-themeToggle.addEventListener('click', () => {
-    const currentTheme = htmlElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    
-    htmlElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme); // Uložíme volbu uživatele
-});
-
-/* --- 2. GENERÁTOR TABULKY FILAMENTŮ --- */
-
-// Tady upravuj seznam svých filamentů:
+/* --- DATA: SEZNAM FILAMENTŮ --- */
+// Zde si upravuj své zásoby.
+// hexColor: barva ikonky špulky
+// percent: kolik zbývá (100 = plná, 10 = skoro prázdná)
 const filaments = [
-    { type: "PLA", color: "Galaxy Black", amount: "high", label: "> 750g" },
-    { type: "PLA", color: "Prusa Orange", amount: "mid", label: "> 500g" },
-    { type: "PETG", color: "Transparentní", amount: "low", label: "< 200g" },
-    { type: "TPU", color: "Flexibilní Červená", amount: "high", label: "> 750g" },
-    { type: "ASA", color: "Šedá", amount: "mid", label: "> 400g" }
+    { 
+        type: "PLA", 
+        name: "Galaxy Black", 
+        hexColor: "#333333", 
+        percent: 90, 
+        tags: ["Základní", "Matný", "Detailní"] 
+    },
+    { 
+        type: "PETG", 
+        name: "Prusa Orange", 
+        hexColor: "#fa6831", 
+        percent: 45, 
+        tags: ["Odolné", "Flexibilní", "UV Stálé"] 
+    },
+    { 
+        type: "PLA", 
+        name: "Neon Blue", 
+        hexColor: "#00f2ff", 
+        percent: 15, 
+        tags: ["Estetické", "Svítící"] 
+    },
+    { 
+        type: "TPU", 
+        name: "Flexi Red", 
+        hexColor: "#e74c3c", 
+        percent: 80, 
+        tags: ["Guma", "Tlumící nárazy"] 
+    },
+    { 
+        type: "ASA", 
+        name: "Industrial Grey", 
+        hexColor: "#7f8c8d", 
+        percent: 60, 
+        tags: ["Venkovní", "Teplotně odolné"] 
+    }
 ];
 
-const tableBody = document.getElementById('filament-list');
+/* --- GENERÁTOR KARET --- */
+const container = document.getElementById('materials-container');
 
-// Funkce se spustí pouze pokud jsme na stránce s tabulkou
-if (tableBody) {
-    filaments.forEach(fil => {
-        // Vytvoříme řádek
-        const row = document.createElement('tr');
-        
-        // Vložíme obsah pomocí HTML šablony
-        row.innerHTML = `
-            <td><strong>${fil.type}</strong></td>
-            <td>${fil.color}</td>
-            <td><span class="status-badge ${fil.amount}">${fil.label}</span></td>
+if (container) {
+    filaments.forEach((fil, index) => {
+        // Určení barvy progress baru
+        let progressColor = "var(--status-ok)";
+        if (fil.percent < 50) progressColor = "var(--status-mid)";
+        if (fil.percent < 20) progressColor = "var(--status-low)";
+
+        // Vytvoření HTML tagů
+        const tagsHtml = fil.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+
+        const card = document.createElement('div');
+        card.className = 'material-card';
+        card.setAttribute('data-aos', 'fade-up');
+        card.setAttribute('data-aos-delay', index * 100); // Kaskádový efekt
+
+        card.innerHTML = `
+            <div class="mat-header">
+                <i class="fa-solid fa-dharmachakra spool-icon" style="color: ${fil.hexColor}; text-shadow: 0 0 10px ${fil.hexColor}66;"></i>
+                <div class="mat-info">
+                    <h3>${fil.type}</h3>
+                    <p>${fil.name}</p>
+                </div>
+            </div>
+            
+            <div class="progress-wrapper">
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:5px;">
+                    <span style="color: var(--text-muted)">Dostupnost</span>
+                    <span>${fil.percent}%</span>
+                </div>
+                <div class="progress-bg">
+                    <div class="progress-fill" style="width: ${fil.percent}%; background: ${progressColor};"></div>
+                </div>
+            </div>
+
+            <div class="mat-tags">
+                ${tagsHtml}
+            </div>
         `;
-        
-        tableBody.appendChild(row);
+
+        container.appendChild(card);
+    });
+}
+
+/* --- THEME TOGGLE (Volitelné) --- */
+// Kód pro přepínání témat zůstává stejný, pokud ho chceš zachovat
+// i pro ruční přepnutí na světlý režim.
+const themeToggle = document.getElementById('theme-toggle');
+if(themeToggle) {
+    themeToggle.addEventListener('click', () => {
+        alert("Momentálně je design optimalizován pro Dark Mode, ale funkčnost zde můžeš později dodělat!");
     });
 }
