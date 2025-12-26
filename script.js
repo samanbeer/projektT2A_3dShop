@@ -1,97 +1,112 @@
-/* --- DATA: SEZNAM FILAMENTŮ --- */
-// Zde si upravuj své zásoby.
-// hexColor: barva ikonky špulky
-// percent: kolik zbývá (100 = plná, 10 = skoro prázdná)
-const filaments = [
-    { 
-        type: "PLA", 
-        name: "Galaxy Black", 
-        hexColor: "#333333", 
-        percent: 90, 
-        tags: ["Základní", "Matný", "Detailní"] 
-    },
-    { 
-        type: "PETG", 
-        name: "Prusa Orange", 
-        hexColor: "#fa6831", 
-        percent: 45, 
-        tags: ["Odolné", "Flexibilní", "UV Stálé"] 
-    },
-    { 
-        type: "PLA", 
-        name: "Neon Blue", 
-        hexColor: "#00f2ff", 
-        percent: 15, 
-        tags: ["Estetické", "Svítící"] 
-    },
-    { 
-        type: "TPU", 
-        name: "Flexi Red", 
-        hexColor: "#e74c3c", 
-        percent: 80, 
-        tags: ["Guma", "Tlumící nárazy"] 
-    },
-    { 
-        type: "ASA", 
-        name: "Industrial Grey", 
-        hexColor: "#7f8c8d", 
-        percent: 60, 
-        tags: ["Venkovní", "Teplotně odolné"] 
-    }
-];
+let groupedMaterials = {};
 
-/* --- GENERÁTOR KARET --- */
-const container = document.getElementById('materials-container');
+const materialInfo = {
+    'PLA': 'Ekologický materiál z kukuřičného škrobu. Nabízí skvělý detail, matný povrch a minimální tepelné smrštění. Ideální pro designové kousky a prototypy.',
+    'PETG': 'Pevný a odolný materiál s vysokou houževnatostí. Chemicky odolný a vhodný pro funkční díly v interiéru i exteriéru. Skvělý kompromis mezi PLA a ABS.',
+    'ABS': 'Průmyslový standard pro mechanicky namáhané díly. Vysoká teplotní odolnost a pevnost. Vyžaduje zkušenosti při tisku.',
+    'TPU': 'Flexibilní elastomer připomínající gumu. Vynikající pro těsnění, pouzdra, tlumící prvky a ohebné části.'
+};
 
-if (container) {
-    filaments.forEach((fil, index) => {
-        // Určení barvy progress baru
-        let progressColor = "var(--status-ok)";
-        if (fil.percent < 50) progressColor = "var(--status-mid)";
-        if (fil.percent < 20) progressColor = "var(--status-low)";
+const colorMap = {
+    'Bílá': '#ffffff', 'Bíla': '#ffffff', 'Černá': '#121212', 
+    'Oranžová': '#ff6700', 'Modrá': '#0055ff', 'Červená': '#ff0000',
+    'Šedá': '#808080', 'Neon Blue': '#00f2ff'
+};
 
-        // Vytvoření HTML tagů
-        const tagsHtml = fil.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+function formatGrams(g) {
+    const val = parseInt(g);
+    if (val >= 2000) return "> 2kg";
+    if (val > 1000) return "> 1kg";
+    if (val > 500) return "< 1kg";
+    if (val > 250) return "< 500g";
+    if (val > 100) return "< 250g";
+    return "< 100g";
+}
 
-        const card = document.createElement('div');
-        card.className = 'material-card';
-        card.setAttribute('data-aos', 'fade-up');
-        card.setAttribute('data-aos-delay', index * 100); // Kaskádový efekt
-
-        card.innerHTML = `
-            <div class="mat-header">
-                <i class="fa-solid fa-dharmachakra spool-icon" style="color: ${fil.hexColor}; text-shadow: 0 0 10px ${fil.hexColor}66;"></i>
-                <div class="mat-info">
-                    <h3>${fil.type}</h3>
-                    <p>${fil.name}</p>
-                </div>
-            </div>
+async function loadMaterials() {
+    try {
+        const response = await fetch('filamenty.txt');
+        const text = await response.text();
+        const lines = text.trim().split('\n');
+        
+        groupedMaterials = {};
+        lines.forEach(line => {
+            if(!line.trim() || !line.includes('|')) return;
+            const parts = line.split('|').map(s => s.trim());
+            const type = parts[0];
+            const color = parts[1];
+            const grams = parts[2] ? parseInt(parts[2]) : 0;
             
-            <div class="progress-wrapper">
-                <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:5px;">
-                    <span style="color: var(--text-muted)">Dostupnost</span>
-                    <span>${fil.percent}%</span>
-                </div>
-                <div class="progress-bg">
-                    <div class="progress-fill" style="width: ${fil.percent}%; background: ${progressColor};"></div>
-                </div>
-            </div>
+            if (!groupedMaterials[type]) groupedMaterials[type] = [];
+            groupedMaterials[type].push({ color, grams });
+        });
 
-            <div class="mat-tags">
-                ${tagsHtml}
+        renderTabs();
+    } catch (e) { console.error("Data load failed:", e); }
+}
+
+function renderTabs() {
+    const container = document.getElementById('material-tabs');
+    container.innerHTML = '';
+    
+    Object.keys(groupedMaterials).forEach((type, index) => {
+        const btn = document.createElement('button');
+        btn.className = `tab-btn ${index === 0 ? 'active' : ''}`;
+        btn.innerHTML = `<span>${type}</span>`;
+        btn.onclick = () => selectMaterial(type, btn);
+        container.appendChild(btn);
+        if (index === 0) selectMaterial(type, btn);
+    });
+}
+
+function selectMaterial(type, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    document.getElementById('detail-title').innerText = type;
+    document.getElementById('detail-desc').innerText = materialInfo[type] || 'Vysoce kvalitní tiskový materiál pro vaše projekty.';
+
+    const swatchBox = document.getElementById('color-swatches');
+    const stockBox = document.getElementById('availability-list');
+    swatchBox.innerHTML = '';
+    stockBox.innerHTML = '';
+
+    groupedMaterials[type].forEach(item => {
+        const hex = colorMap[item.color] || '#444';
+        
+        // Vzorník
+        swatchBox.innerHTML += `
+            <div class="swatch-item">
+                <div class="circle" style="background-color: ${hex}"></div>
+                <span>${item.color}</span>
             </div>
         `;
 
-        container.appendChild(card);
+        // Skladová dostupnost s novými třídami pro barvy
+        let statusClass = 'status-ok'; 
+        if (item.grams < 500) statusClass = 'status-low'; 
+        if (item.grams < 150) statusClass = 'status-critical'; 
+
+        stockBox.innerHTML += `
+            <div class="stock-item">
+                <span>${item.color}</span>
+                <span>${formatGrams(item.grams)} <span class="dot ${statusClass}"></span></span>
+            </div>
+        `;
     });
 }
 
-/* --- THEME TOGGLE (Volitelné) --- */
-// Kód pro přepínání témat zůstává stejný, pokud ho chceš zachovat
-// i pro ruční přepnutí na světlý režim.
-const themeToggle = document.getElementById('theme-toggle');
-if(themeToggle) {
-    themeToggle.addEventListener('click', () => {
-        alert("Momentálně je design optimalizován pro Dark Mode, ale funkčnost zde můžeš později dodělat!");
-    });
+function showPage(id) {
+    const track = document.getElementById('pages-track');
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    
+    if (id === 'home') {
+        track.style.transform = 'translateX(0)';
+        document.getElementById('nav-home').classList.add('active');
+    } else {
+        track.style.transform = 'translateX(-100vw)';
+        document.getElementById('nav-materials').classList.add('active');
+    }
 }
+
+document.addEventListener('DOMContentLoaded', loadMaterials);
