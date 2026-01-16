@@ -15,7 +15,8 @@
             <div class="logo" role="img" aria-label="3D Maker logo"><span class="accent">⬢</span> 3D MAKER</div>
             <nav role="navigation" aria-label="Hlavní navigace">
                 <a href="#" onclick="showPage('home'); return false;" id="nav-home" class="nav-link active" aria-current="page">DOMŮ</a>
-                <a href="#" onclick="showPage('materials'); return false;" id="nav-materials" class="nav-link">MATERIÁLY</a>
+                <a href="#" onclick="showPage('products'); return false;" id="nav-products" class="nav-link">MATERIÁLY</a>
+                <a href="#" onclick="showPage('materials'); return false;" id="nav-materials" class="nav-link">PRODUKTY</a>
             </nav>
         </div>
     </header>
@@ -72,6 +73,36 @@
                     </div>
                 </div>
             </section>
+
+            <section class="page" id="page-products">
+                <div class="products-wrapper">
+                    <div class="page-intro">
+                        <h2 class="section-title">Katalog produktů</h2>
+                        <p>Procházejte naši nabídku 3D tiskáren, filamentů a vlastních výrobků.</p>
+                    </div>
+
+                    <div class="product-filters" id="product-filters">
+                        <button class="filter-btn active" data-category="all" onclick="filterProducts('all')">Vše</button>
+                        <button class="filter-btn" data-category="filament" onclick="filterProducts('filament')">Filamenty</button>
+                        <button class="filter-btn" data-category="printer" onclick="filterProducts('printer')">Tiskárny</button>
+                        <button class="filter-btn" data-category="custom" onclick="filterProducts('custom')">Vlastní výrobky</button>
+                    </div>
+
+                    <div class="products-grid" id="products-grid">
+                        <div class="loading">Načítání produktů...</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal-overlay" id="product-modal" onclick="closeModal(event)">
+        <div class="modal-container" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeModal()" aria-label="Zavřít">×</button>
+            <div class="modal-content" id="modal-content">
+                <!-- Content will be dynamically inserted -->
+            </div>
         </div>
     </div>
 
