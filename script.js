@@ -24,8 +24,23 @@ function formatGrams(g) {
 }
 
 async function loadMaterials() {
+    const detailTitle = document.getElementById('detail-title');
+    const detailDesc = document.getElementById('detail-desc');
+    const swatchBox = document.getElementById('color-swatches');
+    const stockBox = document.getElementById('availability-list');
+    const container = document.getElementById('material-tabs');
+    
+    // Show loading state
+    container.innerHTML = '';
+    detailTitle.innerText = 'Načítání...';
+    detailDesc.innerText = 'Materialy se načítají...';
+    swatchBox.innerHTML = '<div class="loading">Načítání vzorků</div>';
+    stockBox.innerHTML = '<div class="loading">Načítání dostupnosti</div>';
+    
     try {
         const response = await fetch('filamenty.txt');
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
         const text = await response.text();
         const lines = text.trim().split('\n');
         
@@ -41,8 +56,19 @@ async function loadMaterials() {
             groupedMaterials[type].push({ color, grams });
         });
 
+        if (Object.keys(groupedMaterials).length === 0) {
+            throw new Error('Žádná data nenalezena');
+        }
+
         renderTabs();
-    } catch (e) { console.error("Data load failed:", e); }
+    } catch (e) {
+        console.error("Data load failed:", e);
+        container.innerHTML = '';
+        detailTitle.innerText = 'Chyba';
+        detailDesc.innerHTML = '<div class="error-message">Nepodařilo se načíst materiály. Zkuste to prosím později.</div>';
+        swatchBox.innerHTML = '';
+        stockBox.innerHTML = '';
+    }
 }
 
 function renderTabs() {
@@ -74,22 +100,17 @@ function selectMaterial(type, btn) {
     groupedMaterials[type].forEach(item => {
         const hex = colorMap[item.color] || '#444';
         
-        // Vzorník
-        swatchBox.innerHTML += `
-            <div class="swatch-item">
-                <div class="circle" style="background-color: ${hex}"></div>
-                <span>${item.color}</span>
-            </div>
-        `;
-
-        // Skladová dostupnost s novými třídami pro barvy
+        // Skladová dostupnost s malým barevným kroužkem vedle názvu
         let statusClass = 'status-ok'; 
         if (item.grams < 500) statusClass = 'status-low'; 
         if (item.grams < 150) statusClass = 'status-critical'; 
 
         stockBox.innerHTML += `
             <div class="stock-item">
-                <span>${item.color}</span>
+                <span class="stock-color-name">
+                    ${item.color}
+                    <span class="color-circle-small" style="background-color: ${hex}"></span>
+                </span>
                 <span>${formatGrams(item.grams)} <span class="dot ${statusClass}"></span></span>
             </div>
         `;
@@ -103,10 +124,81 @@ function showPage(id) {
     if (id === 'home') {
         track.style.transform = 'translateX(0)';
         document.getElementById('nav-home').classList.add('active');
+        // Scroll to top smoothly
+        const homePage = document.getElementById('page-home');
+        homePage.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
         track.style.transform = 'translateX(-100vw)';
         document.getElementById('nav-materials').classList.add('active');
+        // Scroll to top smoothly
+        const materialsPage = document.getElementById('page-materials');
+        materialsPage.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
 
-document.addEventListener('DOMContentLoaded', loadMaterials);
+// Back to top button functionality
+function initBackToTop() {
+    const backToTopBtn = document.createElement('button');
+    backToTopBtn.className = 'back-to-top';
+    backToTopBtn.innerHTML = '↑';
+    backToTopBtn.setAttribute('aria-label', 'Zpět nahoru');
+    backToTopBtn.onclick = () => {
+        const activePage = document.querySelector('.page:not([style*="display: none"])') || 
+                          (document.getElementById('nav-home').classList.contains('active') 
+                           ? document.getElementById('page-home') 
+                           : document.getElementById('page-materials'));
+        activePage.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    document.body.appendChild(backToTopBtn);
+
+    // Show/hide button based on scroll position
+    const pages = [document.getElementById('page-home'), document.getElementById('page-materials')];
+    pages.forEach(page => {
+        if (page) {
+            page.addEventListener('scroll', () => {
+                if (page.scrollTop > 300) {
+                    backToTopBtn.classList.add('visible');
+                } else {
+                    backToTopBtn.classList.remove('visible');
+                }
+            });
+        }
+    });
+}
+
+// Keyboard navigation support
+function initKeyboardNavigation() {
+    document.addEventListener('keydown', (e) => {
+        // Escape key to go back to home
+        if (e.key === 'Escape' && document.getElementById('nav-materials').classList.contains('active')) {
+            showPage('home');
+        }
+        // Number keys for material tabs (1-4)
+        if (document.getElementById('nav-materials').classList.contains('active')) {
+            const tabs = Array.from(document.querySelectorAll('.tab-btn'));
+            const num = parseInt(e.key);
+            if (num >= 1 && num <= tabs.length) {
+                tabs[num - 1].click();
+            }
+        }
+    });
+
+    // Improve tab navigation for material buttons
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab' && e.shiftKey === false) {
+            const activeElement = document.activeElement;
+            if (activeElement && activeElement.classList.contains('tab-btn')) {
+                // Ensure smooth focus transitions
+                setTimeout(() => {
+                    activeElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 0);
+            }
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadMaterials();
+    initBackToTop();
+    initKeyboardNavigation();
+});

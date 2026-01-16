@@ -10,12 +10,12 @@
 <body class="dark-theme">
     <div class="bg-glow"></div>
     
-    <header class="navbar">
+    <header class="navbar" role="banner">
         <div class="nav-container">
-            <div class="logo"><span class="accent">⬢</span> 3D MAKER</div>
-            <nav>
-                <a href="#" onclick="showPage('home')" id="nav-home" class="nav-link active">DOMŮ</a>
-                <a href="#" onclick="showPage('materials')" id="nav-materials" class="nav-link">MATERIÁLY</a>
+            <div class="logo" role="img" aria-label="3D Maker logo"><span class="accent">⬢</span> 3D MAKER</div>
+            <nav role="navigation" aria-label="Hlavní navigace">
+                <a href="#" onclick="showPage('home'); return false;" id="nav-home" class="nav-link active" aria-current="page">DOMŮ</a>
+                <a href="#" onclick="showPage('materials'); return false;" id="nav-materials" class="nav-link">MATERIÁLY</a>
             </nav>
         </div>
     </header>
@@ -29,8 +29,8 @@
                         <h1>PROTOTYPUJTE<br><span class="gradient-text">BUDOUCNOST</span></h1>
                         <p>Špičkový 3D tisk s průmyslovou přesností pro vaše nejnáročnější projekty.</p>
                         <div class="hero-actions">
-                            <button class="btn-main" onclick="showPage('materials')">Zobrazit materiály</button>
-                            <button class="btn-ghost">Naše reference</button>
+                            <button class="btn-main" onclick="showPage('materials')" aria-label="Zobrazit sekci s materiály">Zobrazit materiály</button>
+                            <button class="btn-ghost" aria-label="Zobrazit naše reference">Naše reference</button>
                         </div>
                     </div>
                     <div class="hero-img-box">
@@ -75,7 +75,7 @@
         </div>
     </div>
 
-    <footer class="footer">
+    <footer class="footer" role="contentinfo">
         <div class="footer-grid">
             <div class="foot-col">© 2025 3D Maker. Všechna práva vyhrazena.</div>
         </div>
