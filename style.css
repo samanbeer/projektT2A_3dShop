@@ -1,95 +1,298 @@
 :root {
-    --bg-deep: #0a0b14; /* Hluboké tmavé pozadí */
-    --bg-surface: rgba(255, 255, 255, 0.04); /* Jemnější povrch karet */
+    /* Modern Dark Theme Color Palette */
+    --bg-primary: #0f1117;
+    --bg-secondary: #1a1d29;
+    --bg-tertiary: #252936;
+    --bg-elevated: #2d3244;
+    --bg-card: rgba(29, 33, 52, 0.8);
     
-    /* NOVÁ PALETA PODLE REFERENCE VP3D.EU */
-    --accent-orange: #ff8c00; /* Hlavní oranžová */
-    --accent-amber: #ffba00; /* Světlejší jantarová pro gradienty */
+    /* Accent Colors - Modern Blue/Purple Gradient */
+    --accent-primary: #6366f1;
+    --accent-secondary: #8b5cf6;
+    --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    --accent-hover: #7c3aed;
+    --accent-glow: rgba(99, 102, 241, 0.3);
     
+    /* Status Colors */
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    --info: #3b82f6;
+    
+    /* Text Colors */
     --text-primary: #ffffff;
-    --text-secondary: #b0b8c4; /* Světlejší šedá pro lepší kontrast */
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-blur: 12px; /* Menší rozmazání pro čistší vzhled */
-    --orange-glow: rgba(255, 140, 0, 0.3);
+    --text-secondary: #a1a8b8;
+    --text-tertiary: #6b7280;
+    --text-muted: #4b5563;
+    
+    /* Borders & Dividers */
+    --border-color: rgba(255, 255, 255, 0.1);
+    --border-hover: rgba(99, 102, 241, 0.4);
+    --divider: rgba(255, 255, 255, 0.05);
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.6);
+    --shadow-glow: 0 0 30px rgba(99, 102, 241, 0.4);
+    
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+    --spacing-2xl: 4rem;
+    
+    /* Border Radius */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+    
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
 body {
-    background-color: var(--bg-deep);
+    background: var(--bg-primary);
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+        linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
     color: var(--text-primary);
-    /* Změna hlavního fontu na Montserrat pro modernější vzhled (jako reference) */
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     overflow-x: hidden;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Upravená záře na pozadí do oranžova */
+/* Background Glow Effect */
 .bg-glow {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at 70% 30%, var(--orange-glow) 0%, transparent 50%),
-                radial-gradient(circle at 30% 80%, rgba(255, 186, 0, 0.15) 0%, transparent 50%);
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
     z-index: -1;
-    opacity: 0.6;
+    pointer-events: none;
 }
 
-/* Navbar */
+/* Modern Navigation */
 .navbar {
-    height: 80px; position: fixed; top: 0; width: 100%; z-index: 1000;
-    display: flex; justify-content: center; backdrop-filter: blur(var(--glass-blur));
-    border-bottom: 1px solid var(--glass-border);
-    background: rgba(10, 11, 20, 0.8);
+    height: 72px; 
+    position: fixed; 
+    top: 0; 
+    width: 100%; 
+    z-index: 1000;
+    display: flex; 
+    justify-content: center; 
+    backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(15, 17, 23, 0.75);
+    box-shadow: var(--shadow-sm);
 }
-.nav-container { width: 90%; max-width: 1400px; display: flex; justify-content: space-between; align-items: center; }
-.logo { font-family: 'Rajdhani'; font-size: 1.6rem; font-weight: 700; letter-spacing: 1px; }
-.accent { color: var(--accent-orange); }
 
-nav a { text-decoration: none; color: var(--text-secondary); margin: 0 20px; font-weight: 600; font-size: 0.9rem; transition: 0.3s; text-transform: uppercase; letter-spacing: 0.5px; }
-/* Aktivní link je nyní oranžový */
-nav a.active, nav a:hover { color: var(--accent-orange); }
+.nav-container { 
+    width: 90%; 
+    max-width: 1400px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 0 var(--spacing-md);
+}
 
-/* TLAČÍTKA - STYL VP3D */
+.logo { 
+    font-family: 'Rajdhani', sans-serif; 
+    font-size: 1.75rem; 
+    font-weight: 700; 
+    letter-spacing: -0.5px;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+.accent { 
+    color: var(--accent-primary); 
+}
+
+nav { 
+    display: flex; 
+    gap: var(--spacing-xs);
+}
+
+nav a { 
+    text-decoration: none; 
+    color: var(--text-secondary); 
+    padding: 10px 20px;
+    font-weight: 600; 
+    font-size: 0.9rem; 
+    transition: var(--transition-base); 
+    text-transform: uppercase; 
+    letter-spacing: 0.5px;
+    border-radius: var(--radius-md);
+    position: relative;
+}
+
+nav a::before {
+    content: '';
+    position: absolute;
+    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+    width: 60%;
+    height: 2px;
+    background: var(--accent-gradient);
+    border-radius: var(--radius-full);
+    transition: var(--transition-base);
+}
+
+nav a:hover {
+    color: var(--text-primary);
+    background: rgba(99, 102, 241, 0.1);
+}
+
+nav a.active {
+    color: var(--text-primary);
+    background: rgba(99, 102, 241, 0.15);
+}
+
+nav a.active::before,
+nav a:hover::before {
+    transform: translateX(-50%) scaleX(1);
+}
+
+/* Modern Button Styles */
 .btn-main {
-    background: linear-gradient(135deg, var(--accent-orange), var(--accent-amber));
+    background: var(--accent-gradient);
     border: none;
     color: white;
-    padding: 15px 35px;
-    border-radius: 4px; /* Hranatější rohy podle reference */
-    font-weight: 700;
-    font-size: 1rem;
+    padding: 14px 32px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.95rem;
     cursor: pointer;
-    transition: 0.3s;
-    box-shadow: 0 4px 15px var(--orange-glow);
+    transition: var(--transition-base);
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
+    font-family: 'Montserrat', sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-main::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: var(--transition-slow);
+}
+
+.btn-main:hover::before {
+    left: 100%;
 }
 
 .btn-main:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(255, 140, 0, 0.5);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.5);
+}
+
+.btn-main:active {
+    transform: translateY(0);
 }
 
 .btn-ghost {
     background: transparent;
-    border: 2px solid var(--glass-border);
+    border: 2px solid var(--border-color);
     color: var(--text-primary);
-    padding: 15px 35px;
-    border-radius: 4px;
-    font-weight: 700;
-    font-size: 1rem;
+    padding: 14px 32px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.95rem;
     cursor: pointer;
-    transition: 0.3s;
+    transition: var(--transition-base);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .btn-ghost:hover {
-    border-color: var(--accent-orange);
-    color: var(--accent-orange);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    background: rgba(99, 102, 241, 0.1);
+    transform: translateY(-2px);
 }
 
 /* Layout & Hero */
-.pages-wrapper { width: 100vw; height: 100vh; overflow: hidden; }
-.pages-track { display: flex; width: 300vw; height: 100%; transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1); }
-.page { width: 100vw; height: 100%; overflow-y: auto; padding-top: 100px; padding-bottom: 80px; }
+.pages-wrapper { 
+    width: 100vw; 
+    height: 100vh; 
+    overflow: hidden; 
+}
+
+.pages-track { 
+    display: flex; 
+    width: 300vw; 
+    height: 100%; 
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+}
+
+.page { 
+    width: 100vw; 
+    height: 100%; 
+    overflow-y: auto; 
+    overflow-x: hidden;
+    padding-top: 100px; 
+    padding-bottom: 100px; 
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-primary) transparent;
+}
+
+.page::-webkit-scrollbar {
+    width: 8px;
+}
+
+.page::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.page::-webkit-scrollbar-thumb {
+    background: var(--accent-primary);
+    border-radius: var(--radius-full);
+}
+
+.page::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-secondary);
+}
 
 .hero-card {
     width: 90%; max-width: 1400px; margin: 20px auto 60px; display: grid; grid-template-columns: 1.2fr 1fr;
@@ -110,12 +313,24 @@ h1 { font-family: 'Rajdhani'; font-size: 5rem; line-height: 1; margin: 10px 0 25
 .hero-img-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; mask-image: linear-gradient(to left, black 30%, transparent); }
 .hero-actions { display: flex; gap: 20px; }
 
-/* Nadpisy sekcí s detailem podle reference */
+/* Section Titles */
 .section-title {
-    font-size: 2.2rem; margin-bottom: 40px; font-family: 'Rajdhani'; font-weight: 700; position: relative;
+    font-size: clamp(2rem, 4vw, 2.5rem);
+    margin-bottom: 40px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    position: relative;
+    letter-spacing: -0.5px;
 }
+
 .section-title::after {
-    content: ''; display: block; width: 60px; height: 4px; background: var(--accent-orange); margin-top: 15px; border-radius: 2px;
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: var(--accent-gradient);
+    margin-top: 15px;
+    border-radius: var(--radius-full);
 }
 
 /* Materials Widget */
@@ -172,59 +387,73 @@ h1 { font-family: 'Rajdhani'; font-size: 5rem; line-height: 1; margin: 10px 0 25
 .portfolio-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
 .portfolio-item:hover img { transform: scale(1.05); }
 
-/* Products Page */
+/* Products Page - Modern Design */
 .products-wrapper { 
     width: 90%; 
     max-width: 1400px; 
     margin: 0 auto; 
-    padding: 40px 0; 
+    padding: 60px 0; 
 }
+
 .page-intro {
     text-align: center;
-    margin-bottom: 50px;
+    margin-bottom: 60px;
 }
+
+.page-intro .section-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 16px;
+}
+
 .page-intro p {
     color: var(--text-secondary);
-    font-size: 1.1rem;
+    font-size: 1.125rem;
     margin-top: 16px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
+
 .product-filters {
     display: flex;
     gap: 12px;
-    margin: 50px 0;
+    margin: 60px 0;
     flex-wrap: wrap;
     justify-content: center;
-    padding: 20px;
-    background: rgba(18, 20, 30, 0.4);
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(12px);
+    padding: 24px;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: var(--shadow-md);
 }
 .filter-btn {
-    padding: 14px 32px;
+    padding: 12px 28px;
     background: rgba(255, 255, 255, 0.03);
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--border-color);
     color: var(--text-secondary);
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: var(--transition-base);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-family: 'Montserrat', sans-serif;
 }
+
 .filter-btn:hover {
-    border-color: rgba(255, 140, 0, 0.5);
-    color: var(--accent-orange);
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+    background: rgba(99, 102, 241, 0.1);
     transform: translateY(-2px);
-    background: rgba(255, 140, 0, 0.05);
 }
+
 .filter-btn.active {
-    background: linear-gradient(135deg, var(--accent-orange), var(--accent-amber));
+    background: var(--accent-gradient);
     border-color: transparent;
     color: white;
-    box-shadow: 0 4px 20px rgba(255, 140, 0, 0.4);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
     transform: translateY(-2px);
 }
 
@@ -232,81 +461,94 @@ h1 { font-family: 'Rajdhani'; font-size: 5rem; line-height: 1; margin: 10px 0 25
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 32px;
-    margin: 50px 0;
+    margin: 60px 0;
 }
+
 .product-card {
-    background: rgba(18, 20, 30, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
     overflow: hidden;
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(16px);
+    transition: var(--transition-base);
+    backdrop-filter: blur(20px) saturate(180%);
     opacity: 0;
     transform: translateY(20px);
     animation: fadeInUp 0.6s ease-out forwards;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
-.product-card.product-available:hover {
-    transform: translateY(-12px);
-    border-color: rgba(255, 140, 0, 0.4);
-    box-shadow: 0 20px 60px rgba(255, 140, 0, 0.25);
-}
-.product-card.product-sold-out {
-    cursor: not-allowed;
-    opacity: 0.65;
+    box-shadow: var(--shadow-md);
     position: relative;
 }
+
+.product-card.product-available:hover {
+    transform: translateY(-8px);
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-xl), 0 0 30px rgba(99, 102, 241, 0.2);
+}
+
+.product-card.product-sold-out {
+    cursor: not-allowed;
+    opacity: 0.6;
+    position: relative;
+}
+
 .product-card.product-sold-out:hover {
     transform: none;
+    box-shadow: var(--shadow-md);
 }
+
 .product-card.hidden {
     display: none;
 }
+
 .product-image-wrapper {
     position: relative;
     width: 100%;
-    height: 280px;
+    height: 300px;
     overflow: hidden;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(20, 20, 30, 0.6));
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
 }
+
 .product-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: var(--transition-slow);
 }
+
 .product-card.product-available:hover .product-image {
-    transform: scale(1.08);
+    transform: scale(1.1);
 }
+
 .product-card.product-sold-out .product-image {
-    filter: grayscale(60%);
+    filter: grayscale(70%) brightness(0.7);
 }
 .sold-out-badge {
     position: absolute;
     top: 16px;
     right: 16px;
-    background: rgba(220, 38, 38, 0.95);
+    background: rgba(239, 68, 68, 0.95);
     color: white;
     padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
-    backdrop-filter: blur(8px);
+    letter-spacing: 1px;
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(10px);
     z-index: 2;
 }
+
 .product-info {
-    padding: 28px;
+    padding: 32px 28px;
     display: flex;
     flex-direction: column;
     flex: 1;
     gap: 12px;
 }
+
 .product-name {
     font-family: 'Rajdhani', sans-serif;
     font-size: 1.5rem;
@@ -314,19 +556,27 @@ h1 { font-family: 'Rajdhani'; font-size: 5rem; line-height: 1; margin: 10px 0 25
     color: var(--text-primary);
     line-height: 1.3;
     margin: 0;
+    letter-spacing: -0.5px;
 }
+
 .product-category {
-    color: var(--accent-orange);
-    font-size: 0.8rem;
+    color: var(--accent-primary);
+    font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1.5px;
     margin: 0;
+    display: inline-block;
+    padding: 4px 10px;
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: var(--radius-sm);
+    width: fit-content;
 }
+
 .product-description {
     color: var(--text-secondary);
     font-size: 0.95rem;
-    line-height: 1.6;
+    line-height: 1.7;
     margin: 8px 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -335,50 +585,60 @@ h1 { font-family: 'Rajdhani'; font-size: 5rem; line-height: 1; margin: 10px 0 25
     overflow: hidden;
     flex: 1;
 }
+
 .product-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: auto;
-    padding-top: 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 20px;
+    border-top: 1px solid var(--divider);
+    gap: 16px;
 }
+
 .product-price {
     font-family: 'Rajdhani', sans-serif;
     font-size: 2rem;
     font-weight: 700;
-    color: var(--accent-orange);
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     display: flex;
     align-items: baseline;
 }
+
 .price-unit {
     font-size: 1.2rem;
     color: var(--text-secondary);
     font-weight: 500;
     margin-left: 4px;
 }
+
 .product-btn-quick {
-    background: linear-gradient(135deg, var(--accent-orange), var(--accent-amber));
+    background: var(--accent-gradient);
     border: none;
     color: white;
     padding: 10px 24px;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: var(--transition-base);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(255, 140, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
     font-family: 'Montserrat', sans-serif;
 }
+
 .product-btn-quick:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(255, 140, 0, 0.5);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
 }
+
 .product-status-text {
-    color: rgba(220, 38, 38, 0.8);
-    font-size: 0.9rem;
+    color: var(--error);
+    font-size: 0.85rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -391,66 +651,74 @@ h1 { font-family: 'Rajdhani'; font-size: 5rem; line-height: 1; margin: 10px 0 25
     }
 }
 
-/* Modal */
+/* Modern Modal */
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(12px) saturate(180%);
     z-index: 10000;
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease-out;
+    transition: var(--transition-base);
+    padding: var(--spacing-md);
 }
+
 .modal-overlay.active {
     opacity: 1;
     visibility: visible;
 }
+
 .modal-container {
-    background: var(--bg-surface);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
     max-width: 900px;
-    width: 90%;
+    width: 100%;
     max-height: 90vh;
     overflow-y: auto;
     position: relative;
-    backdrop-filter: blur(var(--glass-blur));
-    transform: scale(0.9) translateY(50px);
-    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: var(--shadow-xl);
+    transform: scale(0.95) translateY(30px);
+    transition: var(--transition-base);
 }
+
 .modal-overlay.active .modal-container {
     transform: scale(1) translateY(0);
 }
+
 .modal-close {
     position: absolute;
     top: 20px;
     right: 20px;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--glass-border);
-    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
     color: var(--text-primary);
-    font-size: 28px;
+    font-size: 24px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s;
+    transition: var(--transition-base);
     z-index: 10;
     line-height: 1;
 }
+
 .modal-close:hover {
-    background: var(--accent-orange);
-    border-color: var(--accent-orange);
-    transform: rotate(90deg);
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    transform: rotate(90deg) scale(1.1);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
 }
 .modal-content {
     padding: 50px;
@@ -474,11 +742,16 @@ h1 { font-family: 'Rajdhani'; font-size: 5rem; line-height: 1; margin: 10px 0 25
     gap: 12px;
 }
 .modal-product-category {
-    color: var(--accent-orange);
-    font-size: 0.9rem;
+    color: var(--accent-primary);
+    font-size: 0.85rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1.5px;
+    display: inline-block;
+    padding: 6px 12px;
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: var(--radius-sm);
+    width: fit-content;
 }
 .stock-badge {
     display: flex;
