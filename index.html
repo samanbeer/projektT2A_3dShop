@@ -14,9 +14,9 @@
         <div class="nav-container">
             <div class="logo" role="img" aria-label="3D Maker logo"><span class="accent">⬢</span> 3D MAKER</div>
             <nav role="navigation" aria-label="Hlavní navigace">
-                <a href="#" onclick="showPage('home'); return false;" id="nav-home" class="nav-link active" aria-current="page">DOMŮ</a>
-                <a href="#" onclick="showPage('products'); return false;" id="nav-products" class="nav-link">MATERIÁLY</a>
-                <a href="#" onclick="showPage('materials'); return false;" id="nav-materials" class="nav-link">PRODUKTY</a>
+                <a href="#domu" id="nav-home" class="nav-link active" aria-current="page">DOMŮ</a>
+                <a href="#materialy" id="nav-materials" class="nav-link">MATERIÁLY</a>
+                <a href="#produkty" id="nav-products" class="nav-link">PRODUKTY</a>
             </nav>
         </div>
     </header>
@@ -30,8 +30,8 @@
                         <h1>PROTOTYPUJTE<br><span class="gradient-text">BUDOUCNOST</span></h1>
                         <p>Špičkový 3D tisk s průmyslovou přesností pro vaše nejnáročnější projekty.</p>
                         <div class="hero-actions">
-                            <button class="btn-main" onclick="showPage('materials')" aria-label="Zobrazit sekci s materiály">Zobrazit materiály</button>
-                            <button class="btn-ghost" aria-label="Zobrazit naše reference">Naše reference</button>
+                            <a href="#materialy" class="btn-main" aria-label="Zobrazit sekci s materiály">Zobrazit materiály</a>
+                            <a href="#recenze" class="btn-ghost" aria-label="Zobrazit naše reference">Naše reference</a>
                         </div>
                     </div>
                     <div class="hero-img-box">
@@ -90,6 +90,15 @@
 
                     <div class="products-grid" id="products-grid">
                         <div class="loading">Načítání produktů...</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="page" id="page-reviews">
+                <div class="reviews-wrapper">
+                    <div class="page-intro">
+                        <h2 class="section-title">Naše reference</h2>
+                        <p>Stránka se připravuje...</p>
                     </div>
                 </div>
             </section>

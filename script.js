@@ -30,7 +30,6 @@ async function loadMaterials() {
     const stockBox = document.getElementById('availability-list');
     const container = document.getElementById('material-tabs');
     
-    // Show loading state
     container.innerHTML = '';
     detailTitle.innerText = 'Načítání...';
     detailDesc.innerText = 'Materialy se načítají...';
@@ -97,6 +96,14 @@ function selectMaterial(type, btn) {
     swatchBox.innerHTML = '';
     stockBox.innerHTML = '';
 
+    // Add header for the stock list
+    stockBox.innerHTML = `
+        <div class="stock-item stock-header">
+            <span>Barva</span>
+            <span>Dostupnost</span>
+        </div>
+    `;
+
     groupedMaterials[type].forEach(item => {
         const hex = colorMap[item.color] || '#444';
         
@@ -104,12 +111,11 @@ function selectMaterial(type, btn) {
         let statusClass = 'status-ok'; 
         if (item.grams < 500) statusClass = 'status-low'; 
         if (item.grams < 150) statusClass = 'status-critical'; 
-
         stockBox.innerHTML += `
             <div class="stock-item">
                 <span class="stock-color-name">
-                    ${item.color}
                     <span class="color-circle-small" style="background-color: ${hex}"></span>
+                    ${item.color}
                 </span>
                 <span>${formatGrams(item.grams)} <span class="dot ${statusClass}"></span></span>
             </div>
@@ -117,33 +123,94 @@ function selectMaterial(type, btn) {
     });
 }
 
+// Global variable for products data
 let productsData = [];
 let currentFilter = 'all';
 
-function showPage(id) {
-    const track = document.getElementById('pages-track');
-    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+// URL Routing and Navigation
+function handleRouting() {
+    // Get hash without '#'. If empty, default to 'home'
+    const hash = window.location.hash.replace('#', '') || 'home';
+    const validPages = ['home', 'materials', 'products', 'reviews'];
     
-    if (id === 'home') {
-        track.style.transform = 'translateX(0)';
-        document.getElementById('nav-home').classList.add('active');
-        const homePage = document.getElementById('page-home');
-        homePage.scrollTo({ top: 0, behavior: 'smooth' });
-    } else if (id === 'products') {
-        track.style.transform = 'translateX(-100vw)';
-        document.getElementById('nav-products').classList.add('active');
-        const productsPage = document.getElementById('page-products');
-        productsPage.scrollTo({ top: 0, behavior: 'smooth' });
-        if (productsData.length === 0) {
+    // Map URL aliases to internal page IDs
+    const routeMap = {
+        'domu': 'home',
+        'materialy': 'materials',
+        'produkty': 'products',
+        'recenze': 'reviews'
+    };
+    
+    let pageId = validPages.includes(hash) ? hash : routeMap[hash];
+    
+
+    if (!pageId) {
+        // Check if we have a 404 page handling logic or redirect
+        if (hash !== '') {
+             window.location.href = '404_page/404.html';
+             return;
+        }
+        pageId = 'home';
+    }
+    
+    showPage(pageId, false);
+}
+
+function showPage(id, updateHistory = true) {
+    const track = document.getElementById('pages-track');
+    
+    // Update active nav link
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    const navLink = document.getElementById(`nav-${id}`);
+    if (navLink) navLink.classList.add('active');
+    const pageIndex = ['home', 'materials', 'products', 'reviews'].indexOf(id);
+    
+    if (pageIndex >= 0) {
+        track.style.transform = `translateX(-${pageIndex * 100}vw)`;
+        
+        // Scroll top of the new page
+        const newPage = document.getElementById(`page-${id}`);
+        if (newPage) {
+            newPage.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Load data if needed
+        if (id === 'products' && (!productsData || productsData.length === 0)) {
             loadProducts();
         }
-    } else if (id === 'materials') {
-        track.style.transform = 'translateX(-200vw)';
-        document.getElementById('nav-materials').classList.add('active');
-        const materialsPage = document.getElementById('page-materials');
-        materialsPage.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Update URL hash if requested (e.g. clicked button)
+        if (updateHistory) {
+            // Map internal IDs back to nice URL aliases
+            const urlMap = {
+                'home': 'domu',
+                'materials': 'materialy',
+                'products': 'produkty',
+                'reviews': 'recenze'
+            };
+            
+            const newHash = urlMap[id] || id;
+            
+            // Only update if changed to avoid loops
+            if (window.location.hash.replace('#', '') !== newHash) {
+                // Using history.pushState or replacing hash.
+                // Setting hash triggers 'hashchange', calling handleRouting again.
+                // handleRouting will see the ID matches current page and do nothing (efficient).
+                window.location.hash = newHash;
+            }
+        }
     }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadMaterials();
+    initBackToTop();
+    initKeyboardNavigation();
+    
+    // Initialize routing
+    handleRouting();
+    window.addEventListener('hashchange', handleRouting);
+});
 
 // Back to top button functionality
 function initBackToTop() {
@@ -151,27 +218,48 @@ function initBackToTop() {
     backToTopBtn.className = 'back-to-top';
     backToTopBtn.innerHTML = '↑';
     backToTopBtn.setAttribute('aria-label', 'Zpět nahoru');
-    backToTopBtn.onclick = () => {
-        const activePage = document.querySelector('.page:not([style*="display: none"])') || 
-                          (document.getElementById('nav-home').classList.contains('active') 
-                           ? document.getElementById('page-home') 
-                           : document.getElementById('page-materials'));
-        activePage.scrollTo({ top: 0, behavior: 'smooth' });
-    };
     document.body.appendChild(backToTopBtn);
 
-    // Show/hide button based on scroll position
-    const pages = [document.getElementById('page-home'), document.getElementById('page-materials')];
-    pages.forEach(page => {
-        if (page) {
-            page.addEventListener('scroll', () => {
+    const pages = Array.from(document.querySelectorAll('.page'));
+    
+    // Helper to get current active page index based on hash
+    function getActivePageIndex() {
+         const hash = window.location.hash.replace('#', '') || 'home';
+         // Map aliases to IDs to find index
+         const routeMap = {
+            'domu': 'home',
+            'materialy': 'materials',
+            'produkty': 'products',
+            'recenze': 'reviews'
+        };
+        const id = routeMap[hash] || hash; 
+        return ['home', 'materials', 'products', 'reviews'].indexOf(id);
+    }
+
+    backToTopBtn.onclick = () => {
+        const activeIndex = getActivePageIndex();
+        if (pages[activeIndex]) {
+            pages[activeIndex].scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+
+    // Add scroll listeners to all pages
+    pages.forEach((page, index) => {
+        page.addEventListener('scroll', () => {
+            // Only show button if this page is the currently active one
+            if (index === getActivePageIndex()) {
                 if (page.scrollTop > 300) {
                     backToTopBtn.classList.add('visible');
                 } else {
                     backToTopBtn.classList.remove('visible');
                 }
-            });
         }
+        });
+    });
+    
+    // Re-check button visibility on navigation change
+    window.addEventListener('hashchange', () => {
+        backToTopBtn.classList.remove('visible'); // Hide initially on change
     });
 }
 
@@ -210,6 +298,12 @@ function initKeyboardNavigation() {
 async function loadProducts() {
     const productsGrid = document.getElementById('products-grid');
     if (!productsGrid) return;
+    
+    // If data is already loaded, render immediately
+    if (productsData && productsData.length > 0) {
+        renderProducts(productsData);
+        return;
+    }
     
     productsGrid.innerHTML = '<div class="loading">Načítání produktů...</div>';
     
@@ -362,6 +456,24 @@ function addToCart(productId) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Add click listeners to nav links for manual navigation updates
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Get the ID from the href (e.g. #home -> home) or map from alias
+            // Actually, the links in HTML should probably use the aliases now: href="#materialy"
+            // Let's assume the HTML links are updated to use aliases or IDs. 
+            // The routing system handles the hash change.
+            const targetHash = link.getAttribute('href');
+            window.location.hash = targetHash;
+        });
+    });
+    
+    // Initialize everything
+    handleRouting();
+    window.addEventListener('hashchange', handleRouting);
+
     loadMaterials();
     initBackToTop();
     initKeyboardNavigation();
