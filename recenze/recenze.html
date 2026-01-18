@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recenze | BEER 3D</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="recenze.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="dark-theme">
+    <div class="bg-glow"></div>
+
+    <header class="navbar" role="banner">
+        <div class="nav-container">
+            <a href="../index.html" class="logo" role="img" aria-label="Beer 3D logo"><span class="accent">🍺</span> BEER 3D</a>
+            <nav role="navigation" aria-label="Hlavní navigace">
+                <a href="../index.html#domu" class="nav-link">DOMŮ</a>
+                <a href="../index.html#materialy" class="nav-link">MATERIÁLY</a>
+                <a href="../index.html#produkty" class="nav-link">PRODUKTY</a>
+                <a href="recenze.html" class="nav-link active">RECENZE</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page" id="page-reviews">
+        <div class="reviews-wrapper">
+            <div class="page-intro">
+                <h2 class="section-title">Napište nám recenzi!</h2>
+                <p>Podělte se o své zkušenosti s našimi produkty a službami.</p>
+            </div>
+    
+            <div class="reviews-layout">
+                <div class="review-form-container glass-effect">
+                    <h3>Přidat recenzi</h3>
+                    <form id="review-form" onsubmit="return false;">
+                        <div class="form-group">
+                            <label for="review-name">Jméno</label>
+                            <input type="text" id="review-name" placeholder="Vaše jméno..." required>
+                        </div>
+                        <div class="form-group">
+                            <label for="review-stars">Hodnocení (1-5 🍺)</label>
+                            <select id="review-stars" required>
+                                <option value="5">🍺🍺🍺🍺🍺 (Vynikající)</option>
+                                <option value="4">🍺🍺🍺🍺 (Velmi dobré)</option>
+                                <option value="3">🍺🍺🍺 (Dobré)</option>
+                                <option value="2">🍺🍺 (Ujde to)</option>
+                                <option value="1">🍺 (Špatné)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="review-text">Recenze</label>
+                            <textarea id="review-text" rows="5" placeholder="Napište pár slov..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="review-photo">Přidat fotku (volitelné)</label>
+                            <input type="file" id="review-photo" accept="image/*">
+                        </div>
+                        <button type="submit" id="submit-review" class="btn-main">Odeslat recenzi</button>
+                    </form>
+                </div>
+    
+                <div class="reviews-list-container">
+                    <h3>Co o nás říkají ostatní</h3>
+                    <div id="reviews-list" class="glass-effect">
+                        <!-- Recenze z Firebase se načtou sem -->
+                        <div class="loading">Načítání recenzí...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+        <div class="footer-grid">
+            <div class="foot-col">© 2025 BEER 3D. Všechna práva vyhrazena.</div>
+        </div>
+    </footer>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD0IcMlE-qMKZhqI3eiCNEOqiPAsgwUt08",
+            authDomain: "beer-3d-eshop.firebaseapp.com",
+            projectId: "beer-3d-eshop",
+            storageBucket: "beer-3d-eshop.firebasestorage.app",
+            messagingSenderId: "134665446846",
+            appId: "1:134665446846:web:f53b7082d77fee0f10c5ef",
+            measurementId: "G-W4GGQYQ2EX"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // --- DOM Elements ---
+        const reviewForm = document.getElementById('review-form');
+        const submitButton = document.getElementById('submit-review');
+        const reviewsList = document.getElementById('reviews-list');
+        const reviewName = document.getElementById('review-name');
+        const reviewText = document.getElementById('review-text');
+        const reviewStars = document.getElementById('review-stars');
+        const reviewPhoto = document.getElementById('review-photo');
+
+        // --- Functions ---
+
+        /**
+         * Loads reviews from Firestore and displays them on the page.
+         */
+        async function loadReviews() {
+            reviewsList.innerHTML = '<div class="loading">Načítání recenzí...</div>';
+            try {
+                const q = query(collection(db, "reviews"), orderBy("timestamp", "desc"));
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) {
+                    reviewsList.innerHTML = '<p class="no-reviews">Zatím tu nejsou žádné recenze. Buďte první!</p>';
+                    return;
+                }
+
+                let reviewsHTML = '';
+                querySnapshot.forEach((doc) => {
+                    const review = doc.data();
+                    const ratingBeer = '🍺'.repeat(review.stars);
+                    const reviewDate = review.timestamp ? review.timestamp.toDate().toLocaleDateString('cs-CZ') : '';
+
+                    reviewsHTML += `
+                        <div class="review-item">
+                            <div class="review-header">
+                                <span class="review-name">${review.name}</span>
+                                <span class="review-rating" title="${review.stars}/5">${ratingBeer}</span>
+                            </div>
+                            <p class="review-text">${review.text}</p>
+                            ${review.photoUrl ? `<img src="${review.photoUrl}" alt="Fotka k recenzi" class="review-photo">` : ''}
+                            <div class="review-date">${reviewDate}</div>
+                        </div>
+                    `;
+                });
+                reviewsList.innerHTML = reviewsHTML;
+            } catch (error) {
+                console.error("Error loading reviews: ", error);
+                reviewsList.innerHTML = '<p class="error-message">Chyba při načítání recenzí.</p>';
+            }
+        }
+
+        /**
+         * Handles the review form submission.
+         */
+         async function handleFormSubmit(e) {
+            e.preventDefault();
+            console.log("Začínám odesílat..."); // Ladící výpis
+            
+            submitButton.disabled = true;
+            submitButton.textContent = 'Odesílám...';
+
+            try {
+                let photoUrl = null;
+                const file = reviewPhoto.files[0];
+
+                if (file) {
+                    console.log("Nahrávám fotku...");
+                    // Upload image to Firebase Storage
+                    const storageRef = ref(storage, 'review-photos/' + Date.now() + '-' + file.name);
+                    const snapshot = await uploadBytes(storageRef, file);
+                    photoUrl = await getDownloadURL(snapshot.ref);
+                    console.log("Fotka nahrána, URL:", photoUrl);
+                }
+
+                console.log("Zapisuji do databáze...");
+                
+                // Změna: Místo serverTimestamp() použijeme new Date()
+                // Je to bezpečnější pro základní nastavení
+                await addDoc(collection(db, "reviews"), {
+                    name: reviewName.value,
+                    text: reviewText.value,
+                    stars: Number(reviewStars.value),
+                    photoUrl: photoUrl,
+                    timestamp: new Date() // Tady byla možná chyba
+                });
+
+                console.log("Zápis úspěšný!");
+
+                // Reset form and reload reviews
+                reviewForm.reset();
+                alert("Recenze úspěšně odeslána! 🍺"); // Přidáno potvrzení pro uživatele
+                await loadReviews();
+
+            } catch (error) {
+                console.error("CHYBA PŘI ODESÍLÁNÍ:", error); // Toto hledej v konzoli
+                alert('Chyba: ' + error.message); // Vypíše chybu přímo na obrazovku
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Odeslat recenzi';
+            }
+        }
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', loadReviews);
+        reviewForm.addEventListener('submit', handleFormSubmit);
+
+    </script>
+</body>
+</html>

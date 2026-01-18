@@ -6,22 +6,22 @@
 }
 
 :root {
-    --bg-dark: #0f172a;
-    --bg-surface:rgba(30, 41, 59, 0.4);
-    --bg-card:rgba(30, 41, 59, 0.6);
-    --text-primary:#f8fafc;
-    --text-secondary:#94a3b8;
-    --accent-orange:#0ea5e9;
-    --accent-amber:#3b82f6;
-    --accent-gradient: linear-gradient(135deg, #0ea5e9, #6366f1);
-    --glass-border: rgba(255, 255, 255, 0.08);
+    --bg-dark: #1a1100; /* Stout/Porter brown */
+    --bg-surface: rgba(74, 42, 12, 0.4); /* Semi-transparent amber */
+    --bg-card: rgba(74, 42, 12, 0.6); /* Semi-transparent amber */
+    --text-primary: #fdfbf7; /* Beer foam off-white */
+    --text-secondary: #c5bca8; /* Lighter, earthy secondary text */
+    --accent-orange: #fbb92d; /* Rich gold (Lager) */
+    --accent-amber: #c86a26; /* Orange-brown (Ale) */
+    --accent-gradient: linear-gradient(135deg, #fbb92d, #c86a26);
+    --glass-border: rgba(253, 251, 247, 0.1);
     --glass-blur: 16px;
     --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 10px 15px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 20px 25px rgba(0, 0, 0, 0.15);
     --shadow-xl: 0 25px 50px rgba(0, 0, 0, 0.2);
-    --orange-glow:rgba(14, 165, 233, 0.25);
-    --divider: rgba(255, 255, 255, 0.08);
+    --orange-glow: rgba(251, 185, 45, 0.25); /* Golden glow */
+    --divider: rgba(253, 251, 247, 0.1);
     --spacing-xs: 8px;
     --spacing-sm: 16px;
     --spacing-md: 24px;
@@ -83,10 +83,7 @@ body {
 }
 
 .logo { 
-    font-family: 'Rajdhani', sans-serif; 
-
-
-
+    font-family: 'Montserrat', sans-serif; 
     font-size: 1.75rem; font-weight: 700; letter-spacing: -0.5px;
     color: var(--text-primary);
     cursor: pointer;
@@ -291,7 +288,7 @@ nav a:hover::before {
 
 .hero-content { padding: 80px; display: flex; flex-direction: column; justify-content: center; }
 .badge { color: var(--accent-orange); font-size: 0.9rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px; display: block; }
-h1 { font-family: 'Rajdhani'; font-size: 5rem; line-height: 1; margin: 10px 0 25px; font-weight: 800; }
+h1 { font-family: 'Montserrat', sans-serif; font-size: 5rem; line-height: 1; margin: 10px 0 25px; font-weight: 800; }
 .gradient-text { background: linear-gradient(to right, var(--accent-orange), var(--accent-amber)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 .hero-content p { font-size: 1.1rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 35px; max-width: 500px; }
 .hero-img-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; mask-image: linear-gradient(to left, black 30%, transparent); }
@@ -300,8 +297,7 @@ h1 { font-family: 'Rajdhani'; font-size: 5rem; line-height: 1; margin: 10px 0 25
 /* Section Titles */
 .section-title {
     font-size: clamp(2rem, 4vw, 2.5rem);
-    margin-bottom: 40px;
-    font-family: 'Rajdhani', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-weight: 700;
     position: relative;
     letter-spacing: -0.5px;
@@ -383,9 +379,7 @@ h1 { font-family: 'Rajdhani'; font-size: 5rem; line-height: 1; margin: 10px 0 25
     margin-bottom: 40px;
 }
 
-.content-header h3 { 
-    font-family: 'Rajdhani', sans-serif; 
-    font-size: 2.2rem; 
+font-family: 'Montserrat', sans-serif;    font-size: 2.2rem; 
     margin-bottom: 12px;
     letter-spacing: -0.5px;
 }
@@ -1212,7 +1206,7 @@ html {
     /* Since we can't easily add HTML, we style the body to have a pseudo-header or rely on content */
     
     body::before {
-        content: '3D MAKER';
+        content: 'BEER 3D';
         display: block;
         text-align: center;
         padding: 15px 0;
