@@ -1,16 +1,16 @@
 let groupedMaterials = {};
 
 const materialInfo = {
-    'PLA': 'Ekologický materiál z kukuřičného škrobu. Nabízí skvělý detail, matný povrch a minimální tepelné smrštění. Ideální pro designové kousky a prototypy.',
-    'PETG': 'Pevný a odolný materiál s vysokou houževnatostí. Chemicky odolný a vhodný pro funkční díly v interiéru i exteriéru. Skvělý kompromis mezi PLA a ABS.',
-    'ABS': 'Průmyslový standard pro mechanicky namáhané díly. Vysoká teplotní odolnost a pevnost. Vyžaduje zkušenosti při tisku.',
-    'TPU': 'Flexibilní elastomer připomínající gumu. Vynikající pro těsnění, pouzdra, tlumící prvky a ohebné části.'
+    'PLA': 'Ekologický materiál, rozložitelný skoro jako pěna na pivu. Ideální pro designové kousky, jako jsou podtácky nebo otvíráky.',
+    'PETG': 'Pevný a houževnatý, skoro jako sládkova trpělivost. Skvělý na funkční díly, co musí vydržet i bouřlivější oslavu.',
+    'ABS': 'Průmyslový standard pro díly, co musí vydržet teplo od motoru... nebo od grilu. Pro opravdové fajnšmekry.',
+    'TPU': 'Flexibilní jako harmonikář po desátém kousku. Ideální na těsnění k pípě nebo nerozbitné "půllitry" na festival.'
 };
 
 const colorMap = {
-    'Bílá': '#ffffff', 'Bíla': '#ffffff', 'Černá': '#121212', 
-    'Oranžová': '#ff6700', 'Modrá': '#0055ff', 'Červená': '#ff0000',
-    'Šedá': '#808080', 'Neon Blue': '#00f2ff'
+    'Pěna (Bílá)': '#ffffff', 'Pěna (Bíla)': '#ffffff', 'Stout (Černá)': '#121212', 
+    'IPA (Oranžová)': '#ff6700', 'Borůvkový Ale (Modrá)': '#0055ff', 'Red Ale (Červená)': '#ff0000',
+    'Golem (Šedá)': '#808080', 'Limetkový Radler (Neon)': '#00f2ff'
 };
 
 function formatGrams(g) {
@@ -105,7 +105,10 @@ function selectMaterial(type, btn) {
     `;
 
     groupedMaterials[type].forEach(item => {
-        const hex = colorMap[item.color] || '#444';
+        const originalColor = item.color;
+        const newColorKey = Object.keys(colorMap).find(key => key.includes(`(${originalColor})`)) || Object.keys(colorMap).find(key => key.toLowerCase().includes(originalColor.toLowerCase()));
+        const hex = newColorKey ? colorMap[newColorKey] : '#444';
+        const displayName = newColorKey || originalColor;
         
         // Skladová dostupnost s malým barevným kroužkem vedle názvu
         let statusClass = 'status-ok'; 
@@ -115,7 +118,7 @@ function selectMaterial(type, btn) {
             <div class="stock-item">
                 <span class="stock-color-name">
                     <span class="color-circle-small" style="background-color: ${hex}"></span>
-                    ${item.color}
+                    ${displayName}
                 </span>
                 <span>${formatGrams(item.grams)} <span class="dot ${statusClass}"></span></span>
             </div>
@@ -131,14 +134,13 @@ let currentFilter = 'all';
 function handleRouting() {
     // Get hash without '#'. If empty, default to 'home'
     const hash = window.location.hash.replace('#', '') || 'home';
-    const validPages = ['home', 'materials', 'products', 'reviews'];
+    const validPages = ['home', 'materials', 'products'];
     
     // Map URL aliases to internal page IDs
     const routeMap = {
         'domu': 'home',
         'materialy': 'materials',
-        'produkty': 'products',
-        'recenze': 'reviews'
+        'produkty': 'products'
     };
     
     let pageId = validPages.includes(hash) ? hash : routeMap[hash];
@@ -163,7 +165,7 @@ function showPage(id, updateHistory = true) {
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
     const navLink = document.getElementById(`nav-${id}`);
     if (navLink) navLink.classList.add('active');
-    const pageIndex = ['home', 'materials', 'products', 'reviews'].indexOf(id);
+    const pageIndex = ['home', 'materials', 'products'].indexOf(id);
     
     if (pageIndex >= 0) {
         track.style.transform = `translateX(-${pageIndex * 100}vw)`;
@@ -185,8 +187,7 @@ function showPage(id, updateHistory = true) {
             const urlMap = {
                 'home': 'domu',
                 'materials': 'materialy',
-                'products': 'produkty',
-                'reviews': 'recenze'
+                'products': 'produkty'
             };
             
             const newHash = urlMap[id] || id;
@@ -229,11 +230,10 @@ function initBackToTop() {
          const routeMap = {
             'domu': 'home',
             'materialy': 'materials',
-            'produkty': 'products',
-            'recenze': 'reviews'
+            'produkty': 'products'
         };
         const id = routeMap[hash] || hash; 
-        return ['home', 'materials', 'products', 'reviews'].indexOf(id);
+        return ['home', 'materials', 'products'].indexOf(id);
     }
 
     backToTopBtn.onclick = () => {
