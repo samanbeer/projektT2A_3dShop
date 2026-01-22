@@ -1,11 +1,18 @@
 :root {
-    --bg-dark: #1a1100; /* Stout/Porter brown */
-    --bg-surface: rgba(74, 42, 12, 0.4); /* Semi-transparent amber */
-    --bg-card: rgba(74, 42, 12, 0.6); /* Semi-transparent amber */
-    --text-primary: #fdfbf7; /* Beer foam off-white */
-    --text-secondary: #c5bca8; /* Lighter, earthy secondary text */
-    --accent-orange: #fbb92d; /* Rich gold (Lager) */
-    --accent-amber: #c86a26; /* Orange-brown (Ale) */
+    --bg-dark: #1a1100;
+    /* Stout/Porter brown */
+    --bg-surface: rgba(74, 42, 12, 0.4);
+    /* Semi-transparent amber */
+    --bg-card: rgba(74, 42, 12, 0.6);
+    /* Semi-transparent amber */
+    --text-primary: #fdfbf7;
+    /* Beer foam off-white */
+    --text-secondary: #c5bca8;
+    /* Lighter, earthy secondary text */
+    --accent-orange: #fbb92d;
+    /* Rich gold (Lager) */
+    --accent-amber: #c86a26;
+    /* Orange-brown (Ale) */
     --accent-gradient: linear-gradient(135deg, #fbb92d, #c86a26);
     --glass-border: rgba(253, 251, 247, 0.1);
     --glass-blur: 16px;
@@ -13,7 +20,8 @@
     --shadow-md: 0 10px 15px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 20px 25px rgba(0, 0, 0, 0.15);
     --shadow-xl: 0 25px 50px rgba(0, 0, 0, 0.2);
-    --orange-glow: rgba(251, 185, 45, 0.25); /* Golden glow */
+    --orange-glow: rgba(251, 185, 45, 0.25);
+    /* Golden glow */
     --divider: rgba(253, 251, 247, 0.1);
     --spacing-xs: 8px;
     --spacing-sm: 16px;
@@ -53,7 +61,8 @@
     padding: var(--spacing-lg);
 }
 
-.review-form-container h3, .reviews-list-container h3 {
+.review-form-container h3,
+.reviews-list-container h3 {
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
     font-size: 1.8rem;
@@ -192,6 +201,22 @@
     text-align: center;
     padding: var(--spacing-xl);
     color: var(--text-secondary);
+}
+
+
+/* Cloudflare Turnstile Styling */
+.cf-turnstile {
+    margin: var(--spacing-md) 0;
+    display: flex;
+    justify-content: center;
+}
+
+/* Ensure submit button has proper disabled state */
+#submit-review:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: rgba(100, 100, 100, 0.3);
+    box-shadow: none;
 }
 
 @media (max-width: 992px) {

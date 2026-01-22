@@ -1,24 +1,29 @@
 <!DOCTYPE html>
 <html lang="cs">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recenze | BEER 3D</title>
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="recenze.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Cloudflare Turnstile -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
+
 <body class="dark-theme">
     <div class="bg-glow"></div>
 
     <header class="navbar" role="banner">
         <div class="nav-container">
-            <a href="../index.html" class="logo" role="img" aria-label="Beer 3D logo"><span class="accent">🍺</span> BEER 3D</a>
+            <a href="../index.html" class="logo" role="img" aria-label="Beer 3D logo"><span class="accent">🍺</span>
+                BEER 3D</a>
             <nav role="navigation" aria-label="Hlavní navigace">
-                <a href="../index.html#domu" class="nav-link">DOMŮ</a>
-                <a href="../index.html#materialy" class="nav-link">MATERIÁLY</a>
-                <a href="../index.html#produkty" class="nav-link">PRODUKTY</a>
-                <a href="recenze.html" class="nav-link active">RECENZE</a>
+                <a href="../index.html#domu" id="nav-home" class="nav-link">DOMŮ</a>
+                <a href="../index.html#materialy" id="nav-materials" class="nav-link">MATERIÁLY</a>
+                <a href="../index.html#produkty" id="nav-products" class="nav-link">PRODUKTY</a>
             </nav>
         </div>
     </header>
@@ -29,7 +34,7 @@
                 <h2 class="section-title">Napište nám recenzi!</h2>
                 <p>Podělte se o své zkušenosti s našimi produkty a službami.</p>
             </div>
-    
+
             <div class="reviews-layout">
                 <div class="review-form-container glass-effect">
                     <h3>Přidat recenzi</h3>
@@ -56,10 +61,16 @@
                             <label for="review-photo">Přidat fotku (volitelné)</label>
                             <input type="file" id="review-photo" accept="image/*">
                         </div>
-                        <button type="submit" id="submit-review" class="btn-main">Odeslat recenzi</button>
+                        <!-- Cloudflare Turnstile -->
+                        <div class="form-group">
+                            <div class="cf-turnstile" id="turnstile-widget" data-sitekey="0x4AAAAAACN74O3NOEO5hMQU"
+                                data-callback="onTurnstileSuccess" data-theme="dark" data-size="normal">
+                            </div>
+                        </div>
+                        <button type="submit" id="submit-review" class="btn-main" disabled>Odeslat recenzi</button>
                     </form>
                 </div>
-    
+
                 <div class="reviews-list-container">
                     <h3>Co o nás říkají ostatní</h3>
                     <div id="reviews-list" class="glass-effect">
@@ -118,7 +129,7 @@
             try {
                 const q = query(collection(db, "reviews"), orderBy("timestamp", "desc"));
                 const querySnapshot = await getDocs(q);
-                
+
                 if (querySnapshot.empty) {
                     reviewsList.innerHTML = '<p class="no-reviews">Zatím tu nejsou žádné recenze. Buďte první!</p>';
                     return;
@@ -149,13 +160,26 @@
             }
         }
 
+        // Turnstile callback - enables submit button when verified
+        window.onTurnstileSuccess = function (token) {
+            console.log('Turnstile verified successfully');
+            submitButton.disabled = false;
+        }
+
         /**
          * Handles the review form submission.
          */
-         async function handleFormSubmit(e) {
+        async function handleFormSubmit(e) {
             e.preventDefault();
             console.log("Začínám odesílat..."); // Ladící výpis
-            
+
+            // Get Turnstile token
+            const turnstileToken = turnstile.getResponse();
+            if (!turnstileToken) {
+                alert('Prosím dokončete bezpečnostní ověření.');
+                return;
+            }
+
             submitButton.disabled = true;
             submitButton.textContent = 'Odesílám...';
 
@@ -173,30 +197,35 @@
                 }
 
                 console.log("Zapisuji do databáze...");
-                
-                // Změna: Místo serverTimestamp() použijeme new Date()
-                // Je to bezpečnější pro základní nastavení
+
+                // Add review to Firestore with Turnstile verification
                 await addDoc(collection(db, "reviews"), {
                     name: reviewName.value,
                     text: reviewText.value,
                     stars: Number(reviewStars.value),
                     photoUrl: photoUrl,
-                    timestamp: new Date() // Tady byla možná chyba
+                    timestamp: new Date(),
+                    turnstileVerified: true // Mark as verified
                 });
 
                 console.log("Zápis úspěšný!");
 
                 // Reset form and reload reviews
                 reviewForm.reset();
-                alert("Recenze úspěšně odeslána! 🍺"); // Přidáno potvrzení pro uživatele
+                turnstile.reset(); // Reset Turnstile widget
+                submitButton.disabled = true; // Disable until next verification
+                alert("Recenze úspěšně odeslána! 🍺");
                 await loadReviews();
 
             } catch (error) {
-                console.error("CHYBA PŘI ODESÍLÁNÍ:", error); // Toto hledej v konzoli
-                alert('Chyba: ' + error.message); // Vypíše chybu přímo na obrazovku
+                console.error("CHYBA PŘI ODESÍLÁNÍ:", error);
+                alert('Chyba: ' + error.message);
+                turnstile.reset(); // Reset on error
+                submitButton.disabled = true;
             } finally {
-                submitButton.disabled = false;
-                submitButton.textContent = 'Odeslat recenzi';
+                if (submitButton.textContent === 'Odesílám...') {
+                    submitButton.textContent = 'Odeslat recenzi';
+                }
             }
         }
 
@@ -206,4 +235,5 @@
 
     </script>
 </body>
+
 </html>

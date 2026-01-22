@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html lang="cs">
+
 <head>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-TX7NXJQ3SY"></script>
     <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-TX7NXJQ3SY');
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-TX7NXJQ3SY');
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BEER 3D | Tiskneme s chutí</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="icon" type="image/png" href="favicon.png">
-    </head>
+</head>
+
 <body class="dark-theme">
     <div class="bg-glow"></div>
 
@@ -38,10 +41,13 @@
                     <div class="hero-content">
                         <span class="badge">3D TISK & PIVO</span>
                         <h1>TISKNEME S<br><span class="gradient-text">CHUTÍ</span></h1>
-                        <p>Když se potká precizní 3D tisk s láskou k chmelu. Zakázkový tisk, otvíráky, podtácky a gadgety.</p>
+                        <p>Když se potká precizní 3D tisk s láskou k chmelu. Zakázkový tisk, otvíráky, podtácky a
+                            gadgety.</p>
                         <div class="hero-actions">
-                            <a href="#materialy" class="btn-main" aria-label="Zobrazit sekci s materiály">Naše čepované materiály</a>
-                            <a href="recenze/recenze.html" class="btn-ghost" aria-label="Zobrazit naše reference">Recenze</a>
+                            <a href="#materialy" class="btn-main" aria-label="Zobrazit sekci s materiály">Naše čepované
+                                materiály</a>
+                            <a href="recenze/recenze.html" class="btn-ghost"
+                                aria-label="Zobrazit naše reference">Recenze</a>
                         </div>
                     </div>
                     <div class="hero-img-box">
@@ -52,11 +58,20 @@
                 <div class="portfolio-section">
                     <h2 class="section-title">Naše výtvory</h2>
                     <div class="portfolio-grid">
-                        <div class="portfolio-item glass-effect"><img src="./imgs/phone_holder.png" alt="Vlastní půllitr"></div>
-                        <div class="portfolio-item glass-effect"><img src="./imgs/pingpong_pálky.png" alt="Chmelový držák"></div>
-                        <div class="portfolio-item glass-effect"><img src="./imgs/pístalky.png" alt="Pivní tokeny"></div>
+                        <div class="portfolio-item glass-effect"><img src="./imgs/phone_holder.png"
+                                alt="Vlastní půllitr"></div>
+                        <div class="portfolio-item glass-effect"><img src="./imgs/pingpong_pálky.png"
+                                alt="Chmelový držák"></div>
+                        <div class="portfolio-item glass-effect"><img src="./imgs/pístalky.png" alt="Pivní tokeny">
+                        </div>
                     </div>
                 </div>
+
+                <footer class="footer" role="contentinfo">
+                    <div class="footer-grid">
+                        <div class="foot-col">© 2025 BEER 3D. Všechna práva vyhrazena.</div>
+                    </div>
+                </footer>
             </section>
 
             <section class="page" id="page-materials">
@@ -65,7 +80,7 @@
                         <h2 class="section-title">Materiály a dostupnost</h2>
                         <p>Skladové zásoby aktualizované v reálném čase z našeho systému.</p>
                     </div>
-                    
+
                     <div class="materials-widget glass-effect">
                         <div class="materials-sidebar" id="material-tabs"></div>
 
@@ -74,7 +89,7 @@
                                 <h3 id="detail-title">Materiál</h3>
                                 <p id="detail-desc">Informace o materiálu se načítají...</p>
                             </div>
-                            
+
                             <div class="content-body">
                                 <div class="swatches-grid" id="color-swatches"></div>
                                 <div class="stock-list" id="availability-list"></div>
@@ -82,6 +97,12 @@
                         </div>
                     </div>
                 </div>
+
+                <footer class="footer" role="contentinfo">
+                    <div class="footer-grid">
+                        <div class="foot-col">© 2025 BEER 3D. Všechna práva vyhrazena.</div>
+                    </div>
+                </footer>
             </section>
 
             <section class="page" id="page-products">
@@ -92,16 +113,26 @@
                     </div>
 
                     <div class="product-filters" id="product-filters">
-                        <button class="filter-btn active" data-category="all" onclick="filterProducts('all')">Vše</button>
-                        <button class="filter-btn" data-category="filament" onclick="filterProducts('filament')">Filamenty</button>
-                        <button class="filter-btn" data-category="printer" onclick="filterProducts('printer')">Tiskárny</button>
-                        <button class="filter-btn" data-category="custom" onclick="filterProducts('custom')">Vlastní výrobky</button>
+                        <button class="filter-btn active" data-category="all"
+                            onclick="filterProducts('all')">Vše</button>
+                        <button class="filter-btn" data-category="filament"
+                            onclick="filterProducts('filament')">Filamenty</button>
+                        <button class="filter-btn" data-category="printer"
+                            onclick="filterProducts('printer')">Tiskárny</button>
+                        <button class="filter-btn" data-category="custom" onclick="filterProducts('custom')">Vlastní
+                            výrobky</button>
                     </div>
 
                     <div class="products-grid" id="products-grid">
                         <div class="loading">Načítání produktů...</div>
                     </div>
                 </div>
+
+                <footer class="footer" role="contentinfo">
+                    <div class="footer-grid">
+                        <div class="foot-col">© 2025 BEER 3D. Všechna práva vyhrazena.</div>
+                    </div>
+                </footer>
             </section>
         </div>
     </div>
@@ -116,12 +147,44 @@
         </div>
     </div>
 
-    <footer class="footer" role="contentinfo">
-        <div class="footer-grid">
-            <div class="foot-col">© 2025 BEER 3D. Všechna práva vyhrazena.</div>
+    <!-- Cart Modal -->
+    <div class="modal-overlay" id="cart-modal" onclick="closeCartModal(event)">
+        <div class="modal-container cart-modal-container" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeCartModal()" aria-label="Zavřít košík">×</button>
+            <div class="modal-content cart-modal-content">
+                <h2 class="cart-modal-title">Váš košík 🛒</h2>
+
+                <!-- Empty cart message -->
+                <div id="cart-empty" class="cart-empty" style="display: none;">
+                    <p>Váš košík je prázdný</p>
+                    <p class="cart-empty-hint">Přidejte produkty z našeho katalogu!</p>
+                </div>
+
+                <!-- Cart content -->
+                <div id="cart-content">
+                    <div id="cart-items" class="cart-items-list">
+                        <!-- Cart items will be dynamically inserted here -->
+                    </div>
+
+                    <div class="cart-summary">
+                        <div class="cart-summary-row">
+                            <span>Mezisoučet:</span>
+                            <span id="cart-total" class="cart-total-price">0 Kč</span>
+                        </div>
+                        <div class="cart-actions">
+                            <button class="btn-ghost" onclick="clearCart()">Vyprázdnit košík</button>
+                            <button class="btn-main" onclick="alert('Objednávka bude brzy k dispozici! 🍺')">Pokračovat
+                                k objednávce</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </footer>
+    </div>
+
+
 
     <script src="script.js"></script>
 </body>
+
 </html>
