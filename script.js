@@ -692,6 +692,20 @@ function renderCartItems() {
     }
 }
 
+// Proceed to checkout page
+function proceedToCheckout() {
+    if (cart.length === 0) {
+        alert('Váš košík je prázdný! Přidejte nejprve nějaké produkty.');
+        return;
+    }
+
+    // Close cart modal
+    closeCartModal();
+
+    // Redirect to checkout page
+    window.location.href = 'platba/checkout.html';
+}
+
 // Navigation click handlers are already set up in the first DOMContentLoaded listener
 
 // Close modal on Escape key

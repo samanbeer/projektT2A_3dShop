@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platba | BEER 3D</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="platba.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+
+<body class="dark-theme">
+    <div class="bg-glow"></div>
+
+    <header class="navbar" role="banner">
+        <div class="nav-container">
+            <a href="../index.html" class="logo" role="img" aria-label="Beer 3D logo"><span class="accent">🍺</span>
+                BEER 3D</a>
+            <nav role="navigation" aria-label="Hlavní navigace">
+                <a href="../index.html#domu" class="nav-link">DOMŮ</a>
+                <a href="../index.html#materialy" class="nav-link">MATERIÁLY</a>
+                <a href="../index.html#produkty" class="nav-link">PRODUKTY</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="payment-page">
+        <div class="payment-wrapper">
+            <div class="page-intro">
+                <h2 class="section-title">Dokončení objednávky</h2>
+                <p>Zkontrolujte si objednávku a přejděte k platbě.</p>
+            </div>
+
+            <div class="payment-layout">
+                <!-- Order Summary -->
+                <div class="order-summary glass-effect">
+                    <h3>Souhrn objednávky</h3>
+                    <div id="order-items" class="order-items-list">
+                        <!-- Produkty se načtou z localStorage -->
+                    </div>
+                    <div class="order-total">
+                        <span>Celkem k úhradě:</span>
+                        <span id="order-total-amount" class="total-price">0 Kč</span>
+                    </div>
+                </div>
+
+                <!-- Payment Form -->
+                <div class="payment-form-container glass-effect">
+                    <h3>Platební údaje</h3>
+                    <form id="payment-form">
+                        <div class="form-group">
+                            <label for="customer-email">Email</label>
+                            <input type="email" id="customer-email" placeholder="vas@email.cz" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="customer-name">Jméno a příjmení</label>
+                            <input type="text" id="customer-name" placeholder="Jan Novák" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="customer-phone">Telefon (volitelné)</label>
+                            <input type="tel" id="customer-phone" placeholder="+420 123 456 789">
+                        </div>
+
+                        <!-- Stripe Payment Element -->
+                        <div class="form-group">
+                            <label>Platební karta</label>
+                            <div id="payment-element">
+                                <!-- Stripe.js vloží platební formulář zde -->
+                            </div>
+                        </div>
+
+                        <div id="payment-message" class="payment-message"></div>
+
+                        <button type="submit" id="submit-payment" class="btn-main">
+                            <span id="button-text">Zaplatit</span>
+                            <span id="spinner" class="spinner" style="display: none;"></span>
+                        </button>
+
+                        <div class="payment-info">
+                            🔒 Platba je zabezpečena pomocí Stripe.<br>
+                            Vaše platební údaje jsou chráněny šifrováním.
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+        <div class="footer-grid">
+            <div class="foot-col">© 2025 BEER 3D. Všechna práva vyhrazena.</div>
+        </div>
+    </footer>
+
+    <script type="module" src="checkout.js"></script>
+</body>
+
+</html>

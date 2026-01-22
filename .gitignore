@@ -1,8 +1,56 @@
-server.py
-/files
+# Git ignore rules for Beer 3D project
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Firebase
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+.firebaserc
+
+# Environment variables (SENSITIVE!)
+.env
+.env.local
+.env.production
+functions/.env
+
+# Build outputs
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
 nohup.out
-nohup
-filamenty.txt
+
+# Python (pokud používáte)
+__pycache__/
+*.py[cod]
+*.pyc
+
+# Temporary files
+*.tmp
+*.temp
+
+# Backup files
+*.bak
+*.backup
+
+# Development server files
+server.py
 start_Serveru.txt
-struktura.txt
-products_database.json
+
+# Unused files folder
+files/
