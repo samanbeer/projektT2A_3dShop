@@ -692,18 +692,18 @@ function renderCartItems() {
     }
 }
 
-// Proceed to checkout page
+// Proceed to checkout page (DISABLED - no payment gateway)
 function proceedToCheckout() {
     if (cart.length === 0) {
         alert('Váš košík je prázdný! Přidejte nejprve nějaké produkty.');
         return;
     }
 
+    // Show message that ordering is not available yet
+    alert('Objednávky zatím nejsou dostupné. Pro více informací nás kontaktujte.');
+
     // Close cart modal
     closeCartModal();
-
-    // Redirect to checkout page
-    window.location.href = 'platba/checkout.html';
 }
 
 // Navigation click handlers are already set up in the first DOMContentLoaded listener

@@ -51,6 +51,6 @@ __pycache__/
 # Development server files
 server.py
 start_Serveru.txt
-
+default.conf
 # Unused files folder
 files/
