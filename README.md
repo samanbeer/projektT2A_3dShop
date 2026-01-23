@@ -61,34 +61,9 @@ HTML_3d_shop/
 - **Backend:** Firebase Cloud Functions (Node.js)
 - **Databáze:** Firebase Firestore
 - **Platby:** Stripe
-- **Hosting:** Firebase Hosting (nebo jiný static hosting)
 
 ---
 
-## 🔧 Jak spustit lokálně
-
-### 1. Otevřete projekt v prohlížeči
-
-Jednoduše otevřete `index.html` v prohlížeči:
-- Pravý klik na `index.html` → Open with → Chrome/Firefox
-
-### 2. Nebo použijte lokální server
-
-Pokud potřebujete HTTP server (kvůli CORS):
-
-**Python:**
-```bash
-python -m http.server 8000
-```
-
-**Node.js (http-server):**
-```bash
-npx http-server -p 8000
-```
-
-Pak otevřete: http://localhost:8000
-
----
 
 ## 💳 Platební systém (Stripe)
 
@@ -98,52 +73,7 @@ Pak otevřete: http://localhost:8000
 - ✅ Firebase Functions (backend kód)
 - ⏳ Potřeba deployment Functions
 
-### Setup:
-1. Přidejte Stripe API klíče (viz `/platba/README.md`)
-2. Pro plně funkční platby: Nastavte Firebase Functions (viz `/functions/SETUP.md`)
 
----
-
-## 📊 Firebase Firestore Kolekce
-
-### `reviews` (recenze)
-```javascript
-{
-  name: "Jan Novák",
-  text: "Skvělé!",
-  stars: 5,
-  photoUrl: "...",
-  timestamp: Date
-}
-```
-
-### `orders` (objednávky)
-```javascript
-{
-  customerEmail: "email@example.com",
-  customerName: "Jan Novák",
-  items: [...],
-  totalAmount: 1234,
-  status: "pending|paid|failed",
-  paymentIntentId: "pi_...",
-  createdAt: Date
-}
-```
-
----
-
-## 🔐 Bezpečnost
-
-### Citlivé údaje (NEPŘIDÁVAT DO GITU):
-- ❌ Stripe Secret Key (`sk_test_...` nebo `sk_live_...`)
-- ❌ Firebase Admin SDK private key
-- ❌ Webhook secrets
-
-### Veřejné údaje (OK dát do Gitu):
-- ✅ Stripe Publishable Key (`pk_test_...` nebo `pk_live_...`)
-- ✅ Firebase client config (apiKey, projectId, atd.)
-
----
 
 ## 📝 Soubory k vymazání před produkčním deployem
 
@@ -152,36 +82,6 @@ Tyto soubory jsou jen pro vývoj a měly by se vymazat:
 - `start_Serveru.txt` - návod na Python server
 - `nohup.out` - log soubor z Python serveru
 - `files/` - pomocná složka s nepoužívanými soubory
-
----
-
-## 🌐 Deployment na Firebase Hosting
-
-```bash
-# 1. Přihlaste se
-firebase login
-
-# 2. Inicializujte hosting
-firebase init hosting
-
-# 3. Deploy
-firebase deploy --only hosting
-```
-
----
-
-## 🆘 Časté problémy
-
-### Produkty se nenačítají
-- Zkontrolujte, že `products_database.json` existuje
-- Otevřete DevTools Console pro chybové hlášky
-
-### Platby nefungují
-- Zkontrolujte, že máte nastavený Stripe Publishable Key v `checkout.js`
-- Pro plné fungování potřebujete Firebase Functions
-
-### CORS chyby
-- Používejte lokální HTTP server místo otevření souboru přímo
 
 ---
 
