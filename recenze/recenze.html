@@ -20,10 +20,11 @@
         <div class="nav-container">
             <a href="../index.html" class="logo" role="img" aria-label="Beer 3D logo"><span class="accent">🍺</span>
                 BEER 3D</a>
-            <nav role="navigation" aria-label="Hlavní navigace">
-                <a href="../index.html#domu" id="nav-home" class="nav-link">DOMŮ</a>
-                <a href="../index.html#materialy" id="nav-materials" class="nav-link">MATERIÁLY</a>
-                <a href="../index.html#produkty" id="nav-products" class="nav-link">PRODUKTY</a>
+            <nav role="navigation" aria-label="Hlavní navigace" class="reviews-nav">
+                <a href="../index.html#domu" id="nav-home" class="nav-link desktop-nav">DOMŮ</a>
+                <a href="../index.html#materialy" id="nav-materials" class="nav-link desktop-nav">MATERIÁLY</a>
+                <a href="../index.html#produkty" id="nav-products" class="nav-link desktop-nav">PRODUKTY</a>
+                <a href="../index.html" class="nav-link mobile-back-btn">← ZPĚT</a>
             </nav>
         </div>
     </header>
@@ -81,6 +82,12 @@
             </div>
         </div>
     </main>
+
+    <!-- Image Lightbox Modal -->
+    <div class="lightbox-overlay" id="image-lightbox" onclick="closeLightbox()">
+        <button class="lightbox-close" onclick="closeLightbox()" aria-label="Zavřít">×</button>
+        <img src="" alt="Zvětšený obrázek" class="lightbox-image" id="lightbox-image" onclick="event.stopPropagation()">
+    </div>
 
     <footer class="footer" role="contentinfo">
         <div class="footer-grid">
@@ -148,7 +155,7 @@
                                 <span class="review-rating" title="${review.stars}/5">${ratingBeer}</span>
                             </div>
                             <p class="review-text">${review.text}</p>
-                            ${review.photoUrl ? `<img src="${review.photoUrl}" alt="Fotka k recenzi" class="review-photo">` : ''}
+                            ${review.photoUrl ? `<img src="${review.photoUrl}" alt="Fotka k recenzi" class="review-photo" onclick="openLightbox('${review.photoUrl}')">` : ''}
                             <div class="review-date">${reviewDate}</div>
                         </div>
                     `;
@@ -233,6 +240,31 @@
         document.addEventListener('DOMContentLoaded', loadReviews);
         reviewForm.addEventListener('submit', handleFormSubmit);
 
+    </script>
+
+    <script>
+        // Lightbox functionality for review images
+        function openLightbox(imageUrl) {
+            const lightbox = document.getElementById('image-lightbox');
+            const lightboxImage = document.getElementById('lightbox-image');
+
+            lightboxImage.src = imageUrl;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('image-lightbox');
+            lightbox.classList.remove('active');
+            document.body.style.overflow = ''; // Restore scrolling
+        }
+
+        // Close lightbox on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
     </script>
 </body>
 
