@@ -133,6 +133,7 @@ function selectMaterial(type, btn) {
 // Global variable for products data
 let productsData = [];
 let currentFilter = 'all';
+let currentSearchQuery = '';
 
 // URL Routing and Navigation
 function handleRouting() {
@@ -390,6 +391,11 @@ function renderProducts(products) {
     if (currentFilter !== 'all') {
         filterProducts(currentFilter);
     }
+
+    // Apply current search if any
+    if (currentSearchQuery) {
+        applyFiltersAndSearch();
+    }
 }
 
 function filterProducts(category) {
@@ -398,12 +404,39 @@ function filterProducts(category) {
         btn.classList.toggle('active', btn.dataset.category === category);
     });
 
-    document.querySelectorAll('.product-card').forEach((card, index) => {
-        const productCategory = card.getAttribute('data-category');
+    applyFiltersAndSearch();
+}
 
-        if (category === 'all' || productCategory === category) {
+function searchProducts(query) {
+    currentSearchQuery = query.toLowerCase().trim();
+    applyFiltersAndSearch();
+}
+
+function applyFiltersAndSearch() {
+    let visibleIndex = 0;
+
+    document.querySelectorAll('.product-card').forEach((card) => {
+        const productCategory = card.getAttribute('data-category');
+        const productId = card.getAttribute('data-product-id');
+
+        // Find product data for search
+        const product = productsData.find(p => p.id === productId);
+
+        // Check category filter
+        const matchesCategory = currentFilter === 'all' || productCategory === currentFilter;
+
+        // Check search query
+        let matchesSearch = true;
+        if (currentSearchQuery && product) {
+            const searchableText = `${product.name} ${product.description} ${product.category}`.toLowerCase();
+            matchesSearch = searchableText.includes(currentSearchQuery);
+        }
+
+        // Show or hide based on both filters
+        if (matchesCategory && matchesSearch) {
             card.classList.remove('hidden');
-            card.style.animationDelay = `${index * 0.05}s`;
+            card.style.animationDelay = `${visibleIndex * 0.05}s`;
+            visibleIndex++;
         } else {
             card.classList.add('hidden');
         }
@@ -717,3 +750,19 @@ document.addEventListener('keydown', (e) => {
         }
     }
 });
+
+// FAQ Accordion functionality
+function toggleFAQ(button) {
+    const faqItem = button.parentElement;
+    const isActive = faqItem.classList.contains('active');
+
+    // Close all other FAQ items
+    document.querySelectorAll('.faq-item').forEach(item => {
+        if (item !== faqItem) {
+            item.classList.remove('active');
+        }
+    });
+
+    // Toggle current FAQ item
+    faqItem.classList.toggle('active', !isActive);
+}
