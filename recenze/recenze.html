@@ -65,7 +65,8 @@
                         <!-- Cloudflare Turnstile -->
                         <div class="form-group">
                             <div class="cf-turnstile" id="turnstile-widget" data-sitekey="0x4AAAAAACN74O3NOEO5hMQU"
-                                data-callback="onTurnstileSuccess" data-theme="dark" data-size="normal">
+                                data-callback="onTurnstileSuccess" data-error-callback="onTurnstileError"
+                                data-theme="dark" data-size="normal">
                             </div>
                         </div>
                         <button type="submit" id="submit-review" class="btn-main" disabled>Odeslat recenzi</button>
@@ -167,10 +168,43 @@
             }
         }
 
+        // Turnstile timeout fallback - enable button after 10 seconds if Turnstile doesn't load
+        let turnstileLoaded = false;
+        let turnstileTimeout = setTimeout(() => {
+            if (!turnstileLoaded) {
+                console.warn('Turnstile widget did not load in time, enabling submit button as fallback');
+                submitButton.disabled = false;
+                submitButton.setAttribute('data-turnstile-fallback', 'true');
+
+                // Add visual indication
+                const turnstileContainer = document.querySelector('.cf-turnstile');
+                if (turnstileContainer) {
+                    turnstileContainer.innerHTML = '<p style="color: var(--text-secondary); font-size: 0.9rem; text-align: center;">⚠️ Bezpečnostní ověření se nenačetlo, můžete pokračovat</p>';
+                }
+            }
+        }, 10000); // 10 seconds timeout
+
         // Turnstile callback - enables submit button when verified
         window.onTurnstileSuccess = function (token) {
             console.log('Turnstile verified successfully');
+            turnstileLoaded = true;
+            clearTimeout(turnstileTimeout);
             submitButton.disabled = false;
+            submitButton.removeAttribute('data-turnstile-fallback');
+        }
+
+        // Turnstile error callback
+        window.onTurnstileError = function () {
+            console.error('Turnstile verification failed');
+            turnstileLoaded = true;
+            clearTimeout(turnstileTimeout);
+            submitButton.disabled = false;
+            submitButton.setAttribute('data-turnstile-fallback', 'true');
+
+            const turnstileContainer = document.querySelector('.cf-turnstile');
+            if (turnstileContainer) {
+                turnstileContainer.innerHTML = '<p style="color: var(--accent-orange); font-size: 0.9rem; text-align: center;">⚠️ Bezpečnostní ověření selhalo, můžete pokračovat</p>';
+            }
         }
 
         /**
@@ -180,11 +214,22 @@
             e.preventDefault();
             console.log("Začínám odesílat..."); // Ladící výpis
 
-            // Get Turnstile token
-            const turnstileToken = turnstile.getResponse();
-            if (!turnstileToken) {
-                alert('Prosím dokončete bezpečnostní ověření.');
-                return;
+            // Get Turnstile token (skip if in fallback mode)
+            const isFallbackMode = submitButton.getAttribute('data-turnstile-fallback') === 'true';
+            let turnstileToken = null;
+
+            if (!isFallbackMode) {
+                try {
+                    turnstileToken = turnstile.getResponse();
+                    if (!turnstileToken) {
+                        alert('Prosím dokončete bezpečnostní ověření.');
+                        return;
+                    }
+                } catch (e) {
+                    console.warn('Turnstile not available, proceeding without verification', e);
+                }
+            } else {
+                console.log('Submitting in fallback mode (Turnstile unavailable)');
             }
 
             submitButton.disabled = true;
@@ -219,16 +264,36 @@
 
                 // Reset form and reload reviews
                 reviewForm.reset();
-                turnstile.reset(); // Reset Turnstile widget
+
+                // Reset Turnstile widget if available
+                try {
+                    if (typeof turnstile !== 'undefined' && turnstile.reset) {
+                        turnstile.reset();
+                    }
+                } catch (e) {
+                    console.warn('Could not reset Turnstile widget', e);
+                }
+
                 submitButton.disabled = true; // Disable until next verification
+                submitButton.removeAttribute('data-turnstile-fallback');
                 alert("Recenze úspěšně odeslána! 🍺");
                 await loadReviews();
 
             } catch (error) {
                 console.error("CHYBA PŘI ODESÍLÁNÍ:", error);
                 alert('Chyba: ' + error.message);
-                turnstile.reset(); // Reset on error
+
+                // Reset Turnstile on error if available
+                try {
+                    if (typeof turnstile !== 'undefined' && turnstile.reset) {
+                        turnstile.reset();
+                    }
+                } catch (e) {
+                    console.warn('Could not reset Turnstile widget', e);
+                }
+
                 submitButton.disabled = true;
+                submitButton.removeAttribute('data-turnstile-fallback');
             } finally {
                 if (submitButton.textContent === 'Odesílám...') {
                     submitButton.textContent = 'Odeslat recenzi';
