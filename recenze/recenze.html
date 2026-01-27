@@ -182,7 +182,7 @@
                     turnstileContainer.innerHTML = '<p style="color: var(--text-secondary); font-size: 0.9rem; text-align: center;">⚠️ Bezpečnostní ověření se nenačetlo, můžete pokračovat</p>';
                 }
             }
-        }, 10000); // 10 seconds timeout
+        }, 20000); // 20 seconds timeout
 
         // Turnstile callback - enables submit button when verified
         window.onTurnstileSuccess = function (token) {
