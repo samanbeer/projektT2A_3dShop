@@ -3,7 +3,7 @@ PLA + | Bílá | 900 | Pevnější, Levnější než PETG
 PLA | Černá | 250 | Základní, Matná
 PLA | Oranžová | 600 | Základní, Matná
 PLA | Modrá | 650 | Základní, Matná
-PETG | Bíla | 200 | Pevnější než PLA
+PETG | Bílá | 200 | Pevnější než PLA
 PETG | Černá | 1800 | Pevnější než PLA, Rychlé dodání při volbě této kombinace
 PETG | Červená | 5000 | Pevnější než PLA, Rychlé dodání při volbě této kombinace
 PETG | Bílá Transparentní | 800 | Pevnější než PLA, Rychlé dodání při volbě této kombinace
