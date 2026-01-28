@@ -90,6 +90,33 @@
         <img src="" alt="Zvětšený obrázek" class="lightbox-image" id="lightbox-image" onclick="event.stopPropagation()">
     </div>
 
+    <!-- Reply Modal -->
+    <div class="reply-modal-overlay" id="reply-modal" onclick="closeReplyModal()">
+        <div class="reply-modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeReplyModal()" aria-label="Zavřít">×</button>
+            <h3>Napsat odpověď</h3>
+            <form id="reply-form" onsubmit="return false;">
+                <div class="form-group">
+                    <label for="reply-name">Jméno</label>
+                    <input type="text" id="reply-name" placeholder="Vaše jméno..." required>
+                </div>
+                <div class="form-group">
+                    <label for="reply-text">Odpověď</label>
+                    <textarea id="reply-text" rows="4" placeholder="Napište odpověď..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="reply-photo">Přidat fotku (volitelné)</label>
+                    <input type="file" id="reply-photo" accept="image/*">
+                </div>
+                <!-- Cloudflare Turnstile -->
+                <div class="form-group">
+                    <div id="reply-turnstile-widget"></div>
+                </div>
+                <button type="submit" id="submit-reply" class="btn-main" disabled>Odeslat odpověď</button>
+            </form>
+        </div>
+    </div>
+
     <footer class="footer" role="contentinfo">
         <div class="footer-grid">
             <div class="foot-col">© 2025 BEER 3D. Všechna práva vyhrazena.</div>
@@ -150,21 +177,96 @@
                     const reviewDate = review.timestamp ? review.timestamp.toDate().toLocaleDateString('cs-CZ') : '';
 
                     reviewsHTML += `
-                        <div class="review-item">
+                        <div class="review-item" data-review-id="${doc.id}">
                             <div class="review-header">
                                 <span class="review-name">${review.name}</span>
                                 <span class="review-rating" title="${review.stars}/5">${ratingBeer}</span>
                             </div>
                             <p class="review-text">${review.text}</p>
                             ${review.photoUrl ? `<img src="${review.photoUrl}" alt="Fotka k recenzi" class="review-photo" onclick="openLightbox('${review.photoUrl}')">` : ''}
-                            <div class="review-date">${reviewDate}</div>
+                            <div class="review-footer">
+                                <div class="review-date">${reviewDate}</div>
+                                <button class="reply-btn" onclick="openReplyModal('${doc.id}')">💬 Odpovědět</button>
+                            </div>
+                            <div class="replies-container" id="replies-${doc.id}"></div>
                         </div>
                     `;
                 });
                 reviewsList.innerHTML = reviewsHTML;
+
+                // Load replies for all reviews
+                await loadAllReplies();
             } catch (error) {
                 console.error("Error loading reviews: ", error);
                 reviewsList.innerHTML = '<p class="error-message">Chyba při načítání recenzí.</p>';
+            }
+        }
+
+        /**
+         * Loads all replies for all reviews
+         */
+        async function loadAllReplies() {
+            try {
+                const reviewItems = document.querySelectorAll('.review-item');
+                for (const reviewItem of reviewItems) {
+                    const reviewId = reviewItem.getAttribute('data-review-id');
+                    await loadRepliesForReview(reviewId);
+                }
+            } catch (error) {
+                console.error("Error loading replies: ", error);
+            }
+        }
+
+        /**
+         * Loads replies for a specific review
+         */
+        async function loadRepliesForReview(reviewId) {
+            try {
+                const repliesContainer = document.getElementById(`replies-${reviewId}`);
+                if (!repliesContainer) return;
+
+                const q = query(
+                    collection(db, "reviews", reviewId, "replies"),
+                    orderBy("timestamp", "asc")
+                );
+                const querySnapshot = await getDocs(q);
+
+                const replyCount = querySnapshot.size;
+
+                // If there are no replies, don't show anything
+                if (replyCount === 0) {
+                    repliesContainer.innerHTML = '';
+                    return;
+                }
+
+                // Create toggle button with count
+                let repliesHTML = `
+                    <button class="replies-toggle" onclick="toggleReplies('${reviewId}')" id="toggle-${reviewId}">
+                        <span class="toggle-arrow">▼</span> Odpovědi (${replyCount})
+                    </button>
+                    <div class="replies-list" id="replies-list-${reviewId}" style="display: none;">
+                `;
+
+                querySnapshot.forEach((doc) => {
+                    const reply = doc.data();
+                    const replyDate = reply.timestamp ? reply.timestamp.toDate().toLocaleDateString('cs-CZ') : '';
+
+                    repliesHTML += `
+                        <div class="reply-item">
+                            <div class="reply-header">
+                                <span class="reply-name">↳ ${reply.name}</span>
+                            </div>
+                            <p class="reply-text">${reply.text}</p>
+                            ${reply.photoUrl ? `<img src="${reply.photoUrl}" alt="Fotka k odpovědi" class="reply-photo" onclick="openLightbox('${reply.photoUrl}')">` : ''}
+                            <div class="reply-date">${replyDate}</div>
+                        </div>
+                    `;
+                });
+
+                repliesHTML += `</div>`;
+                repliesContainer.innerHTML = repliesHTML;
+            } catch (error) {
+                console.error(`Error loading replies for review ${reviewId}: `, error);
             }
         }
 
@@ -305,6 +407,239 @@
         document.addEventListener('DOMContentLoaded', loadReviews);
         reviewForm.addEventListener('submit', handleFormSubmit);
 
+        // --- Reply Form Handling ---
+        const replyForm = document.getElementById('reply-form');
+        const submitReplyButton = document.getElementById('submit-reply');
+        const replyName = document.getElementById('reply-name');
+        const replyText = document.getElementById('reply-text');
+        const replyPhoto = document.getElementById('reply-photo');
+
+        // Reply Turnstile timeout fallback
+        let replyTurnstileLoaded = false;
+        let replyTurnstileTimeout = null;
+
+        // Reply Turnstile callback - enables submit button when verified
+        window.onReplyTurnstileSuccess = function (token) {
+            console.log('Reply Turnstile verified successfully');
+            replyTurnstileLoaded = true;
+            if (replyTurnstileTimeout) clearTimeout(replyTurnstileTimeout);
+            submitReplyButton.disabled = false;
+            submitReplyButton.removeAttribute('data-turnstile-fallback');
+        }
+
+        // Reply Turnstile error callback
+        window.onReplyTurnstileError = function () {
+            console.error('Reply Turnstile verification failed');
+            replyTurnstileLoaded = true;
+            if (replyTurnstileTimeout) clearTimeout(replyTurnstileTimeout);
+            submitReplyButton.disabled = false;
+            submitReplyButton.setAttribute('data-turnstile-fallback', 'true');
+
+            const turnstileContainer = document.getElementById('reply-turnstile-widget');
+            if (turnstileContainer) {
+                turnstileContainer.innerHTML = '<p style="color: var(--accent-orange); font-size: 0.9rem; text-align: center;">⚠️ Bezpečnostní ověření selhalo, můžete pokračovat</p>';
+            }
+        }
+
+        /**
+         * Handles the reply form submission.
+         */
+        async function handleReplySubmit(e) {
+            e.preventDefault();
+
+            if (!currentReviewId) {
+                alert('Chyba: Nebyla vybrána recenze.');
+                return;
+            }
+
+            console.log("Začínám odesílat odpověď...");
+
+            // Get Turnstile token (skip if in fallback mode)
+            const isFallbackMode = submitReplyButton.getAttribute('data-turnstile-fallback') === 'true';
+            let turnstileToken = null;
+
+            if (!isFallbackMode) {
+                try {
+                    turnstileToken = turnstile.getResponse(document.getElementById('reply-turnstile-widget'));
+                    if (!turnstileToken) {
+                        alert('Prosím dokončete bezpečnostní ověření.');
+                        return;
+                    }
+                } catch (e) {
+                    console.warn('Turnstile not available, proceeding without verification', e);
+                }
+            } else {
+                console.log('Submitting reply in fallback mode (Turnstile unavailable)');
+            }
+
+            submitReplyButton.disabled = true;
+            submitReplyButton.textContent = 'Odesílám...';
+
+            try {
+                let photoUrl = null;
+                const file = replyPhoto.files[0];
+
+                if (file) {
+                    console.log("Nahrávám fotku odpovědi...");
+                    // Upload image to Firebase Storage
+                    const storageRef = ref(storage, 'reply-photos/' + Date.now() + '-' + file.name);
+                    const snapshot = await uploadBytes(storageRef, file);
+                    photoUrl = await getDownloadURL(snapshot.ref);
+                    console.log("Fotka nahrána, URL:", photoUrl);
+                }
+
+                console.log("Zapisuji odpověď do databáze...");
+
+                // Add reply to Firestore subcollection
+                await addDoc(collection(db, "reviews", currentReviewId, "replies"), {
+                    name: replyName.value,
+                    text: replyText.value,
+                    photoUrl: photoUrl,
+                    timestamp: new Date(),
+                    turnstileVerified: true
+                });
+
+                console.log("Odpověď úspěšně uložena!");
+
+                // Reset form
+                replyForm.reset();
+
+                // Reset Turnstile widget if available
+                try {
+                    if (typeof turnstile !== 'undefined' && turnstile.reset) {
+                        const replyWidget = document.getElementById('reply-turnstile-widget');
+                        if (replyWidget) {
+                            turnstile.reset(replyWidget);
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Could not reset Reply Turnstile widget', e);
+                }
+
+                submitReplyButton.disabled = true;
+                submitReplyButton.removeAttribute('data-turnstile-fallback');
+
+                alert("Odpověď úspěšně odeslána! 🍺");
+
+                // Close modal and reload replies
+                closeReplyModal();
+                await loadRepliesForReview(currentReviewId);
+
+            } catch (error) {
+                console.error("CHYBA PŘI ODESÍLÁNÍ ODPOVĚDI:", error);
+                alert('Chyba: ' + error.message);
+
+                // Reset Turnstile on error if available
+                try {
+                    if (typeof turnstile !== 'undefined' && turnstile.reset) {
+                        const replyWidget = document.getElementById('reply-turnstile-widget');
+                        if (replyWidget) {
+                            turnstile.reset(replyWidget);
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Could not reset Reply Turnstile widget', e);
+                }
+
+                submitReplyButton.disabled = true;
+                submitReplyButton.removeAttribute('data-turnstile-fallback');
+            } finally {
+                if (submitReplyButton.textContent === 'Odesílám...') {
+                    submitReplyButton.textContent = 'Odeslat odpověď';
+                }
+            }
+        }
+
+        // Attach reply form submit handler
+        replyForm.addEventListener('submit', handleReplySubmit);
+
+        // --- Reply Modal Control Functions (must be global for onclick handlers) ---
+
+        // Reply Modal functionality
+        let currentReviewId = null;
+
+        window.openReplyModal = function (reviewId) {
+            currentReviewId = reviewId;
+            const modal = document.getElementById('reply-modal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            // Reset form
+            document.getElementById('reply-form').reset();
+            submitReplyButton.disabled = true;
+            replyTurnstileLoaded = false;
+
+            // Clear any existing timeout
+            if (replyTurnstileTimeout) {
+                clearTimeout(replyTurnstileTimeout);
+            }
+
+            // Clear and re-render Turnstile widget
+            const turnstileContainer = document.getElementById('reply-turnstile-widget');
+            if (turnstileContainer) {
+                turnstileContainer.innerHTML = ''; // Clear previous widget
+
+                // Render new Turnstile widget dynamically
+                try {
+                    if (typeof turnstile !== 'undefined' && turnstile.render) {
+                        turnstile.render('#reply-turnstile-widget', {
+                            sitekey: '0x4AAAAAACN74O3NOEO5hMQU',
+                            callback: window.onReplyTurnstileSuccess,
+                            'error-callback': window.onReplyTurnstileError,
+                            theme: 'dark',
+                            size: 'normal'
+                        });
+                        console.log('Turnstile widget rendered dynamically');
+                    } else {
+                        console.warn('Turnstile not available, will use fallback');
+                    }
+                } catch (e) {
+                    console.error('Error rendering Turnstile:', e);
+                }
+            }
+
+            // Set timeout fallback - enable button after 20 seconds if Turnstile doesn't load
+            replyTurnstileTimeout = setTimeout(() => {
+                if (!replyTurnstileLoaded) {
+                    console.warn('Reply Turnstile widget did not load in time, enabling submit button as fallback');
+                    submitReplyButton.disabled = false;
+                    submitReplyButton.setAttribute('data-turnstile-fallback', 'true');
+
+                    const turnstileContainer = document.getElementById('reply-turnstile-widget');
+                    if (turnstileContainer) {
+                        turnstileContainer.innerHTML = '<p style="color: var(--text-secondary); font-size: 0.9rem; text-align: center;">⚠️ Bezpečnostní ověření se nenačetlo, můžete pokračovat</p>';
+                    }
+                }
+            }, 20000); // 20 seconds timeout
+        }
+
+        window.toggleReplies = function (reviewId) {
+            const repliesList = document.getElementById(`replies-list-${reviewId}`);
+            const toggleButton = document.getElementById(`toggle-${reviewId}`);
+            const arrow = toggleButton.querySelector('.toggle-arrow');
+
+            if (repliesList.style.display === 'none') {
+                repliesList.style.display = 'block';
+                arrow.style.transform = 'rotate(180deg)';
+            } else {
+                repliesList.style.display = 'none';
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        window.closeReplyModal = function () {
+            const modal = document.getElementById('reply-modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            currentReviewId = null;
+
+            // Clear timeout if modal is closed
+            if (replyTurnstileTimeout) {
+                clearTimeout(replyTurnstileTimeout);
+                replyTurnstileTimeout = null;
+            }
+        }
+
     </script>
 
     <script>
@@ -324,10 +659,13 @@
             document.body.style.overflow = ''; // Restore scrolling
         }
 
-        // Close lightbox on Escape key
+        // Close modals on Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeLightbox();
+                if (window.closeReplyModal) {
+                    window.closeReplyModal();
+                }
             }
         });
     </script>
