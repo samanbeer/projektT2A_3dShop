@@ -47,7 +47,7 @@
     "cost": 199,
     "category": "custom",
     "subcategory": "akcesorie",
-    "inStock": false
+    "inStock": true
   },
   {
     "id": "custom-pingpong-paddle",
