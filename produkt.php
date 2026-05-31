@@ -270,7 +270,7 @@ require __DIR__ . '/partials/header.php';
             <p class="detail-desc"><?= htmlspecialchars($product->description) ?></p>
 
             <form action="" method="POST" class="detail-form">
-                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
                 <input type="hidden" name="product_id" value="<?= $product->id ?>">
 
                 <!-- Selectable parameters (Variants) -->
