@@ -5,7 +5,7 @@ services:
     build: .
     container_name: beer3d-shop
     ports:
-      - "8080:80"
+      - "7999:80"
     volumes:
       # Persistent bind mount for the SQLite database
       - ./database:/var/www/html/database
