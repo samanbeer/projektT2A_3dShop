@@ -8,30 +8,31 @@
 }
 
 :root {
-    --bg-dark: #1a1100;
-    /* Stout/Porter brown */
-    --bg-surface: rgba(74, 42, 12, 0.4);
-    /* Semi-transparent amber */
-    --bg-card: rgba(74, 42, 12, 0.6);
-    /* Semi-transparent amber */
-    --text-primary: #fdfbf7;
-    /* Beer foam off-white */
-    --text-secondary: #c5bca8;
-    /* Lighter, earthy secondary text */
-    --accent-orange: #fbb92d;
-    /* Rich gold (Lager) */
-    --accent-amber: #c86a26;
-    /* Orange-brown (Ale) */
-    --accent-gradient: linear-gradient(135deg, #fbb92d, #c86a26);
-    --glass-border: rgba(253, 251, 247, 0.1);
-    --glass-blur: 16px;
-    --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 10px 15px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 20px 25px rgba(0, 0, 0, 0.15);
-    --shadow-xl: 0 25px 50px rgba(0, 0, 0, 0.2);
-    --orange-glow: rgba(251, 185, 45, 0.25);
-    /* Golden glow */
-    --divider: rgba(253, 251, 247, 0.1);
+    --bg-dark: #0f0b05;
+    /* Rich Stout dark gold-black */
+    --bg-surface: rgba(43, 26, 11, 0.55);
+    /* Translucent premium amber glass */
+    --bg-card: rgba(30, 20, 10, 0.7);
+    /* Deep rich amber glass */
+    --text-primary: #fbf9f4;
+    /* Beer foam warm white */
+    --text-secondary: #d4cbb8;
+    /* Soft, warm earthy secondary */
+    --accent-orange: #ffb300;
+    /* Radiant gold (Lager) */
+    --accent-amber: #ff6f00;
+    /* Rich deep orange-brown (Ale) */
+    --accent-gradient: linear-gradient(135deg, #ffc107, #ff6f00);
+    --glass-border: rgba(255, 193, 7, 0.15);
+    /* Golden glass edge */
+    --glass-blur: 24px;
+    --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 10px 20px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 20px 30px rgba(0, 0, 0, 0.4);
+    --shadow-xl: 0 25px 50px rgba(0, 0, 0, 0.5);
+    --orange-glow: rgba(255, 193, 7, 0.25);
+    /* Golden radiant glow */
+    --divider: rgba(255, 193, 7, 0.1);
     --spacing-xs: 8px;
     --spacing-sm: 16px;
     --spacing-md: 24px;
@@ -58,30 +59,30 @@ body {
 }
 
 /* Custom Scrollbar Styling */
-.page::-webkit-scrollbar {
+body::-webkit-scrollbar {
     width: 10px;
 }
 
-.page::-webkit-scrollbar-track {
-    background: rgba(10, 11, 20, 0.5);
+body::-webkit-scrollbar-track {
+    background: rgba(15, 11, 5, 0.5);
     border-left: 1px solid var(--glass-border);
 }
 
-.page::-webkit-scrollbar-thumb {
+body::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, var(--accent-orange), var(--accent-amber));
     border-radius: var(--radius-full);
     transition: var(--transition-base);
 }
 
-.page::-webkit-scrollbar-thumb:hover {
+body::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(180deg, #ffc850, #d47a38);
     box-shadow: 0 0 10px var(--orange-glow);
 }
 
 /* Firefox scrollbar */
-.page {
+body {
     scrollbar-width: thin;
-    scrollbar-color: var(--accent-orange) rgba(10, 11, 20, 0.5);
+    scrollbar-color: var(--accent-orange) rgba(15, 11, 5, 0.5);
 }
 
 
@@ -111,7 +112,7 @@ body {
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
     border-bottom: 1px solid var(--glass-border);
-    background: rgba(10, 11, 20, 0.8);
+    background: rgba(15, 11, 5, 0.85);
     box-shadow: var(--shadow-sm);
 }
 
@@ -276,25 +277,27 @@ nav a:hover::before {
 
 /* Layout & Hero */
 .pages-wrapper {
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    min-height: calc(100vh - 80px);
 }
 
 .pages-track {
-    display: flex;
-    width: 400vw;
-    height: 100%;
-    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: block;
+    width: 100%;
+    height: auto;
+    transform: none;
+    transition: none;
 }
 
 .page {
-    width: 100vw;
-    min-height: 100vh;
-    overflow-y: auto;
-    overflow-x: hidden;
+    width: 100%;
+    min-height: auto;
+    height: auto;
+    overflow: visible;
     padding-top: 120px;
-    padding-bottom: 0;
+    padding-bottom: 80px;
 }
 
 /* Remove custom scrollbar from pages since we're using body scroll now */
@@ -747,30 +750,27 @@ h1 {
 }
 
 .product-card {
-    background: var(--bg-card);
-
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-xl);
+    background: rgba(30, 30, 30, 0.45);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-lg);
     overflow: hidden;
     cursor: pointer;
-    transition: var(--transition-base);
-
-    backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    position: relative;
     opacity: 0;
     transform: translateY(20px);
     animation: fadeInUp 0.6s ease-out forwards;
-    display: flex;
-    flex-direction: column;
-    box-shadow: var(--shadow-md);
-    position: relative;
 }
 
 .product-card.product-available:hover {
-    transform: translateY(-8px);
-
-
+    transform: translateY(-10px) scale(1.02);
     border-color: var(--accent-orange);
-    box-shadow: var(--shadow-xl), 0 0 30px var(--orange-glow);
+    box-shadow: 0 20px 40px rgba(255, 140, 0, 0.25);
 }
 
 .product-card.product-sold-out {
@@ -781,7 +781,7 @@ h1 {
 
 .product-card.product-sold-out:hover {
     transform: none;
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
 }
 
 .product-card.hidden {
@@ -793,7 +793,6 @@ h1 {
     width: 100%;
     height: 300px;
     overflow: hidden;
-
     background: linear-gradient(135deg, rgba(255, 140, 0, 0.05), rgba(255, 191, 0, 0.05));
 }
 
@@ -838,36 +837,34 @@ h1 {
 }
 
 .product-name {
-    font-family: 'Rajdhani', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--text-primary);
     line-height: 1.3;
-    margin: 0;
+    margin: 10px 0 0 0;
     letter-spacing: -0.5px;
 }
 
 .product-category {
-
+    background: rgba(255, 140, 0, 0.1);
     color: var(--accent-orange);
-    font-size: 0.75rem;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.725rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin: 0;
-    display: inline-block;
-    padding: 4px 10px;
-
-    background: rgba(255, 140, 0, 0.1);
-    border-radius: var(--radius-sm);
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(255, 140, 0, 0.2);
     width: fit-content;
+    margin-bottom: 12px;
 }
 
 .product-description {
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-    line-height: 1.7;
-    margin: 8px 0;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 10px 0 20px 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
@@ -887,19 +884,16 @@ h1 {
 }
 
 .product-price {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 2rem;
-    font-weight: 700;
-    background: var(--accent-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--accent-orange);
     display: flex;
     align-items: baseline;
 }
 
 .price-unit {
-    font-size: 1.2rem;
+    font-size: 1rem;
     color: var(--text-secondary);
     font-weight: 500;
     margin-left: 4px;
@@ -909,24 +903,20 @@ h1 {
     background: var(--accent-gradient);
     border: none;
     color: white;
-    padding: 10px 24px;
-
-    border-radius: var(--radius-full);
-    font-weight: 600;
+    padding: 8px 24px;
+    border-radius: 30px;
+    font-weight: 700;
     font-size: 0.875rem;
     cursor: pointer;
-    transition: var(--transition-base);
+    transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-
-    box-shadow: 0 4px 12px var(--orange-glow);
-    font-family: 'Montserrat', sans-serif;
+    box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
 }
 
 .product-btn-quick:hover {
     transform: translateY(-2px);
-
-    box-shadow: 0 6px 20px var(--orange-glow);
+    box-shadow: 0 6px 20px rgba(255, 140, 0, 0.55);
 }
 
 .product-status-text {
@@ -2230,4 +2220,41 @@ html {
         padding-top: 12px;
         padding-bottom: 12px;
     }
+}
+
+/* Global Premium Form Control Styles */
+.form-control {
+    width: 100%;
+    padding: 14px 18px;
+    background: rgba(30, 20, 10, 0.4) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-md) !important;
+    color: var(--text-primary) !important;
+    font-family: 'Montserrat', sans-serif !important;
+    font-size: 1rem !important;
+    transition: var(--transition-base) !important;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    outline: none !important;
+    border-color: var(--accent-orange) !important;
+    box-shadow: 0 0 15px var(--orange-glow) !important;
+}
+
+select.form-control {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffb300' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 18px center !important;
+    background-size: 16px !important;
+    padding-right: 48px !important;
+    cursor: pointer;
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
 }
