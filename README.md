@@ -17,6 +17,11 @@ php database/init.php
 ```
 Tento skript automaticky smaže staré tabulky, vytvoří novou databázovou strukturu a provede seed dat.
 
+> **Důležité upozornění pro práva k zápisu (Docker / Synology):**
+> SQLite vyžaduje oprávnění pro zápis nejen do souboru `database/eshop.db`, ale i do celého adresáře `database/` (kde vytváří dočasné zámky). Pokud se při zápisu objednávky zobrazí chyba *attempt to write a readonly database*, udělte složkám plná práva pro zápis:
+> `chmod -R 777 database imgs/reviews` (na Linuxu/Synology) nebo nastavte zápis pro uživatele `http` / `www-data` ve File Station.
+
+
 ### 2. Spuštění lokálního webového serveru
 V kořenovém adresáři projektu (`HTML_3d_shop/`) spusťte vestavěný PHP vývojový server pomocí následujícího příkazu v terminálu:
 ```bash
