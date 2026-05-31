@@ -1,42 +1,4 @@
-:root {
-    --bg-dark: #1a1100;
-    /* Stout/Porter brown */
-    --bg-surface: rgba(74, 42, 12, 0.4);
-    /* Semi-transparent amber */
-    --bg-card: rgba(74, 42, 12, 0.6);
-    /* Semi-transparent amber */
-    --text-primary: #fdfbf7;
-    /* Beer foam off-white */
-    --text-secondary: #c5bca8;
-    /* Lighter, earthy secondary text */
-    --accent-orange: #fbb92d;
-    /* Rich gold (Lager) */
-    --accent-amber: #c86a26;
-    /* Orange-brown (Ale) */
-    --accent-gradient: linear-gradient(135deg, #fbb92d, #c86a26);
-    --glass-border: rgba(253, 251, 247, 0.1);
-    --glass-blur: 16px;
-    --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 10px 15px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 20px 25px rgba(0, 0, 0, 0.15);
-    --shadow-xl: 0 25px 50px rgba(0, 0, 0, 0.2);
-    --orange-glow: rgba(251, 185, 45, 0.25);
-    /* Golden glow */
-    --divider: rgba(253, 251, 247, 0.1);
-    --spacing-xs: 8px;
-    --spacing-sm: 16px;
-    --spacing-md: 24px;
-    --spacing-lg: 32px;
-    --spacing-xl: 48px;
-    --radius-sm: 6px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-xl: 20px;
-    --radius-full: 9999px;
-    --transition-fast: 0.15s ease-out;
-    --transition-base: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    --transition-slow: 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
+
 
 /* Reviews Page Specific Styles */
 .reviews-wrapper {
