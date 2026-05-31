@@ -210,7 +210,7 @@ try {
     $db->exec("INSERT INTO shipping_methods (id, name, price, delivery_days) VALUES
     (1, 'Česká pošta', 89.0, '3–4 pracovní dny'),
     (2, 'Zásilkovna', 69.0, '2–3 pracovní dny'),
-    (3, 'Osobní odběr (Brno)', 0.0, 'Ihned k vyzvednutí');");
+    (3, 'Osobní odběr (Kopřivnice)', 0.0, 'Ihned k vyzvednutí');");
 
     // Payment methods
     $db->exec("INSERT INTO payment_methods (id, name, price) VALUES
