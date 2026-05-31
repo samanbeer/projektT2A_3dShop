@@ -9,8 +9,6 @@
     <link rel="stylesheet" href="recenze.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
-    <!-- Cloudflare Turnstile -->
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 
 <body class="dark-theme">
@@ -62,14 +60,7 @@
                             <label for="review-photo">Přidat fotku (volitelné)</label>
                             <input type="file" id="review-photo" accept="image/*">
                         </div>
-                        <!-- Cloudflare Turnstile -->
-                        <div class="form-group">
-                            <div class="cf-turnstile" id="turnstile-widget" data-sitekey="0x4AAAAAACN74O3NOEO5hMQU"
-                                data-callback="onTurnstileSuccess" data-error-callback="onTurnstileError"
-                                data-theme="dark" data-size="normal">
-                            </div>
-                        </div>
-                        <button type="submit" id="submit-review" class="btn-main" disabled>Odeslat recenzi</button>
+                        <button type="submit" id="submit-review" class="btn-main">Odeslat recenzi</button>
                     </form>
                 </div>
 
@@ -108,11 +99,7 @@
                     <label for="reply-photo">Přidat fotku (volitelné)</label>
                     <input type="file" id="reply-photo" accept="image/*">
                 </div>
-                <!-- Cloudflare Turnstile -->
-                <div class="form-group">
-                    <div id="reply-turnstile-widget"></div>
-                </div>
-                <button type="submit" id="submit-reply" class="btn-main" disabled>Odeslat odpověď</button>
+                <button type="submit" id="submit-reply" class="btn-main">Odeslat odpověď</button>
             </form>
         </div>
     </div>
@@ -270,69 +257,10 @@
             }
         }
 
-        // Turnstile timeout fallback - enable button after 10 seconds if Turnstile doesn't load
-        let turnstileLoaded = false;
-        let turnstileTimeout = setTimeout(() => {
-            if (!turnstileLoaded) {
-                console.warn('Turnstile widget did not load in time, enabling submit button as fallback');
-                submitButton.disabled = false;
-                submitButton.setAttribute('data-turnstile-fallback', 'true');
-
-                // Add visual indication
-                const turnstileContainer = document.querySelector('.cf-turnstile');
-                if (turnstileContainer) {
-                    turnstileContainer.innerHTML = '<p style="color: var(--text-secondary); font-size: 0.9rem; text-align: center;">⚠️ Bezpečnostní ověření se nenačetlo, můžete pokračovat</p>';
-                }
-            }
-        }, 20000); // 20 seconds timeout
-
-        // Turnstile callback - enables submit button when verified
-        window.onTurnstileSuccess = function (token) {
-            console.log('Turnstile verified successfully');
-            turnstileLoaded = true;
-            clearTimeout(turnstileTimeout);
-            submitButton.disabled = false;
-            submitButton.removeAttribute('data-turnstile-fallback');
-        }
-
-        // Turnstile error callback
-        window.onTurnstileError = function () {
-            console.error('Turnstile verification failed');
-            turnstileLoaded = true;
-            clearTimeout(turnstileTimeout);
-            submitButton.disabled = false;
-            submitButton.setAttribute('data-turnstile-fallback', 'true');
-
-            const turnstileContainer = document.querySelector('.cf-turnstile');
-            if (turnstileContainer) {
-                turnstileContainer.innerHTML = '<p style="color: var(--accent-orange); font-size: 0.9rem; text-align: center;">⚠️ Bezpečnostní ověření selhalo, můžete pokračovat</p>';
-            }
-        }
-
-        /**
-         * Handles the review form submission.
-         */
+        // Form submit handlers
         async function handleFormSubmit(e) {
             e.preventDefault();
-            console.log("Začínám odesílat..."); // Ladící výpis
-
-            // Get Turnstile token (skip if in fallback mode)
-            const isFallbackMode = submitButton.getAttribute('data-turnstile-fallback') === 'true';
-            let turnstileToken = null;
-
-            if (!isFallbackMode) {
-                try {
-                    turnstileToken = turnstile.getResponse();
-                    if (!turnstileToken) {
-                        alert('Prosím dokončete bezpečnostní ověření.');
-                        return;
-                    }
-                } catch (e) {
-                    console.warn('Turnstile not available, proceeding without verification', e);
-                }
-            } else {
-                console.log('Submitting in fallback mode (Turnstile unavailable)');
-            }
+            console.log("Začínám odesílat...");
 
             submitButton.disabled = true;
             submitButton.textContent = 'Odesílám...';
@@ -343,7 +271,6 @@
 
                 if (file) {
                     console.log("Nahrávám fotku...");
-                    // Upload image to Firebase Storage
                     const storageRef = ref(storage, 'review-photos/' + Date.now() + '-' + file.name);
                     const snapshot = await uploadBytes(storageRef, file);
                     photoUrl = await getDownloadURL(snapshot.ref);
@@ -352,51 +279,25 @@
 
                 console.log("Zapisuji do databáze...");
 
-                // Add review to Firestore with Turnstile verification
                 await addDoc(collection(db, "reviews"), {
                     name: reviewName.value,
                     text: reviewText.value,
                     stars: Number(reviewStars.value),
                     photoUrl: photoUrl,
                     timestamp: new Date(),
-                    turnstileVerified: true // Mark as verified
+                    turnstileVerified: true
                 });
 
                 console.log("Zápis úspěšný!");
-
-                // Reset form and reload reviews
                 reviewForm.reset();
-
-                // Reset Turnstile widget if available
-                try {
-                    if (typeof turnstile !== 'undefined' && turnstile.reset) {
-                        turnstile.reset();
-                    }
-                } catch (e) {
-                    console.warn('Could not reset Turnstile widget', e);
-                }
-
-                submitButton.disabled = true; // Disable until next verification
-                submitButton.removeAttribute('data-turnstile-fallback');
                 alert("Recenze úspěšně odeslána! 🍺");
                 await loadReviews();
 
             } catch (error) {
                 console.error("CHYBA PŘI ODESÍLÁNÍ:", error);
                 alert('Chyba: ' + error.message);
-
-                // Reset Turnstile on error if available
-                try {
-                    if (typeof turnstile !== 'undefined' && turnstile.reset) {
-                        turnstile.reset();
-                    }
-                } catch (e) {
-                    console.warn('Could not reset Turnstile widget', e);
-                }
-
-                submitButton.disabled = true;
-                submitButton.removeAttribute('data-turnstile-fallback');
             } finally {
+                submitButton.disabled = false;
                 if (submitButton.textContent === 'Odesílám...') {
                     submitButton.textContent = 'Odeslat recenzi';
                 }
@@ -414,33 +315,6 @@
         const replyText = document.getElementById('reply-text');
         const replyPhoto = document.getElementById('reply-photo');
 
-        // Reply Turnstile timeout fallback
-        let replyTurnstileLoaded = false;
-        let replyTurnstileTimeout = null;
-
-        // Reply Turnstile callback - enables submit button when verified
-        window.onReplyTurnstileSuccess = function (token) {
-            console.log('Reply Turnstile verified successfully');
-            replyTurnstileLoaded = true;
-            if (replyTurnstileTimeout) clearTimeout(replyTurnstileTimeout);
-            submitReplyButton.disabled = false;
-            submitReplyButton.removeAttribute('data-turnstile-fallback');
-        }
-
-        // Reply Turnstile error callback
-        window.onReplyTurnstileError = function () {
-            console.error('Reply Turnstile verification failed');
-            replyTurnstileLoaded = true;
-            if (replyTurnstileTimeout) clearTimeout(replyTurnstileTimeout);
-            submitReplyButton.disabled = false;
-            submitReplyButton.setAttribute('data-turnstile-fallback', 'true');
-
-            const turnstileContainer = document.getElementById('reply-turnstile-widget');
-            if (turnstileContainer) {
-                turnstileContainer.innerHTML = '<p style="color: var(--accent-orange); font-size: 0.9rem; text-align: center;">⚠️ Bezpečnostní ověření selhalo, můžete pokračovat</p>';
-            }
-        }
-
         /**
          * Handles the reply form submission.
          */
@@ -454,24 +328,6 @@
 
             console.log("Začínám odesílat odpověď...");
 
-            // Get Turnstile token (skip if in fallback mode)
-            const isFallbackMode = submitReplyButton.getAttribute('data-turnstile-fallback') === 'true';
-            let turnstileToken = null;
-
-            if (!isFallbackMode) {
-                try {
-                    turnstileToken = turnstile.getResponse(document.getElementById('reply-turnstile-widget'));
-                    if (!turnstileToken) {
-                        alert('Prosím dokončete bezpečnostní ověření.');
-                        return;
-                    }
-                } catch (e) {
-                    console.warn('Turnstile not available, proceeding without verification', e);
-                }
-            } else {
-                console.log('Submitting reply in fallback mode (Turnstile unavailable)');
-            }
-
             submitReplyButton.disabled = true;
             submitReplyButton.textContent = 'Odesílám...';
 
@@ -481,7 +337,6 @@
 
                 if (file) {
                     console.log("Nahrávám fotku odpovědi...");
-                    // Upload image to Firebase Storage
                     const storageRef = ref(storage, 'reply-photos/' + Date.now() + '-' + file.name);
                     const snapshot = await uploadBytes(storageRef, file);
                     photoUrl = await getDownloadURL(snapshot.ref);
@@ -490,7 +345,6 @@
 
                 console.log("Zapisuji odpověď do databáze...");
 
-                // Add reply to Firestore subcollection
                 await addDoc(collection(db, "reviews", currentReviewId, "replies"), {
                     name: replyName.value,
                     text: replyText.value,
@@ -500,50 +354,17 @@
                 });
 
                 console.log("Odpověď úspěšně uložena!");
-
-                // Reset form
                 replyForm.reset();
-
-                // Reset Turnstile widget if available
-                try {
-                    if (typeof turnstile !== 'undefined' && turnstile.reset) {
-                        const replyWidget = document.getElementById('reply-turnstile-widget');
-                        if (replyWidget) {
-                            turnstile.reset(replyWidget);
-                        }
-                    }
-                } catch (e) {
-                    console.warn('Could not reset Reply Turnstile widget', e);
-                }
-
-                submitReplyButton.disabled = true;
-                submitReplyButton.removeAttribute('data-turnstile-fallback');
-
                 alert("Odpověď úspěšně odeslána! 🍺");
 
-                // Close modal and reload replies
                 closeReplyModal();
                 await loadRepliesForReview(currentReviewId);
 
             } catch (error) {
                 console.error("CHYBA PŘI ODESÍLÁNÍ ODPOVĚDI:", error);
                 alert('Chyba: ' + error.message);
-
-                // Reset Turnstile on error if available
-                try {
-                    if (typeof turnstile !== 'undefined' && turnstile.reset) {
-                        const replyWidget = document.getElementById('reply-turnstile-widget');
-                        if (replyWidget) {
-                            turnstile.reset(replyWidget);
-                        }
-                    }
-                } catch (e) {
-                    console.warn('Could not reset Reply Turnstile widget', e);
-                }
-
-                submitReplyButton.disabled = true;
-                submitReplyButton.removeAttribute('data-turnstile-fallback');
             } finally {
+                submitReplyButton.disabled = false;
                 if (submitReplyButton.textContent === 'Odesílám...') {
                     submitReplyButton.textContent = 'Odeslat odpověď';
                 }
@@ -553,9 +374,7 @@
         // Attach reply form submit handler
         replyForm.addEventListener('submit', handleReplySubmit);
 
-        // --- Reply Modal Control Functions (must be global for onclick handlers) ---
-
-        // Reply Modal functionality
+        // --- Reply Modal Control Functions ---
         let currentReviewId = null;
 
         window.openReplyModal = function (reviewId) {
@@ -564,53 +383,8 @@
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
 
-            // Reset form
             document.getElementById('reply-form').reset();
-            submitReplyButton.disabled = true;
-            replyTurnstileLoaded = false;
-
-            // Clear any existing timeout
-            if (replyTurnstileTimeout) {
-                clearTimeout(replyTurnstileTimeout);
-            }
-
-            // Clear and re-render Turnstile widget
-            const turnstileContainer = document.getElementById('reply-turnstile-widget');
-            if (turnstileContainer) {
-                turnstileContainer.innerHTML = ''; // Clear previous widget
-
-                // Render new Turnstile widget dynamically
-                try {
-                    if (typeof turnstile !== 'undefined' && turnstile.render) {
-                        turnstile.render('#reply-turnstile-widget', {
-                            sitekey: '0x4AAAAAACN74O3NOEO5hMQU',
-                            callback: window.onReplyTurnstileSuccess,
-                            'error-callback': window.onReplyTurnstileError,
-                            theme: 'dark',
-                            size: 'normal'
-                        });
-                        console.log('Turnstile widget rendered dynamically');
-                    } else {
-                        console.warn('Turnstile not available, will use fallback');
-                    }
-                } catch (e) {
-                    console.error('Error rendering Turnstile:', e);
-                }
-            }
-
-            // Set timeout fallback - enable button after 20 seconds if Turnstile doesn't load
-            replyTurnstileTimeout = setTimeout(() => {
-                if (!replyTurnstileLoaded) {
-                    console.warn('Reply Turnstile widget did not load in time, enabling submit button as fallback');
-                    submitReplyButton.disabled = false;
-                    submitReplyButton.setAttribute('data-turnstile-fallback', 'true');
-
-                    const turnstileContainer = document.getElementById('reply-turnstile-widget');
-                    if (turnstileContainer) {
-                        turnstileContainer.innerHTML = '<p style="color: var(--text-secondary); font-size: 0.9rem; text-align: center;">⚠️ Bezpečnostní ověření se nenačetlo, můžete pokračovat</p>';
-                    }
-                }
-            }, 20000); // 20 seconds timeout
+            submitReplyButton.disabled = false;
         }
 
         window.toggleReplies = function (reviewId) {
@@ -632,12 +406,6 @@
             modal.classList.remove('active');
             document.body.style.overflow = '';
             currentReviewId = null;
-
-            // Clear timeout if modal is closed
-            if (replyTurnstileTimeout) {
-                clearTimeout(replyTurnstileTimeout);
-                replyTurnstileTimeout = null;
-            }
         }
 
     </script>

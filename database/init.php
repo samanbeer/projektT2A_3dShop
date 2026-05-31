@@ -218,15 +218,6 @@ try {
     (2, 'Bankovní převod', 0.0),
     (3, 'Dobírka', 39.0);");
 
-    // Seed reviews
-    $db->exec("INSERT INTO reviews (id, name, stars, text, photo_url) VALUES
-    (1, 'Martin K.', 5, 'Super přístup a neskutečně rychlý tisk! Objednal jsem si stojánek na telefon a pálku na stolní tenis. Pálka je pevná a skvěle se drží. Doporučuji všemi deseti! 🍺', NULL),
-    (2, 'Jana M.', 5, 'PLA filament v bílé barvě má úžasný matný finiš a tiskne se úplně sám. Určitě objednám znovu. Skvělá kvalita za rozumnou cenu.', NULL);");
-
-    // Seed review replies
-    $db->exec("INSERT INTO review_replies (review_id, name, text, photo_url) VALUES
-    (1, 'BEER 3D', 'Děkujeme moc za super recenzi, Martine! Ať stojánek i pálka dobře slouží. Na zdraví! 🍻', NULL);");
-
     echo "Seed data úspěšně vložena!\n";
     echo "Databáze je kompletně inicializována.\n";
 

@@ -112,8 +112,6 @@ function getReplies(int $reviewId, PDO $db) {
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="recenze.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Cloudflare Turnstile -->
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body class="dark-theme">
     <div class="bg-glow"></div>
@@ -167,15 +165,7 @@ function getReplies(int $reviewId, PDO $db) {
                             <input type="file" id="review-photo" name="photo" accept="image/*">
                         </div>
                         
-                        <!-- Cloudflare Turnstile CAPTCHA Widget -->
-                        <div class="form-group">
-                            <div class="cf-turnstile" id="turnstile-widget" data-sitekey="0x4AAAAAACN74O3NOEO5hMQU"
-                                 data-callback="onTurnstileSuccess" data-error-callback="onTurnstileError"
-                                 data-theme="dark" data-size="normal">
-                            </div>
-                        </div>
-                        
-                        <button type="submit" id="submit-review" class="btn-main" disabled style="width: 100%; border: none; cursor: pointer;">Odeslat recenzi</button>
+                        <button type="submit" id="submit-review" class="btn-main" style="width: 100%; border: none; cursor: pointer;">Odeslat recenzi</button>
                     </form>
                 </div>
 
@@ -264,12 +254,7 @@ function getReplies(int $reviewId, PDO $db) {
                     <input type="file" id="reply-photo" name="reply_photo" accept="image/*">
                 </div>
                 
-                <!-- Cloudflare Turnstile captcha widget for replies -->
-                <div class="form-group">
-                    <div id="reply-turnstile-widget"></div>
-                </div>
-                
-                <button type="submit" id="submit-reply" class="btn-main" disabled style="width: 100%; border: none; cursor: pointer;">Odeslat odpověď</button>
+                <button type="submit" id="submit-reply" class="btn-main" style="width: 100%; border: none; cursor: pointer;">Odeslat odpověď</button>
             </form>
         </div>
     </div>
@@ -298,49 +283,6 @@ function getReplies(int $reviewId, PDO $db) {
     <?php endif; ?>
 
     <script>
-        const submitButton = document.getElementById('submit-review');
-        const submitReplyButton = document.getElementById('submit-reply');
-
-        // Turnstile timeout fallback - enable buttons if Turnstile fails to load (offline support)
-        let turnstileLoaded = false;
-        let turnstileTimeout = setTimeout(() => {
-            if (!turnstileLoaded) {
-                console.warn('Turnstile widget did not load in time, enabling submit button as fallback');
-                submitButton.disabled = false;
-                submitButton.setAttribute('data-turnstile-fallback', 'true');
-                const widget = document.getElementById('turnstile-widget');
-                if (widget) {
-                    widget.innerHTML = '<p style="color: var(--text-secondary); font-size: 0.9rem; text-align: center;">⚠️ Bezpečnostní ověření se nenačetlo, můžete pokračovat</p>';
-                }
-            }
-        }, 3000);
-
-        // Turnstile callbacks
-        window.onTurnstileSuccess = function (token) {
-            turnstileLoaded = true;
-            clearTimeout(turnstileTimeout);
-            submitButton.disabled = false;
-        }
-
-        window.onTurnstileError = function () {
-            turnstileLoaded = true;
-            clearTimeout(turnstileTimeout);
-            submitButton.disabled = false;
-            const widget = document.getElementById('turnstile-widget');
-            if (widget) {
-                widget.innerHTML = '<p style="color: var(--accent-orange); font-size: 0.9rem; text-align: center;">⚠️ Ověření se nezdařilo, můžete odeslat</p>';
-            }
-        }
-
-        // Reply Turnstile Callbacks
-        window.onReplyTurnstileSuccess = function (token) {
-            submitReplyButton.disabled = false;
-        }
-
-        window.onReplyTurnstileError = function () {
-            submitReplyButton.disabled = false;
-        }
-
         // Modal Controls
         let currentReviewId = null;
 
@@ -350,30 +292,6 @@ function getReplies(int $reviewId, PDO $db) {
             const modal = document.getElementById('reply-modal');
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
-
-            // Reset Reply Turnstile dynamically
-            const turnstileContainer = document.getElementById('reply-turnstile-widget');
-            if (turnstileContainer) {
-                turnstileContainer.innerHTML = ''; // Clear previous
-                try {
-                    if (typeof turnstile !== 'undefined' && turnstile.render) {
-                        turnstile.render('#reply-turnstile-widget', {
-                            sitekey: '0x4AAAAAACN74O3NOEO5hMQU',
-                            callback: window.onReplyTurnstileSuccess,
-                            'error-callback': window.onReplyTurnstileError,
-                            theme: 'dark',
-                            size: 'normal'
-                        });
-                    } else {
-                        submitReplyButton.disabled = false;
-                    }
-                } catch (e) {
-                    console.error('Error rendering Turnstile:', e);
-                    submitReplyButton.disabled = false;
-                }
-            } else {
-                submitReplyButton.disabled = false;
-            }
         }
 
         window.closeReplyModal = function () {
