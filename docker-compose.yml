@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  beer3d-shop:
+    build: .
+    container_name: beer3d-shop
+    ports:
+      - "8080:80"
+    volumes:
+      # Persistent bind mount for the SQLite database
+      - ./database:/var/www/html/database
+      # Persistent bind mount for uploaded customer review images
+      - ./imgs/reviews:/var/www/html/imgs/reviews
+    restart: always
