@@ -255,7 +255,7 @@ require __DIR__ . '/partials/header.php';
     <div class="checkout-container">
         <!-- Form columns -->
         <form action="" method="POST" id="checkout-form" class="checkout-form-section">
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
 
             <?php if (isset($errors['global'])): ?>
                 <div class="error-text" style="font-size: 1em; padding: 15px; background: rgba(255,59,48,0.1); border-radius: 8px; border: 1px solid #ff3b30; margin-bottom: 20px;">

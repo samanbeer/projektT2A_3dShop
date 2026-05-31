@@ -260,7 +260,7 @@ require __DIR__ . '/partials/header.php';
                             <td>
                                 <div class="qty-controls">
                                     <form action="" method="POST" style="display:inline;">
-                                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
                                         <input type="hidden" name="action" value="update">
                                         <input type="hidden" name="product_id" value="<?= $item->productId ?>">
                                         <input type="hidden" name="variant" value="<?= htmlspecialchars($item->variant ?? '') ?>">
@@ -271,7 +271,7 @@ require __DIR__ . '/partials/header.php';
                                     <input type="text" class="qty-input" value="<?= $item->quantity ?>" readonly>
 
                                     <form action="" method="POST" style="display:inline;">
-                                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
                                         <input type="hidden" name="action" value="update">
                                         <input type="hidden" name="product_id" value="<?= $item->productId ?>">
                                         <input type="hidden" name="variant" value="<?= htmlspecialchars($item->variant ?? '') ?>">
@@ -303,7 +303,7 @@ require __DIR__ . '/partials/header.php';
 
             <div class="cart-actions-row">
                 <form action="" method="POST" onsubmit="return confirm('Opravdu chcete vyprázdnit celý košík?')">
-                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
                     <input type="hidden" name="action" value="clear">
                     <button type="submit" class="btn-ghost" style="cursor: pointer; padding: 12px 24px; font-family: inherit; font-size: 1em;">
                         Vyprázdnit košík 🗑️
