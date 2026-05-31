@@ -9,3 +9,4 @@ PETG | Červená | 5000 | Pevnější než PLA, Rychlé dodání při volbě té
 PETG | Bílá Transparentní | 800 | Pevnější než PLA, Rychlé dodání při volbě této kombinace
 TPU | Černá | 150 | Flexibilní, Drahší
 ABS | Černá | 950 | Super Pevná
+ASA | Černá | 730 | Super Pevná, Do jakéhokoliv počasí
