@@ -158,7 +158,7 @@ function initDraughtBeerExperience() {
         const foamColor = new THREE.Color(info.foamColor);
         const glassColor = new THREE.Color(0xdceef2); // Premium semi-translucent glass tint
         
-        // Find bounding box in raw local coords (Z-up is standard in CAD/3MF)
+        // Find bounding box in raw local coords
         let minX = Infinity, maxX = -Infinity;
         let minY = Infinity, maxY = -Infinity;
         let minZ = Infinity, maxZ = -Infinity;
@@ -176,16 +176,22 @@ function initDraughtBeerExperience() {
         }
         
         const avgX = sumX / count;
-        const depthY = maxY - minY;
-        const cupRadius = depthY / 2;
+        const sizeX = maxX - minX;
+        const sizeY = maxY - minY;
+        const sizeZ = maxZ - minZ;
+        
+        // Determine the height axis (Y or Z) based on the largest dimension
+        const useYAsHeight = sizeY > sizeZ;
+        const heightVal = useYAsHeight ? sizeY : sizeZ;
+        const minH = useYAsHeight ? minY : minZ;
+        const cupRadius = useYAsHeight ? sizeZ / 2 : sizeY / 2;
         
         // Find which candidate X center is closer to the average X of all vertices
         const candidateX1 = minX + cupRadius; // Handle on positive X (right)
         const candidateX2 = maxX - cupRadius; // Handle on negative X (left)
         
         const centerX = Math.abs(avgX - candidateX1) < Math.abs(avgX - candidateX2) ? candidateX1 : candidateX2;
-        const centerY = (minY + maxY) / 2;
-        const heightZ = maxZ - minZ;
+        const centerY = useYAsHeight ? (minZ + maxZ) / 2 : (minY + maxY) / 2;
         
         // Inner radius of the glass cylinder to isolate beer liquid from the glass wall
         const innerRadius = cupRadius * 0.86; 
@@ -199,19 +205,20 @@ function initDraughtBeerExperience() {
             
             // Measure horizontal distance of vertex from cylinder axis
             const dx = x - centerX;
-            const dy = y - centerY;
+            const dy = useYAsHeight ? (z - centerY) : (y - centerY);
             const dist = Math.sqrt(dx * dx + dy * dy);
             
-            const relZ = (z - minZ) / heightZ; // Relative vertical height (0.0 at bottom, 1.0 at top)
+            const hVal = useYAsHeight ? y : z;
+            const relHeight = (hVal - minH) / heightVal; // Relative vertical height (0.0 at bottom, 1.0 at top)
             
             let r = glassColor.r, g = glassColor.g, b = glassColor.b;
             
             if (dist <= innerRadius) {
                 // Inside the main cup cylinder
-                if (relZ < 0.15) {
+                if (relHeight < 0.15) {
                     // Glass base (bottom 15%)
                     r = glassColor.r; g = glassColor.g; b = glassColor.b;
-                } else if (relZ >= 0.15 && relZ < 0.76) {
+                } else if (relHeight >= 0.15 && relHeight < 0.76) {
                     // Glowing beer liquid body (middle 61%)
                     r = beerColor.r; g = beerColor.g; b = beerColor.b;
                 } else {
@@ -240,10 +247,11 @@ function initDraughtBeerExperience() {
         loaderText.innerText = 'Nahrávám kybernetický 3D model...';
     }
 
-    // Load custom multi-color beer mug model
-    const loader = new THREE.ThreeMFLoader();
-    loader.load('beer_2_colours.3mf', function (object) {
-        console.log("3MF model loaded successfully:", object);
+    // Load custom GLB/GLTF model
+    const loader = new THREE.GLTFLoader();
+    loader.load('beer_mug_glass.glb', function (gltf) {
+        const object = gltf.scene;
+        console.log("GLTF model loaded successfully:", gltf);
 
         // Gather and enable shadow casting/receiving on all sub-meshes
         const meshes = [];
@@ -256,7 +264,7 @@ function initDraughtBeerExperience() {
             }
         });
 
-        console.log(`Parsed ${meshes.length} sub-meshes from 3MF.`);
+        console.log(`Parsed ${meshes.length} sub-meshes from GLB.`);
 
         // Dynamic, robust volume and height-based classification for multi-color models
         if (meshes.length === 1) {
@@ -276,14 +284,16 @@ function initDraughtBeerExperience() {
                 return { index: i, vol: vol, box: box, center: box.getCenter(new THREE.Vector3()) };
             });
 
-            console.log("Multi-mesh 3MF model detected. Sorted volumes:", volumes);
+            console.log("Multi-mesh GLTF model detected. Sorted volumes:", volumes);
             glassMesh = meshes[glassIndex];
             
             const remaining = volumes.filter(v => v.index !== glassIndex);
-            // Sort remaining meshes by their height center (Z-up is standard in raw CAD/3MF space)
-            remaining.sort((a, b) => a.center.z - b.center.z);
+            // Sort remaining meshes by their height center (GLTF standard is Y-up)
+            remaining.sort((a, b) => a.center.y - b.center.y);
             
-            liquidMesh = meshes[remaining[0].index];
+            if (remaining.length > 0) {
+                liquidMesh = meshes[remaining[0].index];
+            }
             if (remaining.length > 1) {
                 foamMesh = meshes[remaining[1].index];
             }
@@ -314,13 +324,15 @@ function initDraughtBeerExperience() {
                 console.log("Programmatic multi-color vertex styling mounted to single-mesh model.");
             }
         } else {
-            // Multi-mesh mode: apply separate premium materials!
+            // Multi-mesh mode: apply separate premium materials, preserving original map (textures) if they exist
             if (glassMesh) {
                 if (glassMesh.geometry) {
                     glassMesh.geometry.computeVertexNormals();
                 }
+                const originalMap = (glassMesh.material && glassMesh.material.map) ? glassMesh.material.map : null;
                 glassMaterial = new THREE.MeshPhysicalMaterial({
                     color: 0xdceef2, // Light blue glass tint
+                    map: originalMap,
                     transparent: true,
                     opacity: 0.38, // Beautiful high transparency glass!
                     roughness: 0.05,
@@ -330,7 +342,7 @@ function initDraughtBeerExperience() {
                     clearcoatRoughness: 0.05
                 });
                 glassMesh.material = glassMaterial;
-                console.log("Premium glass material applied to outer mug mesh.");
+                console.log("Premium glass material applied to outer glass mesh.");
             }
 
             const info = beerTypes[activeVariant];
@@ -339,10 +351,12 @@ function initDraughtBeerExperience() {
                 if (liquidMesh.geometry) {
                     liquidMesh.geometry.computeVertexNormals();
                 }
+                const originalMap = (liquidMesh.material && liquidMesh.material.map) ? liquidMesh.material.map : null;
                 liquidMaterial = new THREE.MeshPhysicalMaterial({
                     color: info.color,
                     emissive: info.emissive,
                     emissiveIntensity: 0.4,
+                    map: originalMap,
                     transparent: true,
                     opacity: 0.92, // Dense glossy beer liquid
                     roughness: 0.08,
@@ -357,8 +371,10 @@ function initDraughtBeerExperience() {
                 if (foamMesh.geometry) {
                     foamMesh.geometry.computeVertexNormals();
                 }
+                const originalMap = (foamMesh.material && foamMesh.material.map) ? foamMesh.material.map : null;
                 foamMaterial = new THREE.MeshStandardMaterial({
                     color: info.foamColor,
+                    map: originalMap,
                     roughness: 0.85,
                     metalness: 0.05
                 });
@@ -367,10 +383,10 @@ function initDraughtBeerExperience() {
             }
         }
 
-        // Align coordinates: Rotate from CAD/3D printing Z-up standard to WebGL Y-up standard
-        object.rotation.x = -Math.PI / 2;
+        // Align coordinates: GLTF/GLB files are standard Y-up, so rotation.x is 0 by default.
+        object.rotation.x = 0;
         
-        // Force immediate local matrix update so bounding box is measured in rotated coordinate space
+        // Force immediate local matrix update so bounding box is measured in coordinate space
         object.updateMatrix();
 
         // Auto centering & dynamic scaling bounds
@@ -378,9 +394,9 @@ function initDraughtBeerExperience() {
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
-        console.log("Rotated model dimensions - width:", size.x, "height:", size.y, "depth:", size.z);
+        console.log("Loaded model dimensions - width:", size.x, "height:", size.y, "depth:", size.z);
 
-        // Center the rotated object locally inside the wrapper (centering X, Y, and Z)
+        // Center the object locally inside the wrapper (centering X, Y, and Z)
         object.position.set(-center.x, -center.y, -center.z);
 
         const modelWrapper = new THREE.Group();
@@ -413,7 +429,7 @@ function initDraughtBeerExperience() {
             }
         }
     }, function (error) {
-        console.error("3MF loader encountered an error:", error);
+        console.error("GLTF loader encountered an error:", error);
         if (loaderText) {
             loaderText.innerText = "Chyba při přípravě 3D zobrazení.";
         }
