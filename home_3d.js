@@ -138,6 +138,7 @@ function initDraughtBeerExperience() {
     let liquidMaterial = null;
     let foamMaterial = null;
     let glassMaterial = null;
+    let loadedMeshes = [];
 
     const bubbles = [];
     const clock = new THREE.Clock();
@@ -242,55 +243,32 @@ function initDraughtBeerExperience() {
             }
         }
 
-        // Apply physical materials to the classified parts (optimized for maximum WebGL compatibility)
-        if (glassMesh) {
-            const isSingleMesh = (meshes.length === 1);
-            const hasVertexColors = !!(glassMesh.geometry.attributes.color);
-            
-            // Retain original base color from 3MF loader if vertex colors are not defined in geometry
-            const originalColor = (glassMesh.material && glassMesh.material.color) ? glassMesh.material.color.clone() : new THREE.Color(0xffffff);
+        // Store reference to the meshes for variant swapping
+        loadedMeshes = meshes;
 
-            console.log(`Main mesh check: hasVertexColors=${hasVertexColors}, originalColor=`, originalColor);
-
-            glassMaterial = new THREE.MeshPhysicalMaterial({
-                color: hasVertexColors ? 0xffffff : originalColor,
-                vertexColors: hasVertexColors, // Crucial! Only use vertex colors if they actually exist in geometry to prevent solid black rendering
-                transparent: true,
-                opacity: isSingleMesh ? 0.90 : 0.28, // Semi-translucent for single-mesh print, clear for glass mug
-                roughness: isSingleMesh ? 0.15 : 0.08,
-                metalness: isSingleMesh ? 0.05 : 0.15,
-                depthWrite: true,
-                clearcoat: 1.0,
-                clearcoatRoughness: 0.1
-            });
-            glassMesh.material = glassMaterial;
-            console.log(`Premium material mounted to main mesh (singleMesh=${isSingleMesh}, vertexColors=${hasVertexColors}).`);
-        }
-
-        if (liquidMesh) {
-            liquidMaterial = new THREE.MeshPhysicalMaterial({
-                color: beerTypes[activeVariant].color,
-                emissive: beerTypes[activeVariant].emissive,
-                emissiveIntensity: 0.65,
-                transparent: true,
-                opacity: 0.90, // Rich, glowing translucent liquid body
-                roughness: 0.08,
-                metalness: 0.05,
-                clearcoat: 0.5
-            });
-            liquidMesh.material = liquidMaterial;
-            console.log("Premium glowing liquid material mounted to core mesh.");
-        }
-
-        if (foamMesh) {
-            foamMaterial = new THREE.MeshStandardMaterial({
-                color: beerTypes[activeVariant].foamColor,
-                roughness: 0.98,
-                metalness: 0.02
-            });
-            foamMesh.material = foamMaterial;
-            console.log("Creamy foam material mounted to cap mesh.");
-        }
+        // Upgrade original 3MF loaded materials to be glossy, shiny and slightly translucent
+        meshes.forEach(mesh => {
+            if (mesh.material) {
+                const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+                materials.forEach(mat => {
+                    console.log("Upgrading original material:", mat.name || "unnamed", "type:", mat.type);
+                    
+                    // Enable transparency so the rising bubbles inside are visible
+                    mat.transparent = true;
+                    mat.opacity = 0.88;
+                    
+                    // Check if it is a Phong material (standard for 3MFLoader) and make it glossy
+                    if (mat.isMeshPhongMaterial || mat.type === 'MeshPhongMaterial') {
+                        mat.shininess = 95;
+                        mat.specular = new THREE.Color(0xffffff);
+                    } else {
+                        // Standard/Physical material properties
+                        mat.roughness = 0.12;
+                        mat.metalness = 0.08;
+                    }
+                });
+            }
+        });
 
         // Align coordinates: Rotate from CAD/3D printing Z-up standard to WebGL Y-up standard
         object.rotation.x = -Math.PI / 2;
@@ -520,63 +498,30 @@ function initDraughtBeerExperience() {
         root.style.setProperty('--active-beer', hexColorString);
         root.style.setProperty('--active-beer-glow', glowColorString);
 
-        // Transition materials smoothly with GSAP
-        if (liquidMaterial) {
-            gsap.to(liquidMaterial.color, {
-                r: new THREE.Color(info.color).r,
-                g: new THREE.Color(info.color).g,
-                b: new THREE.Color(info.color).b,
-                duration: 0.6,
-                ease: "power2.out"
-            });
-
-            gsap.to(liquidMaterial.emissive, {
-                r: new THREE.Color(info.emissive).r,
-                g: new THREE.Color(info.emissive).g,
-                b: new THREE.Color(info.emissive).b,
-                duration: 0.6,
-                ease: "power2.out"
-            });
-        } else if (glassMaterial) {
-            // Single-mesh fallback tinting (affects vertex colors dynamically!)
-            let tintColor = 0xffffff;
-            let emissiveColor = 0x000000;
-            if (variantName === 'ipa') {
-                tintColor = 0xffd8b0;
-                emissiveColor = 0x221100;
-            } else if (variantName === 'stout') {
-                tintColor = 0x6b4a3a;
-                emissiveColor = 0x110500;
-            }
-            
-            gsap.to(glassMaterial.color, {
-                r: new THREE.Color(tintColor).r,
-                g: new THREE.Color(tintColor).g,
-                b: new THREE.Color(tintColor).b,
-                duration: 0.6,
-                ease: "power2.out"
-            });
-
-            if (glassMaterial.emissive) {
-                gsap.to(glassMaterial.emissive, {
-                    r: new THREE.Color(emissiveColor).r,
-                    g: new THREE.Color(emissiveColor).g,
-                    b: new THREE.Color(emissiveColor).b,
-                    duration: 0.6,
-                    ease: "power2.out"
+        // Smoothly tint all loaded meshes' original materials
+        loadedMeshes.forEach(mesh => {
+            if (mesh.material) {
+                const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+                materials.forEach(mat => {
+                    let tintColor = 0xffffff;
+                    if (variantName === 'ipa') {
+                        tintColor = 0xffd8b0;
+                    } else if (variantName === 'stout') {
+                        tintColor = 0x6b4a3a;
+                    }
+                    
+                    if (mat.color) {
+                        gsap.to(mat.color, {
+                            r: new THREE.Color(tintColor).r,
+                            g: new THREE.Color(tintColor).g,
+                            b: new THREE.Color(tintColor).b,
+                            duration: 0.6,
+                            ease: "power2.out"
+                        });
+                    }
                 });
             }
-        }
-
-        if (foamMaterial) {
-            gsap.to(foamMaterial.color, {
-                r: new THREE.Color(info.foamColor).r,
-                g: new THREE.Color(info.foamColor).g,
-                b: new THREE.Color(info.foamColor).b,
-                duration: 0.6,
-                ease: "power2.out"
-            });
-        }
+        });
     }
 
     // --- Main Animation loop ---
