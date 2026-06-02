@@ -6,8 +6,8 @@ $pageTitle = 'BEER 3D | Zakázková 3D tisková manufaktura';
 require __DIR__ . '/partials/header.php';
 ?>
 
-<!-- Temporary Cybernetic Diagnostics Overlay -->
-<div id="debug-log-overlay" style="position:fixed; top:70px; right:20px; background:rgba(10,10,10,0.92); color:#00ffcc; font-family:monospace; padding:15px; font-size:11px; z-index:999999; max-height:250px; overflow-y:auto; width:340px; border:1px solid #ff0055; border-radius:8px; box-shadow:0 0 15px rgba(255,0,85,0.4); pointer-events:auto; word-break:break-all;">
+<!-- Temporary Cybernetic Diagnostics Overlay (Hidden for Production Redesign) -->
+<div id="debug-log-overlay" style="position:fixed; top:70px; right:20px; background:rgba(10,10,10,0.92); color:#00ffcc; font-family:monospace; padding:15px; font-size:11px; z-index:999999; max-height:250px; overflow-y:auto; width:340px; border:1px solid #ff0055; border-radius:8px; box-shadow:0 0 15px rgba(255,0,85,0.4); pointer-events:auto; word-break:break-all; display:none;">
     <div style="font-weight:bold; border-bottom:1px solid #ff0055; padding-bottom:5px; margin-bottom:5px; color:#ff0055; display:flex; justify-content:between; align-items:center;">
         <span>CYBER DIACNOSTICS CONTROLLER</span>
         <button onclick="document.getElementById('debug-log-overlay').style.display='none'" style="background:none; border:none; color:#ff0055; cursor:pointer; font-weight:bold;">[X]</button>
@@ -50,7 +50,8 @@ require __DIR__ . '/partials/header.php';
     })();
 </script>
 
-<!-- Load CDNs, Warm golden styles -->
+<!-- Load CDNs, Space Grotesk & Outfit typography, Warm styles -->
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="home_3d.css">
 <script src="js/three.min.js"></script>
 <script src="js/GLTFLoader.js"></script>
