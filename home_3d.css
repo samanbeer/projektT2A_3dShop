@@ -1,16 +1,26 @@
-/* Immersive 3D Landing Page Stylesheet - Stout Dark-Gold Theme */
+/* Immersive Cyberpunk 3D Experience Stylesheet */
 
 :root {
     --gold-primary: #d4af37;
     --gold-glow: rgba(212, 175, 55, 0.4);
     --gold-dark: #8c6d12;
-    --bg-dark-900: #0a0705;
-    --bg-dark-800: #120e0a;
-    --bg-dark-700: #1b1510;
-    --text-primary: #f5efe6;
-    --text-secondary: #c9bfb3;
-    --accent-orange: #e67e22;
-    --accent-amber: #f39c12;
+    --bg-dark-900: #050404;
+    --bg-dark-800: #0a0808;
+    --bg-dark-700: #120f0f;
+    --text-primary: #ffffff;
+    --text-secondary: #a9a49e;
+    
+    /* Neon Cyberpunk Colors */
+    --neon-green: #39ff14;
+    --neon-green-glow: rgba(57, 255, 20, 0.45);
+    --neon-pink: #ff007f;
+    --neon-pink-glow: rgba(255, 0, 127, 0.45);
+    --neon-blue: #00d0ff;
+    --neon-blue-glow: rgba(0, 208, 255, 0.45);
+    
+    --active-neon: var(--neon-green);
+    --active-neon-glow: var(--neon-green-glow);
+
     --spacing-xl: 4rem;
     --spacing-lg: 2.5rem;
     --spacing-md: 1.5rem;
@@ -26,6 +36,41 @@
     color: var(--text-primary);
     padding: 0;
     margin: 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* Animated Cyberpunk Digital Grid Background */
+#page-home::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(212, 175, 55, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212, 175, 55, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    background-position: center;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Scanlines effect */
+.scanlines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.15) 50%
+    );
+    background-size: 100% 4px;
+    z-index: 999;
+    pointer-events: none;
+    opacity: 0.4;
 }
 
 /* Fullscreen Fixed Canvas Container */
@@ -36,7 +81,7 @@
     width: 100vw;
     height: 100vh;
     z-index: 2;
-    pointer-events: none; /* Never blocks scrolling */
+    pointer-events: none;
     transition: opacity 1s ease;
     will-change: transform;
 }
@@ -69,39 +114,44 @@
 }
 
 .hero-3d-content .badge {
-    background: rgba(212, 175, 55, 0.15);
+    background: rgba(212, 175, 55, 0.1);
     border: 1px solid var(--gold-primary);
     color: var(--gold-primary);
-    padding: 0.4rem 1rem;
-    border-radius: 50px;
-    font-size: 0.8rem;
-    letter-spacing: 2px;
-    font-weight: 700;
+    padding: 0.4rem 1.2rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    font-weight: 800;
     display: inline-block;
     margin-bottom: var(--spacing-md);
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+    text-transform: uppercase;
+    clip-path: polygon(0 0, 90% 0, 100% 100%, 0 100%);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
 }
 
 .hero-3d-content h1 {
-    font-size: 4.5rem;
-    line-height: 1.1;
+    font-size: 5rem;
+    line-height: 0.95;
     font-weight: 800;
     margin: 0 0 var(--spacing-md) 0;
-    letter-spacing: -1px;
+    letter-spacing: -2px;
+    text-transform: uppercase;
 }
 
 .gradient-text-gold {
-    background: linear-gradient(135deg, #fff 0%, var(--gold-primary) 50%, var(--accent-orange) 100%);
+    background: linear-gradient(135deg, #ffffff 0%, var(--gold-primary) 50%, #ff007f 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 40px rgba(212, 175, 55, 0.1);
+    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.25));
 }
 
 .hero-3d-content p {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     color: var(--text-secondary);
     line-height: 1.6;
     margin-bottom: var(--spacing-lg);
+    border-left: 3px solid var(--gold-primary);
+    padding-left: var(--spacing-md);
 }
 
 .hero-3d-actions {
@@ -109,25 +159,81 @@
     gap: var(--spacing-md);
 }
 
-/* Glassmorphic elements */
-.glass-effect-premium {
-    background: rgba(18, 14, 10, 0.45);
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    border: 1px solid rgba(212, 175, 55, 0.12);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-    border-radius: 20px;
+/* Cyberpunk buttons */
+.btn-cyber-primary {
+    background: var(--gold-primary);
+    color: #000;
+    padding: 1rem 2rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    clip-path: polygon(0 0, 85% 0, 100% 100%, 0 100%);
+    transition: var(--transition-smooth);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.35);
+}
+
+.btn-cyber-primary:hover {
+    background: #ffffff;
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+    transform: scale(1.03);
+}
+
+.btn-cyber-ghost {
+    background: transparent;
+    color: #fff;
+    padding: 1rem 2rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: 2px solid var(--gold-primary);
+    cursor: pointer;
+    text-decoration: none;
+    clip-path: polygon(15% 0, 100% 0, 100% 100%, 0 100%);
     transition: var(--transition-smooth);
 }
 
+.btn-cyber-ghost:hover {
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--gold-primary);
+    box-shadow: inset 0 0 15px rgba(212, 175, 55, 0.2);
+    transform: scale(1.03);
+}
+
+/* Glassmorphic elements with cyberpunk glow */
+.glass-effect-premium {
+    background: rgba(10, 8, 8, 0.6);
+    backdrop-filter: blur(20px) saturate(190%);
+    -webkit-backdrop-filter: blur(20px) saturate(190%);
+    border: 1px solid rgba(212, 175, 55, 0.12);
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    transition: var(--transition-smooth);
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-effect-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold-primary), transparent);
+    opacity: 0.8;
+}
+
 .glass-effect-premium:hover {
-    border-color: rgba(212, 175, 55, 0.3);
+    border-color: rgba(212, 175, 55, 0.35);
     box-shadow: 0 15px 50px rgba(212, 175, 55, 0.15);
 }
 
 /* --- Features Section --- */
 .features-3d-section {
-    justify-content: flex-end; /* Align cards to the right, mug is on the left */
+    justify-content: flex-end;
 }
 
 .features-grid-3d {
@@ -142,27 +248,31 @@
     display: flex;
     gap: var(--spacing-md);
     align-items: flex-start;
+    clip-path: polygon(0 0, 95% 0, 100% 100%, 0 100%);
 }
 
 .feature-icon-box {
     width: 60px;
     height: 60px;
     min-width: 60px;
-    background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary));
-    border-radius: 12px;
+    background: linear-gradient(135deg, var(--bg-dark-900), var(--bg-dark-700));
+    border: 1px solid var(--gold-primary);
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.8rem;
-    color: var(--bg-dark-900);
-    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+    color: var(--gold-primary);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
 }
 
 .feature-card-premium h3 {
-    font-size: 1.4rem;
+    font-size: 1.35rem;
     margin: 0 0 0.5rem 0;
     color: #fff;
-    font-weight: 700;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
 .feature-card-premium p {
@@ -180,14 +290,15 @@
 
 .portfolio-header {
     text-align: center;
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
     max-width: 700px;
 }
 
 .portfolio-header h2 {
-    font-size: 3rem;
+    font-size: 3.5rem;
     font-weight: 800;
     margin-bottom: 1rem;
+    text-transform: uppercase;
 }
 
 .portfolio-3d-grid {
@@ -204,11 +315,13 @@
     cursor: pointer;
     text-align: center;
     position: relative;
+    border-radius: 6px;
+    clip-path: polygon(0 0, 100% 0, 100% 90%, 90% 100%, 0 100%);
 }
 
 .portfolio-img-wrapper {
     position: relative;
-    border-radius: 16px;
+    border-radius: 4px;
     overflow: hidden;
     margin-bottom: var(--spacing-md);
     background: var(--bg-dark-800);
@@ -225,6 +338,7 @@
 
 .portfolio-card-premium:hover img {
     transform: scale(1.08) rotate(1deg);
+    filter: brightness(1.15) contrast(1.1);
 }
 
 .portfolio-info {
@@ -235,7 +349,9 @@
     font-size: 1.25rem;
     margin: 0 0 0.5rem 0;
     color: #fff;
-    font-weight: 700;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .portfolio-info p {
@@ -244,24 +360,33 @@
     color: var(--text-secondary);
 }
 
-/* Dynamic glow effect indicator for active cards */
-.portfolio-card-premium::before {
+/* Active cyberpunk borders and dynamic shadow adjustments */
+.portfolio-card-premium.active::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    border-radius: 20px;
-    border: 2px solid transparent;
-    transition: var(--transition-smooth);
+    border: 2px solid var(--active-neon);
     pointer-events: none;
     z-index: 5;
+    box-shadow: inset 0 0 15px var(--active-neon-glow);
 }
 
-.portfolio-card-premium.active::before {
-    border-color: var(--gold-primary);
-    box-shadow: 0 0 30px var(--gold-glow);
+.portfolio-card-premium[data-variant="pilsner"].active {
+    --active-neon: var(--neon-green);
+    --active-neon-glow: var(--neon-green-glow);
+}
+
+.portfolio-card-premium[data-variant="ipa"].active {
+    --active-neon: var(--neon-pink);
+    --active-neon-glow: var(--neon-pink-glow);
+}
+
+.portfolio-card-premium[data-variant="stout"].active {
+    --active-neon: var(--neon-blue);
+    --active-neon-glow: var(--neon-blue-glow);
 }
 
 /* Floating helper text above active variant */
@@ -269,17 +394,25 @@
     position: absolute;
     top: 15px;
     right: 15px;
-    background: rgba(10, 7, 5, 0.85);
-    padding: 0.3rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--gold-primary);
-    border: 1px solid var(--gold-primary);
+    background: rgba(5, 4, 4, 0.95);
+    padding: 0.4rem 1rem;
+    border-radius: 2px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--active-neon);
+    border: 1px solid var(--active-neon);
+    box-shadow: 0 0 10px var(--active-neon-glow);
     opacity: 0;
     transform: translateY(-5px);
     transition: var(--transition-smooth);
+    z-index: 10;
 }
+
+.portfolio-card-premium[data-variant="pilsner"] .beer-flavor-label { color: var(--neon-green); border-color: var(--neon-green); }
+.portfolio-card-premium[data-variant="ipa"] .beer-flavor-label { color: var(--neon-pink); border-color: var(--neon-pink); }
+.portfolio-card-premium[data-variant="stout"] .beer-flavor-label { color: var(--neon-blue); border-color: var(--neon-blue); }
 
 .portfolio-card-premium:hover .beer-flavor-label {
     opacity: 1;
@@ -301,6 +434,7 @@
 .faq-title-box h2 {
     font-size: 3rem;
     font-weight: 800;
+    text-transform: uppercase;
 }
 
 .faq-wrapper-3d {
@@ -313,15 +447,16 @@
 
 .faq-item-premium {
     border: 1px solid rgba(212, 175, 55, 0.12);
-    border-radius: 12px;
+    border-radius: 4px;
     overflow: hidden;
     transition: var(--transition-smooth);
-    background: rgba(18, 14, 10, 0.3);
+    background: rgba(10, 8, 8, 0.4);
+    clip-path: polygon(0 0, 97% 0, 100% 25%, 100% 100%, 0 100%);
 }
 
 .faq-item-premium.active {
-    border-color: rgba(212, 175, 55, 0.3);
-    background: rgba(18, 14, 10, 0.6);
+    border-color: rgba(212, 175, 55, 0.35);
+    background: rgba(18, 14, 14, 0.6);
 }
 
 .faq-question-premium {
@@ -332,7 +467,7 @@
     padding: 1.25rem 1.5rem;
     font-size: 1.1rem;
     text-align: left;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
@@ -353,13 +488,14 @@
 
 .faq-item-premium.active .faq-trigger-icon {
     transform: rotate(45deg);
+    color: var(--neon-pink);
 }
 
 .faq-answer-premium {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.4s ease-out;
-    background: rgba(10, 7, 5, 0.2);
+    background: rgba(5, 4, 4, 0.35);
 }
 
 .faq-item-premium.active .faq-answer-premium {
@@ -395,14 +531,16 @@
 }
 
 .loader-pint {
-    width: 60px;
-    height: 80px;
-    border: 4px solid var(--text-primary);
+    width: 50px;
+    height: 70px;
+    border: 3px solid var(--gold-primary);
     border-top: none;
-    border-radius: 0 0 12px 12px;
+    border-radius: 0;
     position: relative;
     margin-bottom: 20px;
     overflow: hidden;
+    clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
 }
 
 .loader-pint::before {
@@ -412,23 +550,24 @@
     left: 0;
     width: 100%;
     height: 0%;
-    background: linear-gradient(to top, var(--accent-orange), var(--gold-primary));
-    animation: fillBeer 2s infinite ease-in-out;
+    background: linear-gradient(to top, var(--neon-pink), var(--gold-primary));
+    animation: fillBeer 2.2s infinite ease-in-out;
 }
 
 .loader-text {
     font-family: 'Montserrat', sans-serif;
-    letter-spacing: 3px;
+    letter-spacing: 4px;
     color: var(--gold-primary);
-    font-weight: 700;
+    font-weight: 800;
     font-size: 0.9rem;
     text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
 }
 
 /* Animations */
 @keyframes fillBeer {
     0% { height: 0%; }
-    80%, 100% { height: 85%; }
+    80%, 100% { height: 90%; }
 }
 
 @keyframes fadeInUp {
@@ -449,7 +588,7 @@
     }
 
     .hero-3d-content h1 {
-        font-size: 3.5rem;
+        font-size: 3.8rem;
     }
 
     .portfolio-3d-grid {
@@ -459,9 +598,8 @@
 }
 
 @media (max-width: 768px) {
-    /* Mobile optimization: 3D canvas stays in background, html rolls over it */
     .canvas-3d-wrapper {
-        opacity: 0.6; /* Dim the canvas so text is highly readable */
+        opacity: 0.55;
     }
 
     .scroll-section {
@@ -480,7 +618,7 @@
     }
 
     .hero-3d-content h1 {
-        font-size: 2.8rem;
+        font-size: 3rem;
     }
 
     .hero-3d-actions {
