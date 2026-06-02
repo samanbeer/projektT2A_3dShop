@@ -137,6 +137,11 @@ function initDraughtBeerExperience() {
     // --- 3MF Custom Model Loader Architecture ---
     let glassMaterial = null;
     let glassMesh = null;
+    let liquidMesh = null;
+    let foamMesh = null;
+    let liquidMaterial = null;
+    let foamMaterial = null;
+    let isMultiMesh = false;
 
     const clock = new THREE.Clock();
 
@@ -253,28 +258,12 @@ function initDraughtBeerExperience() {
 
         console.log(`Parsed ${meshes.length} sub-meshes from 3MF.`);
 
-        let glassMesh = null;
-        let liquidMesh = null;
-        let foamMesh = null;
-
         // Dynamic, robust volume and height-based classification for multi-color models
         if (meshes.length === 1) {
             glassMesh = meshes[0];
-        } else if (meshes.length === 2) {
-            const boxA = new THREE.Box3().setFromObject(meshes[0]);
-            const boxB = new THREE.Box3().setFromObject(meshes[1]);
-            const volA = (boxA.max.x - boxA.min.x) * (boxA.max.y - boxA.min.y) * (boxA.max.z - boxA.min.z);
-            const volB = (boxB.max.x - boxB.min.x) * (boxB.max.y - boxB.min.y) * (boxB.max.z - boxB.min.z);
-            
-            console.log(`2 meshes found. Mesh 0 vol: ${volA}, Mesh 1 vol: ${volB}`);
-            if (volA > volB) {
-                glassMesh = meshes[0];
-                liquidMesh = meshes[1];
-            } else {
-                glassMesh = meshes[1];
-                liquidMesh = meshes[0];
-            }
-        } else if (meshes.length >= 3) {
+            isMultiMesh = false;
+        } else {
+            isMultiMesh = true;
             let maxVol = -1;
             let glassIndex = -1;
             const volumes = meshes.map((m, i) => {
@@ -286,47 +275,96 @@ function initDraughtBeerExperience() {
                 }
                 return { index: i, vol: vol, box: box, center: box.getCenter(new THREE.Vector3()) };
             });
-            
-            console.log("3+ meshes found, sorted volumes:", volumes);
+
+            console.log("Multi-mesh 3MF model detected. Sorted volumes:", volumes);
             glassMesh = meshes[glassIndex];
             
             const remaining = volumes.filter(v => v.index !== glassIndex);
-            remaining.sort((a, b) => a.center.y - b.center.y);
+            // Sort remaining meshes by their height center (Z-up is standard in raw CAD/3MF space)
+            remaining.sort((a, b) => a.center.z - b.center.z);
             
-            if (remaining.length === 1) {
-                liquidMesh = meshes[remaining[0].index];
-            } else {
-                // In single-mesh mode, just fallback to first mesh
-                glassMesh = meshes[0];
+            liquidMesh = meshes[remaining[0].index];
+            if (remaining.length > 1) {
+                foamMesh = meshes[remaining[1].index];
             }
-        } else {
-            // Handle fallback if no meshes at all
-            glassMesh = meshes[0];
         }
 
-        // Apply physical materials to the classified parts (optimized for maximum WebGL compatibility)
-        if (glassMesh) {
-            // Ensure normals are computed correctly so physical materials don't render black
-            if (glassMesh.geometry) {
-                glassMesh.geometry.computeVertexNormals();
+        // Apply premium materials based on single-mesh vs multi-mesh classification
+        if (!isMultiMesh) {
+            if (glassMesh) {
+                if (glassMesh.geometry) {
+                    glassMesh.geometry.computeVertexNormals();
+                }
+                
+                glassMaterial = new THREE.MeshPhysicalMaterial({
+                    color: 0xffffff,
+                    vertexColors: true, // Enables programmatic vertex coloring
+                    transparent: true,
+                    opacity: 0.88, // Solid glossy glass and liquid body
+                    roughness: 0.08,
+                    metalness: 0.12,
+                    depthWrite: true,
+                    clearcoat: 1.0,
+                    clearcoatRoughness: 0.08
+                });
+                glassMesh.material = glassMaterial;
+                
+                // Programmatically paint the single combined mesh
+                generateVertexColors(glassMesh, activeVariant);
+                console.log("Programmatic multi-color vertex styling mounted to single-mesh model.");
             }
-            
-            glassMaterial = new THREE.MeshPhysicalMaterial({
-                color: 0xffffff,
-                vertexColors: true, // Crucial! Enables programmatic vertex coloring
-                transparent: true,
-                opacity: 0.88, // Solid glossy glass and liquid body
-                roughness: 0.08,
-                metalness: 0.12,
-                depthWrite: true,
-                clearcoat: 1.0,
-                clearcoatRoughness: 0.08
-            });
-            glassMesh.material = glassMaterial;
-            
-            // Programmatically color the model vertices in real-time!
-            generateVertexColors(glassMesh, activeVariant);
-            console.log("Programmatic multi-color vertex styling mounted to 3D model.");
+        } else {
+            // Multi-mesh mode: apply separate premium materials!
+            if (glassMesh) {
+                if (glassMesh.geometry) {
+                    glassMesh.geometry.computeVertexNormals();
+                }
+                glassMaterial = new THREE.MeshPhysicalMaterial({
+                    color: 0xdceef2, // Light blue glass tint
+                    transparent: true,
+                    opacity: 0.38, // Beautiful high transparency glass!
+                    roughness: 0.05,
+                    metalness: 0.1,
+                    depthWrite: true,
+                    clearcoat: 1.0,
+                    clearcoatRoughness: 0.05
+                });
+                glassMesh.material = glassMaterial;
+                console.log("Premium glass material applied to outer mug mesh.");
+            }
+
+            const info = beerTypes[activeVariant];
+
+            if (liquidMesh) {
+                if (liquidMesh.geometry) {
+                    liquidMesh.geometry.computeVertexNormals();
+                }
+                liquidMaterial = new THREE.MeshPhysicalMaterial({
+                    color: info.color,
+                    emissive: info.emissive,
+                    emissiveIntensity: 0.4,
+                    transparent: true,
+                    opacity: 0.92, // Dense glossy beer liquid
+                    roughness: 0.08,
+                    metalness: 0.1,
+                    clearcoat: 0.5
+                });
+                liquidMesh.material = liquidMaterial;
+                console.log("Premium beer liquid material applied to inner liquid mesh.");
+            }
+
+            if (foamMesh) {
+                if (foamMesh.geometry) {
+                    foamMesh.geometry.computeVertexNormals();
+                }
+                foamMaterial = new THREE.MeshStandardMaterial({
+                    color: info.foamColor,
+                    roughness: 0.85,
+                    metalness: 0.05
+                });
+                foamMesh.material = foamMaterial;
+                console.log("Premium creamy foam material applied to foam cap mesh.");
+            }
         }
 
         // Align coordinates: Rotate from CAD/3D printing Z-up standard to WebGL Y-up standard
@@ -531,9 +569,38 @@ function initDraughtBeerExperience() {
         root.style.setProperty('--active-beer', hexColorString);
         root.style.setProperty('--active-beer-glow', glowColorString);
 
-        // Regenerate vertex colors with the new variant beer colors dynamically in real-time!
-        if (glassMesh) {
-            generateVertexColors(glassMesh, variantName);
+        if (!isMultiMesh) {
+            // Single-mesh mode: regenerate vertex colors
+            if (glassMesh) {
+                generateVertexColors(glassMesh, variantName);
+            }
+        } else {
+            // Multi-mesh mode: smoothly animate material colors using GSAP for maximum visual appeal!
+            if (liquidMaterial) {
+                gsap.to(liquidMaterial.color, {
+                    r: new THREE.Color(info.color).r,
+                    g: new THREE.Color(info.color).g,
+                    b: new THREE.Color(info.color).b,
+                    duration: 0.6,
+                    ease: "power2.out"
+                });
+                gsap.to(liquidMaterial.emissive, {
+                    r: new THREE.Color(info.emissive).r,
+                    g: new THREE.Color(info.emissive).g,
+                    b: new THREE.Color(info.emissive).b,
+                    duration: 0.6,
+                    ease: "power2.out"
+                });
+            }
+            if (foamMaterial) {
+                gsap.to(foamMaterial.color, {
+                    r: new THREE.Color(info.foamColor).r,
+                    g: new THREE.Color(info.foamColor).g,
+                    b: new THREE.Color(info.foamColor).b,
+                    duration: 0.6,
+                    ease: "power2.out"
+                });
+            }
         }
     }
 
