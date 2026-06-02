@@ -84,7 +84,7 @@ require __DIR__ . '/partials/header.php';
         <div class="hero-3d-content">
             <span class="badge">3D TISK NA ZAKÁZKU</span>
             <h1>TISKNEME S<br><span class="gradient-text-gold">PRECIZNOSTÍ</span></h1>
-            <p>Precizní zakázkový 3D tisk pro Vaše projekty i každodenní radost. Navrhujeme a tiskneme originální otvíráky, magnetické podtácky, designové stojany a vysoce odolné technické i designové díly na zakázku.</p>
+            <p>V našem e-shopu nabízíme špičkové 3D tiskárny Bambu Lab a Creality, kvalitní PLA a PETG filamenty a také zakázkovou výrobu stojánků na telefony nebo stolních tenisových pálek s vlastním designem.</p>
             <div class="hero-3d-actions">
                 <a href="materialy.php" class="btn-main-premium" aria-label="Zobrazit sekci s materiály">Naše materiály</a>
                 <a href="produkty.php" class="btn-ghost-premium" aria-label="E-shop">E-shop</a>
@@ -114,8 +114,8 @@ require __DIR__ . '/partials/header.php';
                 <div class="cyber-corners cyber-corners-br"></div>
                 <div class="feature-icon-box">⚙️</div>
                 <div>
-                    <h3>Vlastní praktické doplňky</h3>
-                    <p>Náš rukopis poznáte okamžitě. Vyvíjíme originální magnetické otvíráky, designové držáky a unikátní doplňky pro každodenní radost.</p>
+                    <h3>Vlastní designy výrobků</h3>
+                    <p>Nabízíme možnost personalizace a úpravy designů našich výrobků na míru. Vyberte si vlastní barvu nebo přidejte text podle Vašich představ.</p>
                 </div>
             </div>
             
@@ -176,13 +176,13 @@ require __DIR__ . '/partials/header.php';
                 <div class="cyber-corners cyber-corners-tr"></div>
                 <div class="cyber-corners cyber-corners-bl"></div>
                 <div class="cyber-corners cyber-corners-br"></div>
-                <span class="beer-flavor-label">Karbonové PETG</span>
+                <span class="beer-flavor-label">Různé materiály</span>
                 <div class="portfolio-img-wrapper">
-                    <img src="./imgs/pístalky.png" alt="Píšťalky a doplňky">
+                    <img src="./imgs/pístalky.png" alt="Tisk vlastních modelů">
                 </div>
                 <div class="portfolio-info">
-                    <h4>Hlasité píšťalky a gadgety</h4>
-                    <p>Extrémně výkonné dvoukomorové píšťalky a doplňky pro nouzové signály a outdoor aktivity.</p>
+                    <h4>Tisk vlastních 3D modelů</h4>
+                    <p>Máte hotový soubor STL nebo STEP? Zašlete nám jej a my se postaráme o jeho bezchybné vytištění na našich profesionálních tiskárnách.</p>
                 </div>
             </div>
         </div>
