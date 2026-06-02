@@ -466,16 +466,15 @@ function initDraughtBeerExperience() {
         }, 1500);
     });
 
-    // --- Default Coordinates & Positioning ---
-    // --- Default Coordinates & Positioning (Made smaller and pushed towards the right edge) ---
-    beerMug.position.set(isMobile ? 0.8 : 2.5, isMobile ? -0.8 : -0.2, 0);
+    // --- Default Coordinates & Positioning (Made even smaller and pushed further towards the right edge) ---
+    beerMug.position.set(isMobile ? 1.0 : 2.7, isMobile ? -0.8 : -0.2, 0);
     
     if (isMobile) {
-        beerMug.scale.setScalar(0.48);
+        beerMug.scale.setScalar(0.35);
     } else if (isTablet) {
-        beerMug.scale.setScalar(0.58);
+        beerMug.scale.setScalar(0.42);
     } else {
-        beerMug.scale.setScalar(0.65);
+        beerMug.scale.setScalar(0.48);
     }
 
     // --- Mouse Follow & Parallax (Increased rotation tilt to look more dynamic) ---
@@ -514,22 +513,22 @@ function initDraughtBeerExperience() {
     });
 
     const positions = {
-        heroX: isMobile ? 0.8 : 2.5, // Partially off-screen to the right
+        heroX: isMobile ? 1.0 : 2.7, // Slides significantly past the right edge!
         heroY: isMobile ? -0.8 : -0.2,
-        heroScale: isMobile ? 0.48 : 0.65,
+        heroScale: isMobile ? 0.35 : 0.48,
         
-        featX: isMobile ? -1.2 : -3.2, // Slides far past the left edge!
+        featX: isMobile ? -1.4 : -3.6, // Slides completely past the left edge!
         featY: isMobile ? -0.9 : -0.1,
-        featScale: isMobile ? 0.52 : 0.72,
+        featScale: isMobile ? 0.38 : 0.52,
         
         portX: 0,
         portY: isMobile ? 1.5 : 1.25,
         portZ: isMobile ? -0.8 : -1.2,
-        portScale: isMobile ? 0.55 : 0.72,
+        portScale: isMobile ? 0.42 : 0.55,
         
-        faqX: isMobile ? 1.0 : 2.8, // Slides far past the right edge!
+        faqX: isMobile ? 1.2 : 3.0, // Slides completely past the right edge!
         faqY: isMobile ? -1.1 : -0.95,
-        faqScale: isMobile ? 0.38 : 0.52
+        faqScale: isMobile ? 0.28 : 0.38
     };
 
     // Step 1: Slide left for features section
@@ -704,11 +703,11 @@ function initDraughtBeerExperience() {
         const isTabletNow = window.innerWidth <= 1024 && window.innerWidth > 768;
         
         if (isMobileNow) {
-            beerMug.scale.setScalar(0.48);
+            beerMug.scale.setScalar(0.35);
         } else if (isTabletNow) {
-            beerMug.scale.setScalar(0.58);
+            beerMug.scale.setScalar(0.42);
         } else {
-            beerMug.scale.setScalar(0.65);
+            beerMug.scale.setScalar(0.48);
         }
     });
 
