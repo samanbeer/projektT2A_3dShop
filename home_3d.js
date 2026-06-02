@@ -572,7 +572,7 @@ function initCyberExperience() {
         // 1. Canister floating bobbing physics
         const bobbing = Math.sin(elapsedTime * 1.8) * 0.055;
         // Inject to local visual without breaking timeline offset
-        keyLight.position.x = 5 + Math.sin(elapsedTime * 0.4) * 2.5;
+        frontLight.position.x = 5 + Math.sin(elapsedTime * 0.4) * 2.5;
 
         // 2. Hologram tech rings spinning active rotation
         holoRing1.rotation.z += 0.007;
