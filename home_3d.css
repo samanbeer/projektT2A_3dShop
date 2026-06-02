@@ -82,7 +82,10 @@ html {
     min-height: 100vh;
     display: flex;
     align-items: center;
-    padding: 8rem 10% 6rem 10%;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 8rem 4% 6rem 4%;
     z-index: 3;
     box-sizing: border-box;
 }
@@ -93,7 +96,7 @@ html {
 }
 
 .hero-3d-content {
-    max-width: 620px;
+    max-width: 760px;
     animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
@@ -201,14 +204,15 @@ html {
 
 /* --- Features Section --- */
 .features-3d-section {
-    justify-content: flex-end;
+    justify-content: center;
 }
 
 .features-grid-3d {
-    max-width: 600px;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
+    max-width: 1200px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
 }
 
 .feature-card-premium {
@@ -391,14 +395,17 @@ html {
 
 /* --- FAQ Section --- */
 .faq-3d-section {
-    flex-direction: column;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: var(--spacing-xl);
     align-items: flex-start;
+    width: 100%;
 }
 
 .faq-title-box {
-    margin-bottom: var(--spacing-lg);
-    max-width: 600px;
+    margin-bottom: 0;
+    position: sticky;
+    top: 120px;
 }
 
 .faq-title-box h2 {
@@ -416,7 +423,7 @@ html {
 
 .faq-wrapper-3d {
     width: 100%;
-    max-width: 720px;
+    max-width: 100%;
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
@@ -555,16 +562,31 @@ html {
 /* Responsive Overrides */
 @media (max-width: 1024px) {
     .scroll-section {
-        padding: 6rem 6% 4rem 6%;
+        padding: 6rem 4% 4rem 4%;
     }
 
     .hero-3d-content h1 {
         font-size: 4rem;
     }
 
+    .features-grid-3d {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-md);
+    }
+
     .portfolio-3d-grid {
         grid-template-columns: repeat(3, 1fr);
         gap: var(--spacing-md);
+    }
+
+    .faq-3d-section {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+
+    .faq-title-box {
+        position: relative;
+        top: 0;
     }
 }
 
@@ -598,8 +620,18 @@ html {
         gap: var(--spacing-sm);
     }
 
+    .features-grid-3d {
+        grid-template-columns: 1fr;
+    }
+
     .portfolio-3d-grid {
         grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+
+    .faq-3d-section {
+        display: flex;
+        flex-direction: column;
         gap: var(--spacing-lg);
     }
 }
