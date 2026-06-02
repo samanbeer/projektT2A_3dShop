@@ -6,6 +6,14 @@ class PaymentMethodRepository {
 
     public function __construct() {
         $this->db = Database::getConnection();
+        try {
+            $stmt = $this->db->query("SELECT COUNT(*) FROM payment_methods WHERE id = 4");
+            if ($stmt && (int)$stmt->fetchColumn() === 0) {
+                $this->db->exec("INSERT INTO payment_methods (id, name, price) VALUES (4, 'Platba pivem (25 Kč = 1 pivo)', 0.0)");
+            }
+        } catch (Exception $e) {
+            // Ignore if database is not initialized yet
+        }
     }
 
     public function getAll(): array {

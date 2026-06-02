@@ -142,7 +142,7 @@ require __DIR__ . '/partials/header.php';
         <div class="thanks-order-num">Číslo vaší objednávky je: #<?= htmlspecialchars((string)$order->id) ?></div>
         
         <p class="thanks-desc">
-            Úspěšně jsme zaznamenali vaši objednávku do naší databáze. Již brzy začneme tisknout s chutí! 
+            Úspěšně jsme zaznamenali vaši objednávku do naší databáze. Již brzy začneme tisknout vaše doplňky s maximální precizností! 
             Na zadanou e-mailovou adresu jsme vám odeslali rekapitulaci. Jakmile zásilku předáme dopravci, budeme vás informovat.
         </p>
 
@@ -193,7 +193,12 @@ require __DIR__ . '/partials/header.php';
             <?php endforeach; ?>
             <div class="recap-item-row recap-total">
                 <span>Celkem k úhradě:</span>
-                <span><?= number_format($order->totalPrice, 0, ',', ' ') ?> Kč</span>
+                <span>
+                    <?= number_format($order->totalPrice, 0, ',', ' ') ?> Kč
+                    <?php if ($order->paymentMethodId === 4): ?>
+                        <span style="font-size: 0.7em; color: var(--accent, #ffc107); display: block; text-align: right; font-weight: 500; margin-top: 4px;">(<?= round($order->totalPrice / 25) ?> piv)</span>
+                    <?php endif; ?>
+                </span>
             </div>
         </div>
 
