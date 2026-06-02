@@ -1,0 +1,495 @@
+/* Immersive 3D Landing Page Stylesheet - Stout Dark-Gold Theme */
+
+:root {
+    --gold-primary: #d4af37;
+    --gold-glow: rgba(212, 175, 55, 0.4);
+    --gold-dark: #8c6d12;
+    --bg-dark-900: #0a0705;
+    --bg-dark-800: #120e0a;
+    --bg-dark-700: #1b1510;
+    --text-primary: #f5efe6;
+    --text-secondary: #c9bfb3;
+    --accent-orange: #e67e22;
+    --accent-amber: #f39c12;
+    --spacing-xl: 4rem;
+    --spacing-lg: 2.5rem;
+    --spacing-md: 1.5rem;
+    --spacing-sm: 0.8rem;
+    --transition-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Base structural adjustments for 3D home */
+#page-home {
+    position: relative;
+    overflow: visible !important;
+    background: var(--bg-dark-900);
+    color: var(--text-primary);
+    padding: 0;
+    margin: 0;
+}
+
+/* Fullscreen Fixed Canvas Container */
+.canvas-3d-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 2;
+    pointer-events: none; /* Never blocks scrolling */
+    transition: opacity 1s ease;
+    will-change: transform;
+}
+
+#canvas-3d {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Interactive sections that overlay the canvas */
+.scroll-section {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 6rem 10% 4rem 10%;
+    z-index: 3;
+    box-sizing: border-box;
+}
+
+/* --- Hero Section --- */
+.hero-3d-section {
+    justify-content: flex-start;
+}
+
+.hero-3d-content {
+    max-width: 600px;
+    animation: fadeInUp 1s ease-out;
+}
+
+.hero-3d-content .badge {
+    background: rgba(212, 175, 55, 0.15);
+    border: 1px solid var(--gold-primary);
+    color: var(--gold-primary);
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    font-weight: 700;
+    display: inline-block;
+    margin-bottom: var(--spacing-md);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+}
+
+.hero-3d-content h1 {
+    font-size: 4.5rem;
+    line-height: 1.1;
+    font-weight: 800;
+    margin: 0 0 var(--spacing-md) 0;
+    letter-spacing: -1px;
+}
+
+.gradient-text-gold {
+    background: linear-gradient(135deg, #fff 0%, var(--gold-primary) 50%, var(--accent-orange) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 40px rgba(212, 175, 55, 0.1);
+}
+
+.hero-3d-content p {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--spacing-lg);
+}
+
+.hero-3d-actions {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+/* Glassmorphic elements */
+.glass-effect-premium {
+    background: rgba(18, 14, 10, 0.45);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(212, 175, 55, 0.12);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    border-radius: 20px;
+    transition: var(--transition-smooth);
+}
+
+.glass-effect-premium:hover {
+    border-color: rgba(212, 175, 55, 0.3);
+    box-shadow: 0 15px 50px rgba(212, 175, 55, 0.15);
+}
+
+/* --- Features Section --- */
+.features-3d-section {
+    justify-content: flex-end; /* Align cards to the right, mug is on the left */
+}
+
+.features-grid-3d {
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.feature-card-premium {
+    padding: var(--spacing-md) var(--spacing-lg);
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: flex-start;
+}
+
+.feature-icon-box {
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: var(--bg-dark-900);
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+}
+
+.feature-card-premium h3 {
+    font-size: 1.4rem;
+    margin: 0 0 0.5rem 0;
+    color: #fff;
+    font-weight: 700;
+}
+
+.feature-card-premium p {
+    margin: 0;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* --- Portfolio Showroom Section --- */
+.portfolio-3d-section {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.portfolio-header {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+    max-width: 700px;
+}
+
+.portfolio-header h2 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+
+.portfolio-3d-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+    width: 100%;
+    max-width: 1100px;
+    z-index: 4;
+}
+
+.portfolio-card-premium {
+    overflow: hidden;
+    cursor: pointer;
+    text-align: center;
+    position: relative;
+}
+
+.portfolio-img-wrapper {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: var(--spacing-md);
+    background: var(--bg-dark-800);
+}
+
+.portfolio-card-premium img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    aspect-ratio: 1.1;
+    transition: var(--transition-smooth);
+}
+
+.portfolio-card-premium:hover img {
+    transform: scale(1.08) rotate(1deg);
+}
+
+.portfolio-info {
+    padding: var(--spacing-sm);
+}
+
+.portfolio-info h4 {
+    font-size: 1.25rem;
+    margin: 0 0 0.5rem 0;
+    color: #fff;
+    font-weight: 700;
+}
+
+.portfolio-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* Dynamic glow effect indicator for active cards */
+.portfolio-card-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    border: 2px solid transparent;
+    transition: var(--transition-smooth);
+    pointer-events: none;
+    z-index: 5;
+}
+
+.portfolio-card-premium.active::before {
+    border-color: var(--gold-primary);
+    box-shadow: 0 0 30px var(--gold-glow);
+}
+
+/* Floating helper text above active variant */
+.beer-flavor-label {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(10, 7, 5, 0.85);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--gold-primary);
+    border: 1px solid var(--gold-primary);
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: var(--transition-smooth);
+}
+
+.portfolio-card-premium:hover .beer-flavor-label {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* --- FAQ Section --- */
+.faq-3d-section {
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.faq-title-box {
+    margin-bottom: var(--spacing-lg);
+    max-width: 600px;
+}
+
+.faq-title-box h2 {
+    font-size: 3rem;
+    font-weight: 800;
+}
+
+.faq-wrapper-3d {
+    width: 100%;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.faq-item-premium {
+    border: 1px solid rgba(212, 175, 55, 0.12);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: var(--transition-smooth);
+    background: rgba(18, 14, 10, 0.3);
+}
+
+.faq-item-premium.active {
+    border-color: rgba(212, 175, 55, 0.3);
+    background: rgba(18, 14, 10, 0.6);
+}
+
+.faq-question-premium {
+    width: 100%;
+    background: none;
+    border: none;
+    color: #fff;
+    padding: 1.25rem 1.5rem;
+    font-size: 1.1rem;
+    text-align: left;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Montserrat', sans-serif;
+    transition: var(--transition-smooth);
+}
+
+.faq-question-premium:hover {
+    color: var(--gold-primary);
+}
+
+.faq-trigger-icon {
+    font-size: 1.4rem;
+    color: var(--gold-primary);
+    transition: transform 0.3s ease;
+}
+
+.faq-item-premium.active .faq-trigger-icon {
+    transform: rotate(45deg);
+}
+
+.faq-answer-premium {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+    background: rgba(10, 7, 5, 0.2);
+}
+
+.faq-item-premium.active .faq-answer-premium {
+    max-height: 200px;
+}
+
+.faq-answer-inner {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+/* Interactive Loading Overlay */
+.loader-overlay-3d {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--bg-dark-900);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.loader-overlay-3d.loaded {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loader-pint {
+    width: 60px;
+    height: 80px;
+    border: 4px solid var(--text-primary);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    position: relative;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.loader-pint::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0%;
+    background: linear-gradient(to top, var(--accent-orange), var(--gold-primary));
+    animation: fillBeer 2s infinite ease-in-out;
+}
+
+.loader-text {
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 3px;
+    color: var(--gold-primary);
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+/* Animations */
+@keyframes fillBeer {
+    0% { height: 0%; }
+    80%, 100% { height: 85%; }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Overrides */
+@media (max-width: 1024px) {
+    .scroll-section {
+        padding: 5rem 6% 4rem 6%;
+    }
+
+    .hero-3d-content h1 {
+        font-size: 3.5rem;
+    }
+
+    .portfolio-3d-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-md);
+    }
+}
+
+@media (max-width: 768px) {
+    /* Mobile optimization: 3D canvas stays in background, html rolls over it */
+    .canvas-3d-wrapper {
+        opacity: 0.6; /* Dim the canvas so text is highly readable */
+    }
+
+    .scroll-section {
+        min-height: auto;
+        padding: 5rem 24px 3rem 24px;
+        align-items: flex-start;
+    }
+
+    .hero-3d-section, .features-3d-section {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .hero-3d-content, .features-grid-3d {
+        max-width: 100%;
+    }
+
+    .hero-3d-content h1 {
+        font-size: 2.8rem;
+    }
+
+    .hero-3d-actions {
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    .portfolio-3d-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+}
