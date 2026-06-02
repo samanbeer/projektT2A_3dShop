@@ -467,14 +467,14 @@ function initDraughtBeerExperience() {
     });
 
     // --- Default Coordinates & Positioning (Made even smaller and pushed further towards the right edge) ---
-    beerMug.position.set(isMobile ? 1.0 : 2.7, isMobile ? -0.8 : -0.2, 0);
+    beerMug.position.set(isMobile ? 1.2 : 3.0, isMobile ? -0.8 : -0.2, 0);
     
     if (isMobile) {
-        beerMug.scale.setScalar(0.35);
+        beerMug.scale.setScalar(0.25);
     } else if (isTablet) {
-        beerMug.scale.setScalar(0.42);
+        beerMug.scale.setScalar(0.32);
     } else {
-        beerMug.scale.setScalar(0.48);
+        beerMug.scale.setScalar(0.38);
     }
 
     // --- Mouse Follow & Parallax (Increased rotation tilt to look more dynamic) ---
@@ -513,22 +513,22 @@ function initDraughtBeerExperience() {
     });
 
     const positions = {
-        heroX: isMobile ? 1.0 : 2.7, // Slides significantly past the right edge!
+        heroX: isMobile ? 1.2 : 3.0, // Slides significantly past the right edge!
         heroY: isMobile ? -0.8 : -0.2,
-        heroScale: isMobile ? 0.35 : 0.48,
+        heroScale: isMobile ? 0.25 : 0.38,
         
-        featX: isMobile ? -1.4 : -3.6, // Slides completely past the left edge!
+        featX: isMobile ? -1.6 : -3.9, // Slides completely past the left edge!
         featY: isMobile ? -0.9 : -0.1,
-        featScale: isMobile ? 0.38 : 0.52,
+        featScale: isMobile ? 0.28 : 0.42,
         
         portX: 0,
         portY: isMobile ? 1.5 : 1.25,
         portZ: isMobile ? -0.8 : -1.2,
-        portScale: isMobile ? 0.42 : 0.55,
+        portScale: isMobile ? 0.32 : 0.45,
         
-        faqX: isMobile ? 1.2 : 3.0, // Slides completely past the right edge!
+        faqX: isMobile ? 1.4 : 3.2, // Slides completely past the right edge!
         faqY: isMobile ? -1.1 : -0.95,
-        faqScale: isMobile ? 0.28 : 0.38
+        faqScale: isMobile ? 0.20 : 0.30
     };
 
     // Step 1: Slide left for features section
@@ -703,11 +703,11 @@ function initDraughtBeerExperience() {
         const isTabletNow = window.innerWidth <= 1024 && window.innerWidth > 768;
         
         if (isMobileNow) {
-            beerMug.scale.setScalar(0.35);
+            beerMug.scale.setScalar(0.25);
         } else if (isTabletNow) {
-            beerMug.scale.setScalar(0.42);
+            beerMug.scale.setScalar(0.32);
         } else {
-            beerMug.scale.setScalar(0.48);
+            beerMug.scale.setScalar(0.38);
         }
     });
 
