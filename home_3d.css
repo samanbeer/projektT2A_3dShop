@@ -586,3 +586,111 @@ html {
         gap: var(--spacing-lg);
     }
 }
+
+/* --- Lepshee Cyberpunk Cyber-Grid & Glow Effects --- */
+
+/* Cyber Grid Background lines */
+.cyber-grid-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-size: 60px 60px;
+    background-image: 
+        linear-gradient(to right, rgba(212, 175, 55, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(212, 175, 55, 0.04) 1px, transparent 1px);
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Mouse-following interactive glow orb */
+.interactive-glow-orb {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--active-beer-glow) 0%, rgba(10, 7, 5, 0) 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    will-change: transform;
+    opacity: 0.85;
+    filter: blur(40px);
+}
+
+/* Premium intense border glows and breathing effects */
+.feature-card-premium, .portfolio-card-premium, .faq-item-premium {
+    position: relative;
+    border: 1px solid rgba(212, 175, 55, 0.16) !important;
+    transition: var(--transition-smooth) !important;
+    overflow: hidden;
+}
+
+.feature-card-premium::before, .portfolio-card-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+    pointer-events: none;
+}
+
+.feature-card-premium:hover::before, .portfolio-card-premium:hover::before {
+    transform: translateX(100%);
+}
+
+.feature-card-premium:hover, .portfolio-card-premium.active, .faq-item-premium.active {
+    border-color: var(--active-beer) !important;
+    box-shadow: 0 0 35px var(--active-beer-glow) !important;
+    transform: scale(1.02) translateY(-4px) !important;
+}
+
+/* Header/Badge breathing neon animation */
+.hero-3d-content .badge {
+    animation: breathingGlow 3s infinite alternate;
+}
+
+@keyframes breathingGlow {
+    0% {
+        box-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
+        border-color: rgba(212, 175, 55, 0.5);
+    }
+    100% {
+        box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
+        border-color: var(--gold-primary);
+    }
+}
+
+/* Glowing text enhancements */
+.gradient-text-gold {
+    text-shadow: 0 0 30px rgba(212, 175, 55, 0.35);
+}
+
+/* Interactive Cybernetic Corner Borders for Cards */
+.cyber-corners {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border: 2px solid var(--active-beer);
+    pointer-events: none;
+    opacity: 0;
+    transition: var(--transition-smooth);
+}
+
+.cyber-corners-tl { top: 8px; left: 8px; border-right: none; border-bottom: none; }
+.cyber-corners-tr { top: 8px; right: 8px; border-left: none; border-bottom: none; }
+.cyber-corners-bl { bottom: 8px; left: 8px; border-right: none; border-top: none; }
+.cyber-corners-br { bottom: 8px; right: 8px; border-left: none; border-top: none; }
+
+.feature-card-premium:hover .cyber-corners, 
+.portfolio-card-premium.active .cyber-corners {
+    opacity: 1;
+}
