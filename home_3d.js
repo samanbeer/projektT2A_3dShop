@@ -380,6 +380,17 @@ function initDraughtBeerExperience() {
 
         targetRotationY = mouseX * 0.18;
         targetRotationX = -mouseY * 0.12;
+
+        // Smoothly glide the neon glowing orb to track the cursor coordinates (Lepshee-style energy)
+        const orb = document.getElementById('glow-orb');
+        if (orb) {
+            gsap.to(orb, {
+                x: e.clientX,
+                y: e.clientY,
+                duration: 0.8,
+                ease: "power2.out"
+            });
+        }
     });
 
     // --- GSAP ScrollTrigger Integration ---

@@ -72,6 +72,10 @@ require __DIR__ . '/partials/header.php';
 <!-- Active Page Wrapper -->
 <div class="page active" id="page-home" style="opacity: 1; visibility: visible;">
     
+    <!-- Lepshee Cyberpunk Backgrounds & Glows -->
+    <div class="cyber-grid-overlay"></div>
+    <div class="interactive-glow-orb" id="glow-orb"></div>
+    
     <!-- Dynamic warm glow backdrop -->
     <div class="bg-glow-warm"></div>
 
@@ -92,6 +96,10 @@ require __DIR__ . '/partials/header.php';
     <section class="scroll-section features-3d-section" id="section-features">
         <div class="features-grid-3d">
             <div class="feature-card-premium glass-effect-premium">
+                <div class="cyber-corners cyber-corners-tl"></div>
+                <div class="cyber-corners cyber-corners-tr"></div>
+                <div class="cyber-corners cyber-corners-bl"></div>
+                <div class="cyber-corners cyber-corners-br"></div>
                 <div class="feature-icon-box">🎯</div>
                 <div>
                     <h3>Precizní tisk 0.05mm</h3>
@@ -100,6 +108,10 @@ require __DIR__ . '/partials/header.php';
             </div>
             
             <div class="feature-card-premium glass-effect-premium">
+                <div class="cyber-corners cyber-corners-tl"></div>
+                <div class="cyber-corners cyber-corners-tr"></div>
+                <div class="cyber-corners cyber-corners-bl"></div>
+                <div class="cyber-corners cyber-corners-br"></div>
                 <div class="feature-icon-box">🍺</div>
                 <div>
                     <h3>Vlastní pivní gadgety</h3>
@@ -108,6 +120,10 @@ require __DIR__ . '/partials/header.php';
             </div>
             
             <div class="feature-card-premium glass-effect-premium">
+                <div class="cyber-corners cyber-corners-tl"></div>
+                <div class="cyber-corners cyber-corners-tr"></div>
+                <div class="cyber-corners cyber-corners-bl"></div>
+                <div class="cyber-corners cyber-corners-br"></div>
                 <div class="feature-icon-box">🇨🇿</div>
                 <div>
                     <h3>Manufaktura Kopřivnice</h3>
@@ -126,6 +142,10 @@ require __DIR__ . '/partials/header.php';
         
         <div class="portfolio-3d-grid">
             <div class="portfolio-card-premium glass-effect-premium active" data-variant="pilsner">
+                <div class="cyber-corners cyber-corners-tl"></div>
+                <div class="cyber-corners cyber-corners-tr"></div>
+                <div class="cyber-corners cyber-corners-bl"></div>
+                <div class="cyber-corners cyber-corners-br"></div>
                 <span class="beer-flavor-label">Světlý ležák</span>
                 <div class="portfolio-img-wrapper">
                     <img src="./imgs/phone_holder.png" alt="Stojan na telefon">
@@ -137,6 +157,10 @@ require __DIR__ . '/partials/header.php';
             </div>
 
             <div class="portfolio-card-premium glass-effect-premium" data-variant="ipa">
+                <div class="cyber-corners cyber-corners-tl"></div>
+                <div class="cyber-corners cyber-corners-tr"></div>
+                <div class="cyber-corners cyber-corners-bl"></div>
+                <div class="cyber-corners cyber-corners-br"></div>
                 <span class="beer-flavor-label">Polotmavá IPA</span>
                 <div class="portfolio-img-wrapper">
                     <img src="./imgs/pingpong_pálky.png" alt="Pingpongové pálky">
@@ -148,6 +172,10 @@ require __DIR__ . '/partials/header.php';
             </div>
 
             <div class="portfolio-card-premium glass-effect-premium" data-variant="stout">
+                <div class="cyber-corners cyber-corners-tl"></div>
+                <div class="cyber-corners cyber-corners-tr"></div>
+                <div class="cyber-corners cyber-corners-bl"></div>
+                <div class="cyber-corners cyber-corners-br"></div>
                 <span class="beer-flavor-label">Tmavý Stout</span>
                 <div class="portfolio-img-wrapper">
                     <img src="./imgs/pístalky.png" alt="Píšťalky a doplňky">
