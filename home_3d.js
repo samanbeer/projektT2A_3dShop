@@ -467,23 +467,24 @@ function initDraughtBeerExperience() {
     });
 
     // --- Default Coordinates & Positioning ---
-    beerMug.position.set(isMobile ? 0 : 1.8, isMobile ? -0.7 : -0.2, 0);
+    // --- Default Coordinates & Positioning (Made smaller and pushed towards the right edge) ---
+    beerMug.position.set(isMobile ? 0.8 : 2.5, isMobile ? -0.8 : -0.2, 0);
     
     if (isMobile) {
-        beerMug.scale.setScalar(0.7);
+        beerMug.scale.setScalar(0.48);
     } else if (isTablet) {
-        beerMug.scale.setScalar(0.85);
+        beerMug.scale.setScalar(0.58);
     } else {
-        beerMug.scale.setScalar(1.0);
+        beerMug.scale.setScalar(0.65);
     }
 
-    // --- Mouse Follow & Parallax ---
+    // --- Mouse Follow & Parallax (Increased rotation tilt to look more dynamic) ---
     document.addEventListener('mousemove', (e) => {
         mouseX = (e.clientX / window.innerWidth) * 2 - 1;
         mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
 
-        targetRotationY = mouseX * 0.18;
-        targetRotationX = -mouseY * 0.12;
+        targetRotationY = mouseX * 0.48; // Significantly increased tilt range
+        targetRotationX = -mouseY * 0.38; // Significantly increased tilt range
 
         // Smoothly glide the neon glowing orb to track the cursor coordinates (Lepshee-style energy)
         const orb = document.getElementById('glow-orb');
@@ -513,22 +514,22 @@ function initDraughtBeerExperience() {
     });
 
     const positions = {
-        heroX: isMobile ? 0 : 1.8,
-        heroY: isMobile ? -0.7 : -0.2,
-        heroScale: isMobile ? 0.65 : 1.0,
+        heroX: isMobile ? 0.8 : 2.5, // Partially off-screen to the right
+        heroY: isMobile ? -0.8 : -0.2,
+        heroScale: isMobile ? 0.48 : 0.65,
         
-        featX: isMobile ? 0 : -2.2,
-        featY: isMobile ? -0.8 : -0.1,
-        featScale: isMobile ? 0.75 : 1.2,
+        featX: isMobile ? -1.2 : -3.2, // Slides far past the left edge!
+        featY: isMobile ? -0.9 : -0.1,
+        featScale: isMobile ? 0.52 : 0.72,
         
         portX: 0,
-        portY: isMobile ? 1.8 : 1.35,
-        portZ: isMobile ? -1.0 : -1.6,
-        portScale: isMobile ? 0.72 : 1.05,
+        portY: isMobile ? 1.5 : 1.25,
+        portZ: isMobile ? -0.8 : -1.2,
+        portScale: isMobile ? 0.55 : 0.72,
         
-        faqX: isMobile ? 0 : 1.8,
-        faqY: isMobile ? -1.0 : -0.95,
-        faqScale: isMobile ? 0.52 : 0.78
+        faqX: isMobile ? 1.0 : 2.8, // Slides far past the right edge!
+        faqY: isMobile ? -1.1 : -0.95,
+        faqScale: isMobile ? 0.38 : 0.52
     };
 
     // Step 1: Slide left for features section
@@ -670,11 +671,11 @@ function initDraughtBeerExperience() {
 
         const elapsedTime = clock.getElapsedTime();
 
-        // 1. Slow continuous spin on the model subgroup
-        mugModelGroup.rotation.y = elapsedTime * 0.16;
+        // 1. Slow continuous spin on the model subgroup (made faster and more active)
+        mugModelGroup.rotation.y = elapsedTime * 0.45;
 
-        // 2. Bobbing floating effect
-        const bobbing = Math.sin(elapsedTime * 1.5) * 0.055;
+        // 2. Bobbing floating effect (made wider and more noticeable)
+        const bobbing = Math.sin(elapsedTime * 2.2) * 0.22;
         mugModelGroup.position.y = bobbing;
 
         // 3. Smooth mouse tilt (Desktop only)
@@ -703,11 +704,11 @@ function initDraughtBeerExperience() {
         const isTabletNow = window.innerWidth <= 1024 && window.innerWidth > 768;
         
         if (isMobileNow) {
-            beerMug.scale.setScalar(0.7);
+            beerMug.scale.setScalar(0.48);
         } else if (isTabletNow) {
-            beerMug.scale.setScalar(0.85);
+            beerMug.scale.setScalar(0.58);
         } else {
-            beerMug.scale.setScalar(1.0);
+            beerMug.scale.setScalar(0.65);
         }
     });
 
