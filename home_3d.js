@@ -134,14 +134,15 @@ function initDraughtBeerExperience() {
     const mugModelGroup = new THREE.Group();
     beerMug.add(mugModelGroup);
 
-    // --- 3MF Custom Model Loader Architecture ---
-    let glassMaterial = null;
-    let glassMesh = null;
-    let liquidMesh = null;
-    let foamMesh = null;
-    let liquidMaterial = null;
-    let foamMaterial = null;
-    let isMultiMesh = false;
+    // --- Bottle Model Loader Architecture ---
+    let bottleBodyMesh = null;
+    let capMesh = null;
+    let labelMesh = null;
+    let dropsMesh = null;
+    let bottleBodyMaterial = null;
+    let capMaterial = null;
+    let labelMaterial = null;
+    let dropsMaterial = null;
 
     const clock = new THREE.Clock();
 
@@ -254,161 +255,106 @@ function initDraughtBeerExperience() {
         console.log("GLTF model loaded successfully:", gltf);
 
         // Gather and enable shadow casting/receiving on all sub-meshes
-        const meshes = [];
         object.traverse(child => {
             console.log(`Traversed child: name="${child.name || 'unnamed'}", type="${child.type}", isMesh=${child.isMesh}`);
             if (child.isMesh || child instanceof THREE.Mesh) {
                 child.castShadow = true;
                 child.receiveShadow = true;
-                meshes.push(child);
+                
+                const meshName = (child.name || '').toLowerCase();
+                const matName = (child.material && child.material.name ? child.material.name : '').toLowerCase();
+                
+                if (meshName.includes('cap') || matName.includes('cap')) {
+                    capMesh = child;
+                } else if (meshName.includes('lable') || meshName.includes('label') || matName.includes('lable') || matName.includes('label')) {
+                    labelMesh = child;
+                } else if (meshName.includes('drop') || meshName.includes('sphere') || matName.includes('drop')) {
+                    dropsMesh = child;
+                } else if (meshName.includes('bottle') || matName.includes('beer_bottle') || matName.includes('glass') || matName.includes('liquid')) {
+                    bottleBodyMesh = child;
+                } else {
+                    if (!bottleBodyMesh) {
+                        bottleBodyMesh = child;
+                    }
+                }
             }
         });
 
-        console.log(`Parsed ${meshes.length} sub-meshes from GLB.`);
+        // Apply premium physical and standard PBR materials to the bottle parts
+        const info = beerTypes[activeVariant];
 
-        // Dynamic, robust volume and height-based classification for multi-color models
-        if (meshes.length === 1) {
-            glassMesh = meshes[0];
-            isMultiMesh = false;
-        } else {
-            isMultiMesh = true;
-            let maxVol = -1;
-            let glassIndex = -1;
-            const volumes = meshes.map((m, i) => {
-                const box = new THREE.Box3().setFromObject(m);
-                const vol = (box.max.x - box.min.x) * (box.max.y - box.min.y) * (box.max.z - box.min.z);
-                if (vol > maxVol) {
-                    maxVol = vol;
-                    glassIndex = i;
-                }
-                return { index: i, vol: vol, box: box, center: box.getCenter(new THREE.Vector3()) };
+        if (bottleBodyMesh) {
+            if (bottleBodyMesh.geometry) {
+                bottleBodyMesh.geometry.computeVertexNormals();
+            }
+            const originalMap = (bottleBodyMesh.material && bottleBodyMesh.material.map) ? bottleBodyMesh.material.map : null;
+            bottleBodyMaterial = new THREE.MeshPhysicalMaterial({
+                map: originalMap,
+                transparent: true,
+                opacity: 0.9,
+                roughness: 0.08,
+                metalness: 0.1,
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.08,
+                depthWrite: true,
+                transmission: 0.3,
+                ior: 1.5,
+                color: info.color,
+                emissive: info.emissive,
+                emissiveIntensity: 0.25
             });
-
-            console.log("Multi-mesh GLTF model detected. Sorted volumes:", volumes);
-            glassMesh = meshes[glassIndex];
-            
-            const remaining = volumes.filter(v => v.index !== glassIndex);
-            // Sort remaining meshes by their height center (GLTF standard is Y-up)
-            remaining.sort((a, b) => a.center.y - b.center.y);
-            
-            if (remaining.length > 0) {
-                liquidMesh = meshes[remaining[0].index];
-            }
-            if (remaining.length > 1) {
-                foamMesh = meshes[remaining[1].index];
-            }
+            bottleBodyMesh.material = bottleBodyMaterial;
+            console.log("Premium glass bottle body material applied.");
         }
 
-        // Apply premium materials based on single-mesh vs multi-mesh classification
-        if (!isMultiMesh) {
-            if (glassMesh) {
-                if (glassMesh.geometry) {
-                    glassMesh.geometry.computeVertexNormals();
-                }
-                
-                const originalMaterial = glassMesh.material;
-                const originalMap = originalMaterial && originalMaterial.map ? originalMaterial.map : null;
-                
-                if (originalMap) {
-                    // Model has textures: upgrade while keeping the textures!
-                    glassMaterial = new THREE.MeshPhysicalMaterial({
-                        map: originalMap,
-                        transparent: true,
-                        opacity: 0.95,
-                        roughness: 0.08,
-                        metalness: 0.05,
-                        clearcoat: 1.0,
-                        clearcoatRoughness: 0.08,
-                        depthWrite: true
-                    });
-                    
-                    // Apply variant color tint (white for pilsner default)
-                    const info = beerTypes[activeVariant];
-                    let tintColor = 0xffffff;
-                    if (activeVariant === 'ipa') {
-                        tintColor = 0xffa050;
-                    } else if (activeVariant === 'stout') {
-                        tintColor = 0x5a3c20;
-                    }
-                    glassMaterial.color.setHex(tintColor);
-                    glassMesh.material = glassMaterial;
-                    console.log("Upgraded textured single-mesh material to MeshPhysicalMaterial.");
-                } else {
-                    // Model has NO textures: fall back to programmatic vertex coloring
-                    glassMaterial = new THREE.MeshPhysicalMaterial({
-                        color: 0xffffff,
-                        vertexColors: true,
-                        transparent: true,
-                        opacity: 0.88,
-                        roughness: 0.08,
-                        metalness: 0.12,
-                        depthWrite: true,
-                        clearcoat: 1.0,
-                        clearcoatRoughness: 0.08
-                    });
-                    glassMesh.material = glassMaterial;
-                    generateVertexColors(glassMesh, activeVariant);
-                    console.log("Single-mesh model has no textures; fell back to programmatic vertex colors.");
-                }
+        if (capMesh) {
+            if (capMesh.geometry) {
+                capMesh.geometry.computeVertexNormals();
             }
-        } else {
-            // Multi-mesh mode: apply separate premium materials, preserving original map (textures) if they exist
-            if (glassMesh) {
-                if (glassMesh.geometry) {
-                    glassMesh.geometry.computeVertexNormals();
-                }
-                const originalMap = (glassMesh.material && glassMesh.material.map) ? glassMesh.material.map : null;
-                glassMaterial = new THREE.MeshPhysicalMaterial({
-                    color: 0xdceef2, // Light blue glass tint
-                    map: originalMap,
-                    transparent: true,
-                    opacity: 0.38, // Beautiful high transparency glass!
-                    roughness: 0.05,
-                    metalness: 0.1,
-                    depthWrite: true,
-                    clearcoat: 1.0,
-                    clearcoatRoughness: 0.05
-                });
-                glassMesh.material = glassMaterial;
-                console.log("Premium glass material applied to outer glass mesh.");
-            }
+            const originalMap = (capMesh.material && capMesh.material.map) ? capMesh.material.map : null;
+            capMaterial = new THREE.MeshStandardMaterial({
+                map: originalMap,
+                metalness: 1.0,
+                roughness: 0.2,
+                color: 0xffffff
+            });
+            capMesh.material = capMaterial;
+            console.log("Premium metallic cap material applied.");
+        }
 
-            const info = beerTypes[activeVariant];
-
-            if (liquidMesh) {
-                if (liquidMesh.geometry) {
-                    liquidMesh.geometry.computeVertexNormals();
-                }
-                const originalMap = (liquidMesh.material && liquidMesh.material.map) ? liquidMesh.material.map : null;
-                liquidMaterial = new THREE.MeshPhysicalMaterial({
-                    color: info.color,
-                    emissive: info.emissive,
-                    emissiveIntensity: 0.4,
-                    map: originalMap,
-                    transparent: true,
-                    opacity: 0.92, // Dense glossy beer liquid
-                    roughness: 0.08,
-                    metalness: 0.1,
-                    clearcoat: 0.5
-                });
-                liquidMesh.material = liquidMaterial;
-                console.log("Premium beer liquid material applied to inner liquid mesh.");
+        if (labelMesh) {
+            if (labelMesh.geometry) {
+                labelMesh.geometry.computeVertexNormals();
             }
+            const originalMap = (labelMesh.material && labelMesh.material.map) ? labelMesh.material.map : null;
+            labelMaterial = new THREE.MeshStandardMaterial({
+                map: originalMap,
+                roughness: 0.8,
+                metalness: 0.1,
+                color: 0xffffff
+            });
+            labelMesh.material = labelMaterial;
+            console.log("Premium matte label material applied.");
+        }
 
-            if (foamMesh) {
-                if (foamMesh.geometry) {
-                    foamMesh.geometry.computeVertexNormals();
-                }
-                const originalMap = (foamMesh.material && foamMesh.material.map) ? foamMesh.material.map : null;
-                foamMaterial = new THREE.MeshStandardMaterial({
-                    color: info.foamColor,
-                    map: originalMap,
-                    roughness: 0.85,
-                    metalness: 0.05
-                });
-                foamMesh.material = foamMaterial;
-                console.log("Premium creamy foam material applied to foam cap mesh.");
+        if (dropsMesh) {
+            if (dropsMesh.geometry) {
+                dropsMesh.geometry.computeVertexNormals();
             }
+            dropsMaterial = new THREE.MeshPhysicalMaterial({
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.9,
+                roughness: 0.05,
+                metalness: 0.1,
+                transmission: 0.95,
+                ior: 1.333,
+                depthWrite: false,
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.05
+            });
+            dropsMesh.material = dropsMaterial;
+            console.log("Premium refractive water droplets material applied.");
         }
 
         // Align coordinates: GLTF/GLB files are standard Y-up, so rotation.x is 0 by default.
@@ -466,15 +412,15 @@ function initDraughtBeerExperience() {
         }, 1500);
     });
 
-    // --- Default Coordinates & Positioning (Made even smaller and pushed further towards the right edge) ---
-    beerMug.position.set(isMobile ? 1.2 : 3.0, isMobile ? -0.8 : -0.2, 0);
+    // --- Default Coordinates & Positioning (Scaled up for prominent display) ---
+    beerMug.position.set(isMobile ? 0.6 : 1.8, isMobile ? -0.8 : -0.2, 0);
     
     if (isMobile) {
-        beerMug.scale.setScalar(0.25);
+        beerMug.scale.setScalar(0.55);
     } else if (isTablet) {
-        beerMug.scale.setScalar(0.32);
+        beerMug.scale.setScalar(0.68);
     } else {
-        beerMug.scale.setScalar(0.38);
+        beerMug.scale.setScalar(0.78);
     }
 
     // --- Mouse Follow & Parallax (Increased rotation tilt to look more dynamic) ---
@@ -513,25 +459,25 @@ function initDraughtBeerExperience() {
     });
 
     const positions = {
-        heroX: isMobile ? 1.2 : 3.0, // Slides significantly past the right edge!
+        heroX: isMobile ? 0.6 : 1.8,
         heroY: isMobile ? -0.8 : -0.2,
-        heroScale: isMobile ? 0.25 : 0.38,
+        heroScale: isMobile ? 0.55 : 0.78,
         
-        featX: isMobile ? -1.6 : -3.9, // Slides completely past the left edge!
+        featX: isMobile ? -0.8 : -2.2,
         featY: isMobile ? -0.9 : -0.1,
-        featScale: isMobile ? 0.28 : 0.42,
+        featScale: isMobile ? 0.60 : 0.85,
         
         portX: 0,
         portY: isMobile ? 1.5 : 1.25,
         portZ: isMobile ? -0.8 : -1.2,
-        portScale: isMobile ? 0.32 : 0.45,
+        portScale: isMobile ? 0.62 : 0.88,
         
-        faqX: isMobile ? 1.4 : 3.2, // Slides completely past the right edge!
+        faqX: isMobile ? 0.8 : 2.0,
         faqY: isMobile ? -1.1 : -0.95,
-        faqScale: isMobile ? 0.20 : 0.30
+        faqScale: isMobile ? 0.42 : 0.60
     };
 
-    // Step 1: Slide left for features section
+    // Step 1: Slide left for features section and rotate
     scrollTimeline.to(beerMug.position, {
         x: positions.featX,
         y: positions.featY,
@@ -546,8 +492,14 @@ function initDraughtBeerExperience() {
         duration: 1.0,
         ease: "power2.inOut"
     }, 0);
+    scrollTimeline.to(beerMug.rotation, {
+        y: Math.PI * 1.5,
+        x: 0.2,
+        duration: 1.0,
+        ease: "power2.inOut"
+    }, 0);
 
-    // Step 2: Center & Zoom for portfolio variants showcase
+    // Step 2: Center & Zoom for portfolio variants showcase and rotate further
     scrollTimeline.to(beerMug.position, {
         x: positions.portX,
         y: positions.portY,
@@ -562,8 +514,14 @@ function initDraughtBeerExperience() {
         duration: 1.0,
         ease: "power2.inOut"
     }, 1.0);
+    scrollTimeline.to(beerMug.rotation, {
+        y: Math.PI * 3.0,
+        x: -0.3,
+        duration: 1.0,
+        ease: "power2.inOut"
+    }, 1.0);
 
-    // Step 3: Anchor bottom-right for FAQ section
+    // Step 3: Anchor bottom-right for FAQ section and complete spin
     scrollTimeline.to(beerMug.position, {
         x: positions.faqX,
         y: positions.faqY,
@@ -575,6 +533,13 @@ function initDraughtBeerExperience() {
         x: positions.faqScale,
         y: positions.faqScale,
         z: positions.faqScale,
+        duration: 1.0,
+        ease: "power2.inOut"
+    }, 2.0);
+    scrollTimeline.to(beerMug.rotation, {
+        y: Math.PI * 4.5,
+        x: 0,
+        z: 0,
         duration: 1.0,
         ease: "power2.inOut"
     }, 2.0);
@@ -613,50 +578,19 @@ function initDraughtBeerExperience() {
         root.style.setProperty('--active-beer', hexColorString);
         root.style.setProperty('--active-beer-glow', glowColorString);
 
-        if (!isMultiMesh) {
-            // Single-mesh mode: smoothly animate the texture color tint if textures exist, or regenerate vertex colors
-            if (glassMesh) {
-                if (glassMaterial && glassMaterial.map) {
-                    let targetColor = 0xffffff;
-                    if (variantName === 'ipa') {
-                        targetColor = 0xffa050; // Warm copper/orange tint for IPA
-                    } else if (variantName === 'stout') {
-                        targetColor = 0x5a3c20; // Roasted dark brown tint for Stout
-                    }
-                    gsap.to(glassMaterial.color, {
-                        r: new THREE.Color(targetColor).r,
-                        g: new THREE.Color(targetColor).g,
-                        b: new THREE.Color(targetColor).b,
-                        duration: 0.6,
-                        ease: "power2.out"
-                    });
-                } else {
-                    generateVertexColors(glassMesh, variantName);
-                }
-            }
-        } else {
-            // Multi-mesh mode: smoothly animate material colors using GSAP for maximum visual appeal!
-            if (liquidMaterial) {
-                gsap.to(liquidMaterial.color, {
-                    r: new THREE.Color(info.color).r,
-                    g: new THREE.Color(info.color).g,
-                    b: new THREE.Color(info.color).b,
-                    duration: 0.6,
-                    ease: "power2.out"
-                });
-                gsap.to(liquidMaterial.emissive, {
+        if (bottleBodyMaterial) {
+            gsap.to(bottleBodyMaterial.color, {
+                r: new THREE.Color(info.color).r,
+                g: new THREE.Color(info.color).g,
+                b: new THREE.Color(info.color).b,
+                duration: 0.6,
+                ease: "power2.out"
+            });
+            if (bottleBodyMaterial.emissive) {
+                gsap.to(bottleBodyMaterial.emissive, {
                     r: new THREE.Color(info.emissive).r,
                     g: new THREE.Color(info.emissive).g,
                     b: new THREE.Color(info.emissive).b,
-                    duration: 0.6,
-                    ease: "power2.out"
-                });
-            }
-            if (foamMaterial) {
-                gsap.to(foamMaterial.color, {
-                    r: new THREE.Color(info.foamColor).r,
-                    g: new THREE.Color(info.foamColor).g,
-                    b: new THREE.Color(info.foamColor).b,
                     duration: 0.6,
                     ease: "power2.out"
                 });
@@ -703,11 +637,11 @@ function initDraughtBeerExperience() {
         const isTabletNow = window.innerWidth <= 1024 && window.innerWidth > 768;
         
         if (isMobileNow) {
-            beerMug.scale.setScalar(0.25);
+            beerMug.scale.setScalar(0.55);
         } else if (isTabletNow) {
-            beerMug.scale.setScalar(0.32);
+            beerMug.scale.setScalar(0.68);
         } else {
-            beerMug.scale.setScalar(0.38);
+            beerMug.scale.setScalar(0.78);
         }
     });
 
