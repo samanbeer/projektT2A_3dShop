@@ -171,19 +171,46 @@ function initDraughtBeerExperience() {
     handleMesh.rotation.z = Math.PI / 2;
     beerMug.add(handleMesh);
 
+    // Condensation droplets on the outer glass surface for hyper-realism
+    const dropletGeo = new THREE.SphereGeometry(0.025, 6, 6);
+    const dropletsCount = 45;
+    for (let i = 0; i < dropletsCount; i++) {
+        const droplet = new THREE.Mesh(dropletGeo, glassMaterial);
+        const angle = Math.random() * Math.PI * 2;
+        const height = (Math.random() * 3.1) - 1.55;
+
+        // Skip handle area to avoid clipping
+        if (angle > 2.8 && angle < 3.5) {
+            i--;
+            continue;
+        }
+
+        droplet.position.x = Math.cos(angle) * 1.51;
+        droplet.position.z = Math.sin(angle) * 1.51;
+        droplet.position.y = height;
+
+        // Irregular teardrop stretching
+        droplet.scale.set(
+            0.6 + Math.random() * 0.8,
+            0.6 + Math.random() * 1.8, // Drips
+            0.6 + Math.random() * 0.8
+        );
+        beerMug.add(droplet);
+    }
+
     // Translucent Beer Liquid Cylinder
     const liquidGeometry = new THREE.CylinderGeometry(1.42, 1.37, 3.35, 24);
     const liquidMaterial = new THREE.MeshPhysicalMaterial({
         color: beerTypes.pilsner.color,
         emissive: beerTypes.pilsner.emissive,
-        emissiveIntensity: 0.5,
+        emissiveIntensity: 0.55,
         transparent: true,
-        opacity: 0.9,
-        roughness: 0.12,
+        opacity: 0.92,
+        roughness: 0.08,
         metalness: 0.05,
-        transmission: 0.5, // Realistic light pass
+        transmission: 0.55,
         ior: 1.343,
-        clearcoat: 0.4
+        clearcoat: 0.5
     });
     const liquidMesh = new THREE.Mesh(liquidGeometry, liquidMaterial);
     liquidMesh.position.y = -0.22;
@@ -208,6 +235,22 @@ function initDraughtBeerExperience() {
     foamDome.position.y = 2.25;
     foamDome.scale.y = 0.5; // Flatten slightly
     beerMug.add(foamDome);
+
+    // Tiny frothy foam bubbles on top of the dome for textured foam realism
+    const foamBubbleGeo = new THREE.SphereGeometry(0.11, 8, 8);
+    for (let i = 0; i < 18; i++) {
+        const foamBubble = new THREE.Mesh(foamBubbleGeo, foamMaterial);
+        const angle = Math.random() * Math.PI * 2;
+        const radius = Math.random() * 1.15;
+        foamBubble.position.x = Math.cos(angle) * radius;
+        foamBubble.position.z = Math.sin(angle) * radius;
+        const height = 2.05 + Math.sqrt(Math.max(0, 1.42 * 1.42 - radius * radius)) * 0.5;
+        foamBubble.position.y = height + (Math.random() * 0.06);
+        
+        const size = 0.5 + Math.random() * 0.8;
+        foamBubble.scale.set(size, size * 0.7, size);
+        beerMug.add(foamBubble);
+    }
 
     // --- Dynamic Bubbles Engine (Natural Air Bubbles) ---
     const bubblesCount = isMobile ? 35 : 75;
@@ -251,15 +294,15 @@ function initDraughtBeerExperience() {
     }
 
     // --- Default Coordinates & Positioning ---
-    beerMug.position.set(isMobile ? 0 : 1.7, isMobile ? -0.8 : -0.3, 0);
+    beerMug.position.set(isMobile ? 0 : 1.8, isMobile ? -0.7 : -0.2, 0);
     beerMug.rotation.set(0.12, -0.4, 0);
 
     if (isMobile) {
-        beerMug.scale.setScalar(1.0);
+        beerMug.scale.setScalar(0.7);
     } else if (isTablet) {
-        beerMug.scale.setScalar(1.25);
+        beerMug.scale.setScalar(0.85);
     } else {
-        beerMug.scale.setScalar(1.45);
+        beerMug.scale.setScalar(1.0);
     }
 
     // --- Mouse Follow & Parallax ---
@@ -279,7 +322,7 @@ function initDraughtBeerExperience() {
             trigger: "#page-home",
             start: "top top",
             end: "bottom bottom",
-            scrub: 1.0,
+            scrub: 1.8, // High scrub factor for buttery smooth "clean scroll" transitions
             onUpdate: (self) => {
                 speedMultiplier = 1.0 + Math.abs(self.getVelocity() * 0.002);
             }
@@ -287,24 +330,23 @@ function initDraughtBeerExperience() {
     });
 
     const positions = {
-        heroX: isMobile ? 0 : 1.7,
-        heroY: isMobile ? -0.8 : -0.3,
-        heroScale: isMobile ? 0.95 : 1.45,
+        heroX: isMobile ? 0 : 1.8,
+        heroY: isMobile ? -0.7 : -0.2,
+        heroScale: isMobile ? 0.65 : 1.0,
         
-        featX: isMobile ? 0 : -2.0,
-        featY: isMobile ? -1.0 : -0.15,
-        featScale: isMobile ? 1.05 : 1.75,
+        featX: isMobile ? 0 : -2.2,
+        featY: isMobile ? -0.8 : -0.1,
+        featScale: isMobile ? 0.75 : 1.2,
         featRotY: Math.PI * 1.5 - 0.4,
         
         portX: 0,
-        portY: isMobile ? 1.6 : 1.25,
-        portZ: isMobile ? -1.2 : -1.8,
-        portScale: isMobile ? 1.0 : 1.5,
-        portRotY: Math.PI * 3.0,
+        portY: isMobile ? 1.8 : 1.35,
+        portZ: isMobile ? -1.0 : -1.6,
+        portScale: isMobile ? 0.72 : 1.05,
         
-        faqX: isMobile ? 0 : 1.7,
-        faqY: isMobile ? -1.2 : -1.05,
-        faqScale: isMobile ? 0.75 : 1.15,
+        faqX: isMobile ? 0 : 1.8,
+        faqY: isMobile ? -1.0 : -0.95,
+        faqScale: isMobile ? 0.52 : 0.78,
         faqRotY: Math.PI * 4.25
     };
 
@@ -486,11 +528,11 @@ function initDraughtBeerExperience() {
         const isTabletNow = window.innerWidth <= 1024 && window.innerWidth > 768;
         
         if (isMobileNow) {
-            beerMug.scale.setScalar(1.0);
+            beerMug.scale.setScalar(0.7);
         } else if (isTabletNow) {
-            beerMug.scale.setScalar(1.25);
+            beerMug.scale.setScalar(0.85);
         } else {
-            beerMug.scale.setScalar(1.45);
+            beerMug.scale.setScalar(1.0);
         }
     });
 
