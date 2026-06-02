@@ -255,7 +255,7 @@ require __DIR__ . '/partials/header.php';
 </div>
 
 <!-- Load dynamic 3D experience logic -->
-<script src="home_3d.js"></script>
+<script src="home_3d.js?v=<?php echo time(); ?>"></script>
 
 <script>
     function togglePremiumFAQ(button) {
