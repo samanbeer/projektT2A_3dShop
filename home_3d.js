@@ -135,38 +135,96 @@ function initDraughtBeerExperience() {
     beerMug.add(mugModelGroup);
 
     // --- 3MF Custom Model Loader Architecture ---
-    let liquidMaterial = null;
-    let foamMaterial = null;
     let glassMaterial = null;
-    let loadedMeshes = [];
+    let glassMesh = null;
 
-    const bubbles = [];
     const clock = new THREE.Clock();
 
-    // Default liquid boundaries (will be dynamically adjusted after 3MF model loads)
-    let liquidBounds = {
-        minY: -1.8,
-        maxY: 1.4,
-        radius: 1.2
-    };
-
-    function resetBubble(mesh) {
-        const angle = Math.random() * Math.PI * 2;
-        const radius = Math.random() * liquidBounds.radius;
+    // Programmatic real-time vertex color painter for uncolored single-mesh prints
+    function generateVertexColors(mesh, variantName) {
+        if (!mesh || !mesh.geometry) return;
         
-        mesh.userData = {
-            baseX: Math.cos(angle) * radius,
-            baseZ: Math.sin(angle) * radius,
-            speed: 0.015 + Math.random() * 0.022,
-            wobbleSpeed: 2.5 + Math.random() * 4.5,
-            wobbleAmount: 0.02 + Math.random() * 0.035,
-            wobbleOffset: Math.random() * 200,
-            size: 0.025 + Math.random() * 0.035
-        };
-        mesh.position.x = mesh.userData.baseX;
-        mesh.position.y = liquidBounds.minY;
-        mesh.position.z = mesh.userData.baseZ;
-        mesh.scale.setScalar(mesh.userData.size / 0.038);
+        const position = mesh.geometry.attributes.position;
+        if (!position) return;
+        
+        const count = position.count;
+        const info = beerTypes[variantName];
+        const beerColor = new THREE.Color(info.color);
+        const foamColor = new THREE.Color(info.foamColor);
+        const glassColor = new THREE.Color(0xdceef2); // Premium semi-translucent glass tint
+        
+        // Find bounding box in raw local coords (Z-up is standard in CAD/3MF)
+        let minX = Infinity, maxX = -Infinity;
+        let minY = Infinity, maxY = -Infinity;
+        let minZ = Infinity, maxZ = -Infinity;
+        let sumX = 0;
+        
+        for (let i = 0; i < count; i++) {
+            const x = position.getX(i);
+            const y = position.getY(i);
+            const z = position.getZ(i);
+            
+            if (x < minX) minX = x; if (x > maxX) maxX = x;
+            if (y < minY) minY = y; if (y > maxY) maxY = y;
+            if (z < minZ) minZ = z; if (z > maxZ) maxZ = z;
+            sumX += x;
+        }
+        
+        const avgX = sumX / count;
+        const depthY = maxY - minY;
+        const cupRadius = depthY / 2;
+        
+        // Find which candidate X center is closer to the average X of all vertices
+        const candidateX1 = minX + cupRadius; // Handle on positive X (right)
+        const candidateX2 = maxX - cupRadius; // Handle on negative X (left)
+        
+        const centerX = Math.abs(avgX - candidateX1) < Math.abs(avgX - candidateX2) ? candidateX1 : candidateX2;
+        const centerY = (minY + maxY) / 2;
+        const heightZ = maxZ - minZ;
+        
+        // Inner radius of the glass cylinder to isolate beer liquid from the glass wall
+        const innerRadius = cupRadius * 0.86; 
+        
+        const colorArray = new Float32Array(count * 3);
+        
+        for (let i = 0; i < count; i++) {
+            const x = position.getX(i);
+            const y = position.getY(i);
+            const z = position.getZ(i);
+            
+            // Measure horizontal distance of vertex from cylinder axis
+            const dx = x - centerX;
+            const dy = y - centerY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            const relZ = (z - minZ) / heightZ; // Relative vertical height (0.0 at bottom, 1.0 at top)
+            
+            let r = glassColor.r, g = glassColor.g, b = glassColor.b;
+            
+            if (dist <= innerRadius) {
+                // Inside the main cup cylinder
+                if (relZ < 0.15) {
+                    // Glass base (bottom 15%)
+                    r = glassColor.r; g = glassColor.g; b = glassColor.b;
+                } else if (relZ >= 0.15 && relZ < 0.76) {
+                    // Glowing beer liquid body (middle 61%)
+                    r = beerColor.r; g = beerColor.g; b = beerColor.b;
+                } else {
+                    // White creamy foam head (top 24%)
+                    r = foamColor.r; g = foamColor.g; b = foamColor.b;
+                }
+            } else {
+                // Outside cylinder (Glass handle and outer glass walls)
+                r = glassColor.r; g = glassColor.g; b = glassColor.b;
+            }
+            
+            colorArray[i * 3] = r;
+            colorArray[i * 3 + 1] = g;
+            colorArray[i * 3 + 2] = b;
+        }
+        
+        mesh.geometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
+        mesh.geometry.attributes.color.needsUpdate = true;
     }
 
     // Access dynamic loading screen text
@@ -238,37 +296,38 @@ function initDraughtBeerExperience() {
             if (remaining.length === 1) {
                 liquidMesh = meshes[remaining[0].index];
             } else {
-                liquidMesh = meshes[remaining[0].index];
-                foamMesh = meshes[remaining[remaining.length - 1].index];
+                // In single-mesh mode, just fallback to first mesh
+                glassMesh = meshes[0];
             }
+        } else {
+            // Handle fallback if no meshes at all
+            glassMesh = meshes[0];
         }
 
-        // Store reference to the meshes for variant swapping
-        loadedMeshes = meshes;
-
-        // Upgrade original 3MF loaded materials to be glossy, shiny and slightly translucent
-        meshes.forEach(mesh => {
-            if (mesh.material) {
-                const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-                materials.forEach(mat => {
-                    console.log("Upgrading original material:", mat.name || "unnamed", "type:", mat.type);
-                    
-                    // Enable transparency so the rising bubbles inside are visible
-                    mat.transparent = true;
-                    mat.opacity = 0.88;
-                    
-                    // Check if it is a Phong material (standard for 3MFLoader) and make it glossy
-                    if (mat.isMeshPhongMaterial || mat.type === 'MeshPhongMaterial') {
-                        mat.shininess = 95;
-                        mat.specular = new THREE.Color(0xffffff);
-                    } else {
-                        // Standard/Physical material properties
-                        mat.roughness = 0.12;
-                        mat.metalness = 0.08;
-                    }
-                });
+        // Apply physical materials to the classified parts (optimized for maximum WebGL compatibility)
+        if (glassMesh) {
+            // Ensure normals are computed correctly so physical materials don't render black
+            if (glassMesh.geometry) {
+                glassMesh.geometry.computeVertexNormals();
             }
-        });
+            
+            glassMaterial = new THREE.MeshPhysicalMaterial({
+                color: 0xffffff,
+                vertexColors: true, // Crucial! Enables programmatic vertex coloring
+                transparent: true,
+                opacity: 0.88, // Solid glossy glass and liquid body
+                roughness: 0.08,
+                metalness: 0.12,
+                depthWrite: true,
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.08
+            });
+            glassMesh.material = glassMaterial;
+            
+            // Programmatically color the model vertices in real-time!
+            generateVertexColors(glassMesh, activeVariant);
+            console.log("Programmatic multi-color vertex styling mounted to 3D model.");
+        }
 
         // Align coordinates: Rotate from CAD/3D printing Z-up standard to WebGL Y-up standard
         object.rotation.x = -Math.PI / 2;
@@ -295,43 +354,6 @@ function initDraughtBeerExperience() {
         modelWrapper.scale.setScalar(scaleFactor);
 
         mugModelGroup.add(modelWrapper);
-
-        // Compute dynamic boundary constraints for rising bubble physics from physical liquid mesh
-        if (liquidMesh) {
-            const lBox = new THREE.Box3().setFromObject(liquidMesh);
-            liquidBounds.minY = lBox.min.y + 0.2;
-            liquidBounds.maxY = lBox.max.y - 0.15;
-            liquidBounds.radius = Math.min(lBox.max.x - lBox.min.x, lBox.max.z - lBox.min.z) * 0.42;
-            console.log("Dynamic bubble boundary calculated:", liquidBounds);
-        } else {
-            // Rotated fallback: center Y is 0.0 in local space, so bounds range from -height/2 to height/2
-            liquidBounds.minY = -1.8;
-            liquidBounds.maxY = 1.4;
-            liquidBounds.radius = Math.min(size.x, size.z) * scaleFactor * 0.42;
-            console.log("Rotated dynamic bubble boundary fallback computed:", liquidBounds);
-        }
-
-        // Initialize rising bubble particle engine inside physical bounds
-        const bubblesCount = isMobile ? 30 : 65;
-        const bubbleGeometry = new THREE.SphereGeometry(0.038, 8, 8);
-        const bubbleMaterial = new THREE.MeshPhysicalMaterial({
-            color: 0xffffff,
-            transparent: true,
-            opacity: 0.75,
-            roughness: 0.01,
-            metalness: 0.2,
-            transmission: 0.95,
-            ior: 1.2
-        });
-
-        for (let i = 0; i < bubblesCount; i++) {
-            const bubble = new THREE.Mesh(bubbleGeometry, bubbleMaterial);
-            resetBubble(bubble);
-            // Distribute bubbles randomly on Y axis to start
-            bubble.position.y = liquidBounds.minY + (Math.random() * (liquidBounds.maxY - liquidBounds.minY));
-            mugModelGroup.add(bubble);
-            bubbles.push(bubble);
-        }
 
         // Smoothly dismiss the loading overlay and execute slow epic entry
         setTimeout(() => {
@@ -509,30 +531,10 @@ function initDraughtBeerExperience() {
         root.style.setProperty('--active-beer', hexColorString);
         root.style.setProperty('--active-beer-glow', glowColorString);
 
-        // Smoothly tint all loaded meshes' original materials
-        loadedMeshes.forEach(mesh => {
-            if (mesh.material) {
-                const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-                materials.forEach(mat => {
-                    let tintColor = 0xffffff;
-                    if (variantName === 'ipa') {
-                        tintColor = 0xffd8b0;
-                    } else if (variantName === 'stout') {
-                        tintColor = 0x6b4a3a;
-                    }
-                    
-                    if (mat.color) {
-                        gsap.to(mat.color, {
-                            r: new THREE.Color(tintColor).r,
-                            g: new THREE.Color(tintColor).g,
-                            b: new THREE.Color(tintColor).b,
-                            duration: 0.6,
-                            ease: "power2.out"
-                        });
-                    }
-                });
-            }
-        });
+        // Regenerate vertex colors with the new variant beer colors dynamically in real-time!
+        if (glassMesh) {
+            generateVertexColors(glassMesh, variantName);
+        }
     }
 
     // --- Main Animation loop ---
@@ -557,22 +559,7 @@ function initDraughtBeerExperience() {
         // 4. Oscillating Keylight position
         frontLight.position.x = 5 + Math.sin(elapsedTime * 0.4) * 2.5;
 
-        // 5. Rising air bubbles inside dynamic liquid bounds
-        const activeSpeed = beerTypes[activeVariant].speed;
-        bubbles.forEach(b => {
-            b.position.y += b.userData.speed * speedMultiplier * activeSpeed;
 
-            const wobbleX = Math.sin((elapsedTime * b.userData.wobbleSpeed) + b.userData.wobbleOffset) * b.userData.wobbleAmount;
-            const wobbleZ = Math.cos((elapsedTime * b.userData.wobbleSpeed) + b.userData.wobbleOffset) * b.userData.wobbleAmount;
-
-            b.position.x = b.userData.baseX + wobbleX;
-            b.position.z = b.userData.baseZ + wobbleZ;
-
-            // Reset at foam boundary height
-            if (b.position.y >= liquidBounds.maxY) {
-                resetBubble(b);
-            }
-        });
 
         renderer.render(scene, camera);
     }
