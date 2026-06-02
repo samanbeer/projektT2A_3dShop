@@ -306,22 +306,50 @@ function initDraughtBeerExperience() {
                     glassMesh.geometry.computeVertexNormals();
                 }
                 
-                glassMaterial = new THREE.MeshPhysicalMaterial({
-                    color: 0xffffff,
-                    vertexColors: true, // Enables programmatic vertex coloring
-                    transparent: true,
-                    opacity: 0.88, // Solid glossy glass and liquid body
-                    roughness: 0.08,
-                    metalness: 0.12,
-                    depthWrite: true,
-                    clearcoat: 1.0,
-                    clearcoatRoughness: 0.08
-                });
-                glassMesh.material = glassMaterial;
+                const originalMaterial = glassMesh.material;
+                const originalMap = originalMaterial && originalMaterial.map ? originalMaterial.map : null;
                 
-                // Programmatically paint the single combined mesh
-                generateVertexColors(glassMesh, activeVariant);
-                console.log("Programmatic multi-color vertex styling mounted to single-mesh model.");
+                if (originalMap) {
+                    // Model has textures: upgrade while keeping the textures!
+                    glassMaterial = new THREE.MeshPhysicalMaterial({
+                        map: originalMap,
+                        transparent: true,
+                        opacity: 0.95,
+                        roughness: 0.08,
+                        metalness: 0.05,
+                        clearcoat: 1.0,
+                        clearcoatRoughness: 0.08,
+                        depthWrite: true
+                    });
+                    
+                    // Apply variant color tint (white for pilsner default)
+                    const info = beerTypes[activeVariant];
+                    let tintColor = 0xffffff;
+                    if (activeVariant === 'ipa') {
+                        tintColor = 0xffa050;
+                    } else if (activeVariant === 'stout') {
+                        tintColor = 0x5a3c20;
+                    }
+                    glassMaterial.color.setHex(tintColor);
+                    glassMesh.material = glassMaterial;
+                    console.log("Upgraded textured single-mesh material to MeshPhysicalMaterial.");
+                } else {
+                    // Model has NO textures: fall back to programmatic vertex coloring
+                    glassMaterial = new THREE.MeshPhysicalMaterial({
+                        color: 0xffffff,
+                        vertexColors: true,
+                        transparent: true,
+                        opacity: 0.88,
+                        roughness: 0.08,
+                        metalness: 0.12,
+                        depthWrite: true,
+                        clearcoat: 1.0,
+                        clearcoatRoughness: 0.08
+                    });
+                    glassMesh.material = glassMaterial;
+                    generateVertexColors(glassMesh, activeVariant);
+                    console.log("Single-mesh model has no textures; fell back to programmatic vertex colors.");
+                }
             }
         } else {
             // Multi-mesh mode: apply separate premium materials, preserving original map (textures) if they exist
@@ -586,9 +614,25 @@ function initDraughtBeerExperience() {
         root.style.setProperty('--active-beer-glow', glowColorString);
 
         if (!isMultiMesh) {
-            // Single-mesh mode: regenerate vertex colors
+            // Single-mesh mode: smoothly animate the texture color tint if textures exist, or regenerate vertex colors
             if (glassMesh) {
-                generateVertexColors(glassMesh, variantName);
+                if (glassMaterial && glassMaterial.map) {
+                    let targetColor = 0xffffff;
+                    if (variantName === 'ipa') {
+                        targetColor = 0xffa050; // Warm copper/orange tint for IPA
+                    } else if (variantName === 'stout') {
+                        targetColor = 0x5a3c20; // Roasted dark brown tint for Stout
+                    }
+                    gsap.to(glassMaterial.color, {
+                        r: new THREE.Color(targetColor).r,
+                        g: new THREE.Color(targetColor).g,
+                        b: new THREE.Color(targetColor).b,
+                        duration: 0.6,
+                        ease: "power2.out"
+                    });
+                } else {
+                    generateVertexColors(glassMesh, variantName);
+                }
             }
         } else {
             // Multi-mesh mode: smoothly animate material colors using GSAP for maximum visual appeal!
