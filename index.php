@@ -8,9 +8,9 @@ require __DIR__ . '/partials/header.php';
 
 <!-- Load CDNs, Cyberpunk grid and styles -->
 <link rel="stylesheet" href="home_3d.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script src="js/three.min.js"></script>
+<script src="js/gsap.min.js"></script>
+<script src="js/ScrollTrigger.min.js"></script>
 
 <!-- CRT Scanlines Overlay -->
 <div class="scanlines"></div>

@@ -22,6 +22,16 @@ function isWebGLAvailable() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Check if Three.js and GSAP are loaded
+    if (typeof THREE === 'undefined' || typeof gsap === 'undefined') {
+        console.warn('Three.js or GSAP is not loaded. Reverting to static design.');
+        const loader = document.querySelector('.loader-overlay-3d');
+        if (loader) loader.classList.add('loaded');
+        const wrapper = document.querySelector('.canvas-3d-wrapper');
+        if (wrapper) wrapper.style.display = 'none';
+        return;
+    }
+
     if (!isWebGLAvailable()) {
         console.warn('WebGL not available. Reverting to static design.');
         const loader = document.querySelector('.loader-overlay-3d');
