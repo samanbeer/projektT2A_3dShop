@@ -451,7 +451,13 @@ function initDraughtBeerExperience() {
             trigger: "#page-home",
             start: "top top",
             end: "bottom bottom",
-            scrub: 2.0, // Buttery smooth GSAP scroll inertia
+            scrub: 0.8, // Faster, highly responsive scroll inertia
+            snap: {
+                snapTo: [0, 0.33, 0.66, 1.0],
+                duration: { min: 0.1, max: 0.4 }, // Snaps very quickly
+                delay: 0.05,
+                ease: "power1.out"
+            },
             onUpdate: (self) => {
                 speedMultiplier = 1.0 + Math.abs(self.getVelocity() * 0.0025);
             }

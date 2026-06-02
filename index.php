@@ -146,7 +146,6 @@ require __DIR__ . '/partials/header.php';
                 <div class="cyber-corners cyber-corners-tr"></div>
                 <div class="cyber-corners cyber-corners-bl"></div>
                 <div class="cyber-corners cyber-corners-br"></div>
-                <span class="beer-flavor-label">Zlatavý PETG</span>
                 <div class="portfolio-img-wrapper">
                     <img src="./imgs/phone_holder.png" alt="Stojan na telefon">
                 </div>
@@ -161,7 +160,6 @@ require __DIR__ . '/partials/header.php';
                 <div class="cyber-corners cyber-corners-tr"></div>
                 <div class="cyber-corners cyber-corners-bl"></div>
                 <div class="cyber-corners cyber-corners-br"></div>
-                <span class="beer-flavor-label">Oranžové PLA</span>
                 <div class="portfolio-img-wrapper">
                     <img src="./imgs/pingpong_pálky.png" alt="Pingpongové pálky">
                 </div>
@@ -176,7 +174,6 @@ require __DIR__ . '/partials/header.php';
                 <div class="cyber-corners cyber-corners-tr"></div>
                 <div class="cyber-corners cyber-corners-bl"></div>
                 <div class="cyber-corners cyber-corners-br"></div>
-                <span class="beer-flavor-label">Různé materiály</span>
                 <div class="portfolio-img-wrapper">
                     <img src="./imgs/pístalky.png" alt="Tisk vlastních modelů">
                 </div>
