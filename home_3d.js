@@ -184,7 +184,8 @@ function initDraughtBeerExperience() {
         // Gather and enable shadow casting/receiving on all sub-meshes
         const meshes = [];
         object.traverse(child => {
-            if (child.isMesh) {
+            console.log(`Traversed child: name="${child.name || 'unnamed'}", type="${child.type}", isMesh=${child.isMesh}`);
+            if (child.isMesh || child instanceof THREE.Mesh) {
                 child.castShadow = true;
                 child.receiveShadow = true;
                 meshes.push(child);
@@ -206,6 +207,7 @@ function initDraughtBeerExperience() {
             const volA = (boxA.max.x - boxA.min.x) * (boxA.max.y - boxA.min.y) * (boxA.max.z - boxA.min.z);
             const volB = (boxB.max.x - boxB.min.x) * (boxB.max.y - boxB.min.y) * (boxB.max.z - boxB.min.z);
             
+            console.log(`2 meshes found. Mesh 0 vol: ${volA}, Mesh 1 vol: ${volB}`);
             if (volA > volB) {
                 glassMesh = meshes[0];
                 liquidMesh = meshes[1];
@@ -226,6 +228,7 @@ function initDraughtBeerExperience() {
                 return { index: i, vol: vol, box: box, center: box.getCenter(new THREE.Vector3()) };
             });
             
+            console.log("3+ meshes found, sorted volumes:", volumes);
             glassMesh = meshes[glassIndex];
             
             const remaining = volumes.filter(v => v.index !== glassIndex);
@@ -239,21 +242,18 @@ function initDraughtBeerExperience() {
             }
         }
 
-        // Apply physical materials to the classified parts
+        // Apply physical materials to the classified parts (optimized for maximum WebGL compatibility)
         if (glassMesh) {
             glassMaterial = new THREE.MeshPhysicalMaterial({
                 color: 0xffffff,
                 transparent: true,
-                opacity: 0.14,
-                roughness: 0.03,
-                metalness: 0.1,
-                transmission: 0.96, // Clear, ultra-premium glass transmission
-                ior: 1.52,
-                thickness: 1.2,
+                opacity: 0.28, // Visually premium transparent glass walls
+                roughness: 0.08,
+                metalness: 0.15,
                 depthWrite: true,
                 specularIntensity: 1.0,
                 clearcoat: 1.0,
-                clearcoatRoughness: 0.03
+                clearcoatRoughness: 0.08
             });
             glassMesh.material = glassMaterial;
             console.log("Premium glass material mounted to outer mesh.");
@@ -265,11 +265,9 @@ function initDraughtBeerExperience() {
                 emissive: beerTypes[activeVariant].emissive,
                 emissiveIntensity: 0.65,
                 transparent: true,
-                opacity: 0.94,
-                roughness: 0.05,
+                opacity: 0.90, // Rich, glowing translucent liquid body
+                roughness: 0.08,
                 metalness: 0.05,
-                transmission: 0.48, // Translucent back-glow effect
-                ior: 1.343,
                 clearcoat: 0.5
             });
             liquidMesh.material = liquidMaterial;
