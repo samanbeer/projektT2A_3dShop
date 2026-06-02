@@ -399,7 +399,7 @@ function initDraughtBeerExperience() {
         if (xhr.total) {
             const percent = Math.round((xhr.loaded / xhr.total) * 100);
             if (loaderText) {
-                loaderText.innerText = `Čepujeme 3D model (${percent}%)...`;
+                loaderText.innerText = `Načítáme 3D model (${percent}%)...`;
             }
         }
     }, function (error) {
