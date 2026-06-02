@@ -1,14 +1,18 @@
 /**
- * BEER 3D - Immersive Draught Beer Engine
- * Powered by Three.js & GSAP
+ * BEER 3D - High-Fidelity Draught Beer Experience Engine
+ * Metaprogamming Architecture following Web 3D Integration Patterns
  * 
- * Realistic Features:
- * 1. Traditional Faceted Beer Mug (10 rounded glass columns) procedural modeling.
- * 2. Solid curved glass handle with physical refraction index.
- * 3. Translucent, highly glowing golden liquid (Pilsner, IPA, Stout).
- * 4. Rich, frothy, double-layered foam head (Collar + Overflowing Dome).
- * 5. High-performance particle engine rendering rising natural air bubbles.
- * 6. Mouse parallax tilting physics and GSAP ScrollTrigger coordination.
+ * Core Architectural Implementations:
+ * 1. Layered Group Separation:
+ *    - beerMug (Master Group): Bound solely to GSAP ScrollTrigger timeline (position, scale).
+ *    - mugModelGroup (Inner Model Group): Handles continuous slow showcase spin and mouse parallax tilt.
+ *    - This completely prevents animation conflicts and guarantees butter-smooth performance.
+ * 2. Bubble Containment Physics:
+ *    - Solves the random-walk drift bug by calculating offsets relative to fixed baseX/baseZ.
+ *    - Bubbles rise inside the glass boundaries without ever clipping out.
+ * 3. Translucency & Condensation Detailing:
+ *    - Custom dropletMaterial with water refractive index (ior: 1.333) for visible water droplets.
+ *    - Frothy dome bubbles on top of the foam collar for organic texture.
  */
 
 function isWebGLAvailable() {
@@ -48,7 +52,7 @@ function initDraughtBeerExperience() {
     const canvas = document.getElementById('canvas-3d');
     if (!container || !canvas) return;
 
-    // --- State Variables ---
+    // --- Responsive Constants ---
     const isMobile = window.innerWidth <= 768;
     const isTablet = window.innerWidth <= 1024 && window.innerWidth > 768;
     
@@ -61,22 +65,22 @@ function initDraughtBeerExperience() {
     // Realistic Beer Types Configurations
     const beerTypes = {
         pilsner: {
-            color: 0xf39c12,       // Golden amber
-            emissive: 0xd4af37,    // Warm gold back-glow
-            foamColor: 0xffffff,   // Pure white creamy head
+            color: 0xf5b041,       // Rich Pilsner Gold
+            emissive: 0xd4af37,    // Warm golden back-glow
+            foamColor: 0xffffff,   // Pure white frothy head
             speed: 1.0
         },
         ipa: {
             color: 0xe67e22,       // Deep copper orange
-            emissive: 0xd35400,    // Rich amber back-glow
+            emissive: 0xd35400,    // Amber back-glow
             foamColor: 0xfbf9f5,   // Off-white head
             speed: 1.3
         },
         stout: {
-            color: 0x110a05,       // Near black Stout
+            color: 0x110a05,       // Near black Stout/Porter
             emissive: 0x361f0d,    // Roasted dark brown back-glow
             foamColor: 0xdfd3c3,   // Oatmeal creamy head
-            speed: 0.6
+            speed: 0.55
         }
     };
 
@@ -100,41 +104,48 @@ function initDraughtBeerExperience() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1 : 2));
     renderer.shadowMap.enabled = true;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.35;
+    renderer.toneMappingExposure = 1.4;
 
-    // --- Warm Lighting Rig ---
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
+    // --- Warm Studio Lighting Rig ---
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.42);
     scene.add(ambientLight);
 
-    // Primary gold-amber keylight from front-right
-    const frontLight = new THREE.DirectionalLight(0xfff5e6, 1.8);
+    // Keylight from front-right
+    const frontLight = new THREE.DirectionalLight(0xfff5e6, 1.85);
     frontLight.position.set(5, 5, 4);
     scene.add(frontLight);
 
-    // High gloss highlight pointlight from left
-    const pointHighlight = new THREE.PointLight(0xffffff, 2.2, 12);
+    // High gloss highlight from front-left
+    const pointHighlight = new THREE.PointLight(0xffffff, 2.4, 12);
     pointHighlight.position.set(-4, 3, 3);
     scene.add(pointHighlight);
 
-    // Backlight for gorgeous beer translucency / glow
-    const backLight = new THREE.DirectionalLight(0xf39c12, 3.8);
+    // Backlight for ultimate liquid glow
+    const backLight = new THREE.DirectionalLight(0xf39c12, 4.0);
     backLight.position.set(0, -1, -6);
     scene.add(backLight);
 
-    // --- Procedural 3D Beer Mug (Krýgl) Modeling ---
+    // --- Layered Group Architecture ---
+    // beerMug: Controlled solely by GSAP ScrollTrigger (for scroll coordinates & scaling)
     const beerMug = new THREE.Group();
     scene.add(beerMug);
 
-    // Glass Material (Physical glass with reflection, transmission & index of refraction)
+    // mugModelGroup: Holds all meshes; handles continuous showcase spin & mouse parallax tilt
+    const mugModelGroup = new THREE.Group();
+    beerMug.add(mugModelGroup);
+
+    // --- Procedural Glass & Liquid Meshes ---
+    
+    // 1. Crystal Physical Glass Material
     const glassMaterial = new THREE.MeshPhysicalMaterial({
         color: 0xffffff,
         transparent: true,
         opacity: 0.08,
         roughness: 0.04,
         metalness: 0.05,
-        transmission: 0.95, // Highly transparent
-        ior: 1.52,          // Glass refractive index
-        thickness: 0.24,    // Thick wall look
+        transmission: 0.95, // High physical transparency
+        ior: 1.52,          // Index of refraction of glass
+        thickness: 0.24,    // Physical wall thickness
         depthWrite: false,
         specularIntensity: 1.0,
         clearcoat: 1.0,
@@ -144,13 +155,13 @@ function initDraughtBeerExperience() {
     // Main Cylindrical Cup Body
     const glassGeometry = new THREE.CylinderGeometry(1.5, 1.45, 3.8, 30);
     const glassMesh = new THREE.Mesh(glassGeometry, glassMaterial);
-    beerMug.add(glassMesh);
+    mugModelGroup.add(glassMesh);
 
     // Solid Glass Bottom Disk
     const bottomGeometry = new THREE.CylinderGeometry(1.45, 1.45, 0.35, 30);
     const bottomMesh = new THREE.Mesh(bottomGeometry, glassMaterial);
     bottomMesh.position.y = -1.9;
-    beerMug.add(bottomMesh);
+    mugModelGroup.add(bottomMesh);
 
     // Traditional Facets (10 rounded glass columns wrapped around)
     const ribCount = 10;
@@ -161,7 +172,7 @@ function initDraughtBeerExperience() {
         rib.position.x = Math.cos(angle) * 1.48;
         rib.position.z = Math.sin(angle) * 1.48;
         rib.position.y = -0.05;
-        beerMug.add(rib);
+        mugModelGroup.add(rib);
     }
 
     // Authentic Curved Glass Handle
@@ -169,13 +180,25 @@ function initDraughtBeerExperience() {
     const handleMesh = new THREE.Mesh(handleGeometry, glassMaterial);
     handleMesh.position.set(-1.42, 0.05, 0);
     handleMesh.rotation.z = Math.PI / 2;
-    beerMug.add(handleMesh);
+    mugModelGroup.add(handleMesh);
 
-    // Condensation droplets on the outer glass surface for hyper-realism
+    // 2. Condensation Droplets (Water drops with dedicated material for hyper-realism)
+    const dropletMaterial = new THREE.MeshPhysicalMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.65, // Highly visible condensation
+        roughness: 0.0,
+        metalness: 0.1,
+        transmission: 0.9,
+        ior: 1.333, // Water refractive index
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.0
+    });
+
     const dropletGeo = new THREE.SphereGeometry(0.025, 6, 6);
-    const dropletsCount = 45;
+    const dropletsCount = isMobile ? 25 : 45;
     for (let i = 0; i < dropletsCount; i++) {
-        const droplet = new THREE.Mesh(dropletGeo, glassMaterial);
+        const droplet = new THREE.Mesh(dropletGeo, dropletMaterial);
         const angle = Math.random() * Math.PI * 2;
         const height = (Math.random() * 3.1) - 1.55;
 
@@ -189,16 +212,16 @@ function initDraughtBeerExperience() {
         droplet.position.z = Math.sin(angle) * 1.51;
         droplet.position.y = height;
 
-        // Irregular teardrop stretching
+        // Stretch teardrops vertically to look like drips
         droplet.scale.set(
             0.6 + Math.random() * 0.8,
-            0.6 + Math.random() * 1.8, // Drips
+            0.6 + Math.random() * 1.8,
             0.6 + Math.random() * 0.8
         );
-        beerMug.add(droplet);
+        mugModelGroup.add(droplet);
     }
 
-    // Translucent Beer Liquid Cylinder
+    // 3. Translucent Beer Liquid Cylinder
     const liquidGeometry = new THREE.CylinderGeometry(1.42, 1.37, 3.35, 24);
     const liquidMaterial = new THREE.MeshPhysicalMaterial({
         color: beerTypes.pilsner.color,
@@ -214,27 +237,27 @@ function initDraughtBeerExperience() {
     });
     const liquidMesh = new THREE.Mesh(liquidGeometry, liquidMaterial);
     liquidMesh.position.y = -0.22;
-    beerMug.add(liquidMesh);
+    mugModelGroup.add(liquidMesh);
 
-    // Double-Layer Creamy Foam Head
+    // 4. Double-Layer Creamy Foam Head
     const foamMaterial = new THREE.MeshStandardMaterial({
         color: beerTypes.pilsner.foamColor,
         roughness: 0.95,
         metalness: 0.02
     });
 
-    // 1. Lower Foam Collar
+    // Lower Foam Collar
     const foamGeometry = new THREE.CylinderGeometry(1.46, 1.42, 0.8, 24, 2);
     const foamMesh = new THREE.Mesh(foamGeometry, foamMaterial);
     foamMesh.position.y = 1.85;
-    beerMug.add(foamMesh);
+    mugModelGroup.add(foamMesh);
 
-    // 2. Fluffy Dome Top (representing overflowing head)
+    // Fluffy Dome Top (representing overflowing head)
     const foamDomeGeo = new THREE.SphereGeometry(1.42, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2);
     const foamDome = new THREE.Mesh(foamDomeGeo, foamMaterial);
     foamDome.position.y = 2.25;
     foamDome.scale.y = 0.5; // Flatten slightly
-    beerMug.add(foamDome);
+    mugModelGroup.add(foamDome);
 
     // Tiny frothy foam bubbles on top of the dome for textured foam realism
     const foamBubbleGeo = new THREE.SphereGeometry(0.11, 8, 8);
@@ -249,7 +272,7 @@ function initDraughtBeerExperience() {
         
         const size = 0.5 + Math.random() * 0.8;
         foamBubble.scale.set(size, size * 0.7, size);
-        beerMug.add(foamBubble);
+        mugModelGroup.add(foamBubble);
     }
 
     // --- Dynamic Bubbles Engine (Natural Air Bubbles) ---
@@ -271,17 +294,19 @@ function initDraughtBeerExperience() {
     function resetBubble(mesh) {
         const angle = Math.random() * Math.PI * 2;
         const radius = Math.random() * 1.15;
-        mesh.position.x = Math.cos(angle) * radius;
-        mesh.position.y = -1.9;
-        mesh.position.z = Math.sin(angle) * radius;
         
         mesh.userData = {
+            baseX: Math.cos(angle) * radius,
+            baseZ: Math.sin(angle) * radius,
             speed: 0.015 + Math.random() * 0.022,
             wobbleSpeed: 2.5 + Math.random() * 4.5,
             wobbleAmount: 0.02 + Math.random() * 0.035,
             wobbleOffset: Math.random() * 200,
             size: 0.025 + Math.random() * 0.035
         };
+        mesh.position.x = mesh.userData.baseX;
+        mesh.position.y = -1.9;
+        mesh.position.z = mesh.userData.baseZ;
         mesh.scale.setScalar(mesh.userData.size / 0.038);
     }
 
@@ -289,14 +314,14 @@ function initDraughtBeerExperience() {
         const bubble = new THREE.Mesh(bubbleGeometry, bubbleMaterial);
         resetBubble(bubble);
         bubble.position.y = -1.9 + (Math.random() * 3.35);
-        beerMug.add(bubble);
+        mugModelGroup.add(bubble);
         bubbles.push(bubble);
     }
 
     // --- Default Coordinates & Positioning ---
+    // Clean sizing: reduced scale by 30% for high elegance
     beerMug.position.set(isMobile ? 0 : 1.8, isMobile ? -0.7 : -0.2, 0);
-    beerMug.rotation.set(0.12, -0.4, 0);
-
+    
     if (isMobile) {
         beerMug.scale.setScalar(0.7);
     } else if (isTablet) {
@@ -310,21 +335,23 @@ function initDraughtBeerExperience() {
         mouseX = (e.clientX / window.innerWidth) * 2 - 1;
         mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
 
-        targetRotationY = mouseX * 0.32;
-        targetRotationX = -mouseY * 0.22;
+        // subtle coordinate bounds
+        targetRotationY = mouseX * 0.18;
+        targetRotationX = -mouseY * 0.12;
     });
 
     // --- GSAP ScrollTrigger Integration ---
     gsap.registerPlugin(ScrollTrigger);
 
+    // Highly smoothed scroll scrub (1.8s) for buttery smooth clean scroll
     const scrollTimeline = gsap.timeline({
         scrollTrigger: {
             trigger: "#page-home",
             start: "top top",
             end: "bottom bottom",
-            scrub: 1.8, // High scrub factor for buttery smooth "clean scroll" transitions
+            scrub: 2.0, // High scrub factor
             onUpdate: (self) => {
-                speedMultiplier = 1.0 + Math.abs(self.getVelocity() * 0.002);
+                speedMultiplier = 1.0 + Math.abs(self.getVelocity() * 0.0025);
             }
         }
     });
@@ -337,7 +364,6 @@ function initDraughtBeerExperience() {
         featX: isMobile ? 0 : -2.2,
         featY: isMobile ? -0.8 : -0.1,
         featScale: isMobile ? 0.75 : 1.2,
-        featRotY: Math.PI * 1.5 - 0.4,
         
         portX: 0,
         portY: isMobile ? 1.8 : 1.35,
@@ -346,77 +372,55 @@ function initDraughtBeerExperience() {
         
         faqX: isMobile ? 0 : 1.8,
         faqY: isMobile ? -1.0 : -0.95,
-        faqScale: isMobile ? 0.52 : 0.78,
-        faqRotY: Math.PI * 4.25
+        faqScale: isMobile ? 0.52 : 0.78
     };
 
-    // Step 1: Slide left features
+    // Step 1: Slide left for features section (Scale & Position only!)
     scrollTimeline.to(beerMug.position, {
         x: positions.featX,
         y: positions.featY,
         z: 0,
         duration: 1.0,
-        ease: "power1.inOut"
+        ease: "power2.inOut"
     }, 0);
     scrollTimeline.to(beerMug.scale, {
         x: positions.featScale,
         y: positions.featScale,
         z: positions.featScale,
         duration: 1.0,
-        ease: "power1.inOut"
-    }, 0);
-    scrollTimeline.to(beerMug.rotation, {
-        y: positions.featRotY,
-        x: 0.1,
-        z: -0.05,
-        duration: 1.0,
-        ease: "power1.inOut"
+        ease: "power2.inOut"
     }, 0);
 
-    // Step 2: Center & Zoom portfolio variants
+    // Step 2: Center & Zoom for portfolio variants showcase
     scrollTimeline.to(beerMug.position, {
         x: positions.portX,
         y: positions.portY,
         z: positions.portZ,
         duration: 1.0,
-        ease: "power1.inOut"
+        ease: "power2.inOut"
     }, 1.0);
     scrollTimeline.to(beerMug.scale, {
         x: positions.portScale,
         y: positions.portScale,
         z: positions.portScale,
         duration: 1.0,
-        ease: "power1.inOut"
-    }, 1.0);
-    scrollTimeline.to(beerMug.rotation, {
-        y: positions.portRotY,
-        x: -0.15,
-        z: 0.05,
-        duration: 1.0,
-        ease: "power1.inOut"
+        ease: "power2.inOut"
     }, 1.0);
 
-    // Step 3: Anchor bottom-right FAQ
+    // Step 3: Anchor bottom-right for FAQ section
     scrollTimeline.to(beerMug.position, {
         x: positions.faqX,
         y: positions.faqY,
         z: 0,
         duration: 1.0,
-        ease: "power1.inOut"
+        ease: "power2.inOut"
     }, 2.0);
     scrollTimeline.to(beerMug.scale, {
         x: positions.faqScale,
         y: positions.faqScale,
         z: positions.faqScale,
         duration: 1.0,
-        ease: "power1.inOut"
-    }, 2.0);
-    scrollTimeline.to(beerMug.rotation, {
-        y: positions.faqRotY,
-        x: 0.15,
-        z: 0.0,
-        duration: 1.0,
-        ease: "power1.inOut"
+        ease: "power2.inOut"
     }, 2.0);
 
     // --- Interactive Hover Variant Swapping ---
@@ -454,7 +458,7 @@ function initDraughtBeerExperience() {
         root.style.setProperty('--active-beer', hexColorString);
         root.style.setProperty('--active-beer-glow', glowColorString);
 
-        // 2. Liquid color transitions via GSAP
+        // 2. Mesh color transitions via GSAP
         gsap.to(liquidMaterial.color, {
             r: new THREE.Color(info.color).r,
             g: new THREE.Color(info.color).g,
@@ -487,25 +491,33 @@ function initDraughtBeerExperience() {
 
         const elapsedTime = clock.getElapsedTime();
 
-        // 1. Glass mug floating bobbing physics
-        const bobbing = Math.sin(elapsedTime * 1.5) * 0.055;
-        // Inject to local visual without breaking timeline offset
-        frontLight.position.x = 5 + Math.sin(elapsedTime * 0.4) * 2.5;
+        // 1. Gentle continuous showcase rotation (applied ONLY to the model subgroup)
+        mugModelGroup.rotation.y = elapsedTime * 0.16; // Perfectly slow continuous rotation
 
-        // 2. Smooth mouse tilt (Desktop only)
+        // 2. Bobbing floating effect
+        const bobbing = Math.sin(elapsedTime * 1.5) * 0.055;
+        mugModelGroup.position.y = bobbing;
+
+        // 3. Smooth mouse tilt (Desktop only)
         if (!isMobile) {
-            beerMug.rotation.y += (targetRotationY - (beerMug.rotation.y % (Math.PI * 2))) * 0.08;
-            beerMug.rotation.x += (targetRotationX - beerMug.rotation.x) * 0.08;
+            mugModelGroup.rotation.x += (targetRotationX - mugModelGroup.rotation.x) * 0.08;
+            mugModelGroup.rotation.z += (targetRotationY - mugModelGroup.rotation.z) * 0.08;
         }
 
-        // 3. Rising air bubbles loop
+        // 4. Oscillating Keylight position
+        frontLight.position.x = 5 + Math.sin(elapsedTime * 0.4) * 2.5;
+
+        // 5. Rising air bubbles loop (with absolute wobble boundaries)
         const activeSpeed = beerTypes[activeVariant].speed;
         bubbles.forEach(b => {
             b.position.y += b.userData.speed * speedMultiplier * activeSpeed;
 
-            // Side-to-side drift
-            b.position.x += Math.sin((elapsedTime * b.userData.wobbleSpeed) + b.userData.wobbleOffset) * b.userData.wobbleAmount * 0.25;
-            b.position.z += Math.cos((elapsedTime * b.userData.wobbleSpeed) + b.userData.wobbleOffset) * b.userData.wobbleAmount * 0.25;
+            // Wobble calculated relative to baseX/baseZ (NO ACCUMULATION DRIFT BUG!)
+            const wobbleX = Math.sin((elapsedTime * b.userData.wobbleSpeed) + b.userData.wobbleOffset) * b.userData.wobbleAmount;
+            const wobbleZ = Math.cos((elapsedTime * b.userData.wobbleSpeed) + b.userData.wobbleOffset) * b.userData.wobbleAmount;
+
+            b.position.x = b.userData.baseX + wobbleX;
+            b.position.z = b.userData.baseZ + wobbleZ;
 
             // Reset at foam collar boundary (y ≈ 1.45)
             if (b.position.y >= 1.45) {
@@ -543,11 +555,11 @@ function initDraughtBeerExperience() {
         const loader = document.querySelector('.loader-overlay-3d');
         if (loader) {
             loader.classList.add('loaded');
-            // Epic slide-in entry
+            // Epic slow back entry
             gsap.from(beerMug.position, {
                 y: 6,
-                duration: 1.6,
-                ease: "back.out(1.1)"
+                duration: 1.8,
+                ease: "power3.out"
             });
         }
     }, 850);
