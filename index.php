@@ -61,7 +61,7 @@ require __DIR__ . '/partials/header.php';
 <!-- Interactive 3D Loading Screen -->
 <div class="loader-overlay-3d">
     <div class="loader-pint"></div>
-    <div class="loader-text">Čepujeme 3D zážitek...</div>
+    <div class="loader-text">Načítáme 3D zážitek...</div>
 </div>
 
 <!-- Three.js Canvas Element (Fixed backdrop) -->
@@ -82,9 +82,9 @@ require __DIR__ . '/partials/header.php';
     <!-- 1. Hero 3D Section -->
     <section class="scroll-section hero-3d-section" id="section-hero">
         <div class="hero-3d-content">
-            <span class="badge">3D TISK & PIVO</span>
-            <h1>TISKNEME S<br><span class="gradient-text-gold">CHUTÍ</span></h1>
-            <p>Precizní zakázkový 3D tisk spojený s naší láskou k chmelu. Navrhujeme a tiskneme originální otvíráky, magnetické podtácky, designové stojany a vysoce odolné technické díly na zakázku.</p>
+            <span class="badge">3D TISK NA ZAKÁZKU</span>
+            <h1>TISKNEME S<br><span class="gradient-text-gold">PRECIZNOSTÍ</span></h1>
+            <p>Precizní zakázkový 3D tisk pro Vaše projekty i každodenní radost. Navrhujeme a tiskneme originální otvíráky, magnetické podtácky, designové stojany a vysoce odolné technické i designové díly na zakázku.</p>
             <div class="hero-3d-actions">
                 <a href="materialy.php" class="btn-main-premium" aria-label="Zobrazit sekci s materiály">Naše materiály</a>
                 <a href="produkty.php" class="btn-ghost-premium" aria-label="E-shop">E-shop</a>
@@ -112,10 +112,10 @@ require __DIR__ . '/partials/header.php';
                 <div class="cyber-corners cyber-corners-tr"></div>
                 <div class="cyber-corners cyber-corners-bl"></div>
                 <div class="cyber-corners cyber-corners-br"></div>
-                <div class="feature-icon-box">🍺</div>
+                <div class="feature-icon-box">⚙️</div>
                 <div>
-                    <h3>Vlastní pivní gadgety</h3>
-                    <p>Náš rukopis poznáte okamžitě. Vyvíjíme originální magnetické otvíráky, stylové držáky plechovek a unikátní doplňky pro chvíle pohody.</p>
+                    <h3>Vlastní praktické doplňky</h3>
+                    <p>Náš rukopis poznáte okamžitě. Vyvíjíme originální magnetické otvíráky, designové držáky a unikátní doplňky pro každodenní radost.</p>
                 </div>
             </div>
             
@@ -136,8 +136,8 @@ require __DIR__ . '/partials/header.php';
     <!-- 3. Portfolio Showroom Section (Interactive liquid changing) -->
     <section class="scroll-section portfolio-3d-section" id="section-portfolio">
         <div class="portfolio-header">
-            <h2 class="section-title">Čepované portfolio</h2>
-            <p>Přejeďte kurzorem přes naše výrobky a sledujte, jak se mění barva, hustota pěny a stoupání bublinek v našem interaktivním 3D půllitru!</p>
+            <h2 class="section-title">Naše portfolio</h2>
+            <p>Přejeďte kurzorem přes naše výrobky a sledujte, jak se v našem interaktivním 3D showroomu mění barvy a odlesky lahve reprezentující různé materiály!</p>
         </div>
         
         <div class="portfolio-3d-grid">
@@ -146,13 +146,13 @@ require __DIR__ . '/partials/header.php';
                 <div class="cyber-corners cyber-corners-tr"></div>
                 <div class="cyber-corners cyber-corners-bl"></div>
                 <div class="cyber-corners cyber-corners-br"></div>
-                <span class="beer-flavor-label">Světlý ležák</span>
+                <span class="beer-flavor-label">Zlatavý PETG</span>
                 <div class="portfolio-img-wrapper">
                     <img src="./imgs/phone_holder.png" alt="Stojan na telefon">
                 </div>
                 <div class="portfolio-info">
                     <h4>Vlastní stojánek na telefon</h4>
-                    <p>Robustní stolní stojánek s logem na míru, vytištěný z odolného PETG s carbonovým finišem.</p>
+                    <p>Robustní stolní stojánek s logem na míru, vytištěný z odolného PETG s karbonovým finišem.</p>
                 </div>
             </div>
 
@@ -161,7 +161,7 @@ require __DIR__ . '/partials/header.php';
                 <div class="cyber-corners cyber-corners-tr"></div>
                 <div class="cyber-corners cyber-corners-bl"></div>
                 <div class="cyber-corners cyber-corners-br"></div>
-                <span class="beer-flavor-label">Polotmavá IPA</span>
+                <span class="beer-flavor-label">Oranžové PLA</span>
                 <div class="portfolio-img-wrapper">
                     <img src="./imgs/pingpong_pálky.png" alt="Pingpongové pálky">
                 </div>
@@ -176,7 +176,7 @@ require __DIR__ . '/partials/header.php';
                 <div class="cyber-corners cyber-corners-tr"></div>
                 <div class="cyber-corners cyber-corners-bl"></div>
                 <div class="cyber-corners cyber-corners-br"></div>
-                <span class="beer-flavor-label">Tmavý Stout</span>
+                <span class="beer-flavor-label">Karbonové PETG</span>
                 <div class="portfolio-img-wrapper">
                     <img src="./imgs/pístalky.png" alt="Píšťalky a doplňky">
                 </div>
@@ -249,7 +249,7 @@ require __DIR__ . '/partials/header.php';
     <!-- Footer Area inside section -->
     <footer class="footer" role="contentinfo" style="margin-top: 5rem; z-index: 5; position: relative;">
         <div class="footer-grid">
-            <div class="foot-col">© 2025 BEER 3D. Vytvořeno s precizností a chutí. Všechna práva vyhrazena.</div>
+            <div class="foot-col">© 2025 BEER 3D. Vytvořeno s maximální precizností. Všechna práva vyhrazena.</div>
         </div>
     </footer>
 </div>
