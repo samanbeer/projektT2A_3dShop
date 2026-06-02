@@ -28,6 +28,10 @@
     --transition-smooth: all 0.45s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 /* Base structural adjustments for 3D home */
 #page-home {
     position: relative;
