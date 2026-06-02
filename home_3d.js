@@ -244,19 +244,20 @@ function initDraughtBeerExperience() {
 
         // Apply physical materials to the classified parts (optimized for maximum WebGL compatibility)
         if (glassMesh) {
+            const isSingleMesh = (meshes.length === 1);
             glassMaterial = new THREE.MeshPhysicalMaterial({
                 color: 0xffffff,
+                vertexColors: isSingleMesh, // Crucial! Retains original multi-color look of the single-mesh 3D print
                 transparent: true,
-                opacity: 0.28, // Visually premium transparent glass walls
-                roughness: 0.08,
-                metalness: 0.15,
+                opacity: isSingleMesh ? 0.90 : 0.28, // Semi-translucent for single-mesh print, clear for glass mug
+                roughness: isSingleMesh ? 0.15 : 0.08,
+                metalness: isSingleMesh ? 0.05 : 0.15,
                 depthWrite: true,
-                specularIntensity: 1.0,
                 clearcoat: 1.0,
-                clearcoatRoughness: 0.08
+                clearcoatRoughness: 0.1
             });
             glassMesh.material = glassMaterial;
-            console.log("Premium glass material mounted to outer mesh.");
+            console.log(`Premium material mounted to main mesh (singleMesh=${isSingleMesh}).`);
         }
 
         if (liquidMesh) {
@@ -521,6 +522,35 @@ function initDraughtBeerExperience() {
                 duration: 0.6,
                 ease: "power2.out"
             });
+        } else if (glassMaterial) {
+            // Single-mesh fallback tinting (affects vertex colors dynamically!)
+            let tintColor = 0xffffff;
+            let emissiveColor = 0x000000;
+            if (variantName === 'ipa') {
+                tintColor = 0xffd8b0;
+                emissiveColor = 0x221100;
+            } else if (variantName === 'stout') {
+                tintColor = 0x6b4a3a;
+                emissiveColor = 0x110500;
+            }
+            
+            gsap.to(glassMaterial.color, {
+                r: new THREE.Color(tintColor).r,
+                g: new THREE.Color(tintColor).g,
+                b: new THREE.Color(tintColor).b,
+                duration: 0.6,
+                ease: "power2.out"
+            });
+
+            if (glassMaterial.emissive) {
+                gsap.to(glassMaterial.emissive, {
+                    r: new THREE.Color(emissiveColor).r,
+                    g: new THREE.Color(emissiveColor).g,
+                    b: new THREE.Color(emissiveColor).b,
+                    duration: 0.6,
+                    ease: "power2.out"
+                });
+            }
         }
 
         if (foamMaterial) {
