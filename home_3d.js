@@ -134,166 +134,24 @@ function initDraughtBeerExperience() {
     const mugModelGroup = new THREE.Group();
     beerMug.add(mugModelGroup);
 
-    // --- Procedural Glass & Liquid Meshes ---
-    
-    // 1. Crystal Physical Glass Material
-    const glassMaterial = new THREE.MeshPhysicalMaterial({
-        color: 0xffffff,
-        transparent: true,
-        opacity: 0.08,
-        roughness: 0.04,
-        metalness: 0.05,
-        transmission: 0.95, // High physical transparency
-        ior: 1.52,          // Index of refraction of glass
-        thickness: 0.24,    // Physical wall thickness
-        depthWrite: false,
-        specularIntensity: 1.0,
-        clearcoat: 1.0,
-        clearcoatRoughness: 0.04
-    });
-
-    // Main Cylindrical Cup Body
-    const glassGeometry = new THREE.CylinderGeometry(1.5, 1.45, 3.8, 30);
-    const glassMesh = new THREE.Mesh(glassGeometry, glassMaterial);
-    mugModelGroup.add(glassMesh);
-
-    // Solid Glass Bottom Disk
-    const bottomGeometry = new THREE.CylinderGeometry(1.45, 1.45, 0.35, 30);
-    const bottomMesh = new THREE.Mesh(bottomGeometry, glassMaterial);
-    bottomMesh.position.y = -1.9;
-    mugModelGroup.add(bottomMesh);
-
-    // Traditional Facets (10 rounded glass columns wrapped around)
-    const ribCount = 10;
-    const ribGeometry = new THREE.CylinderGeometry(0.18, 0.18, 3.4, 12);
-    for (let i = 0; i < ribCount; i++) {
-        const rib = new THREE.Mesh(ribGeometry, glassMaterial);
-        const angle = (i / ribCount) * Math.PI * 2;
-        rib.position.x = Math.cos(angle) * 1.48;
-        rib.position.z = Math.sin(angle) * 1.48;
-        rib.position.y = -0.05;
-        mugModelGroup.add(rib);
-    }
-
-    // Authentic Curved Glass Handle
-    const handleGeometry = new THREE.TorusGeometry(0.85, 0.22, 16, 32, Math.PI);
-    const handleMesh = new THREE.Mesh(handleGeometry, glassMaterial);
-    handleMesh.position.set(-1.42, 0.05, 0);
-    handleMesh.rotation.z = Math.PI / 2;
-    mugModelGroup.add(handleMesh);
-
-    // 2. Condensation Droplets (Water drops with dedicated material for hyper-realism)
-    const dropletMaterial = new THREE.MeshPhysicalMaterial({
-        color: 0xffffff,
-        transparent: true,
-        opacity: 0.65, // Highly visible condensation
-        roughness: 0.0,
-        metalness: 0.1,
-        transmission: 0.9,
-        ior: 1.333, // Water refractive index
-        clearcoat: 1.0,
-        clearcoatRoughness: 0.0
-    });
-
-    const dropletGeo = new THREE.SphereGeometry(0.025, 6, 6);
-    const dropletsCount = isMobile ? 25 : 45;
-    for (let i = 0; i < dropletsCount; i++) {
-        const droplet = new THREE.Mesh(dropletGeo, dropletMaterial);
-        const angle = Math.random() * Math.PI * 2;
-        const height = (Math.random() * 3.1) - 1.55;
-
-        // Skip handle area to avoid clipping
-        if (angle > 2.8 && angle < 3.5) {
-            i--;
-            continue;
-        }
-
-        droplet.position.x = Math.cos(angle) * 1.51;
-        droplet.position.z = Math.sin(angle) * 1.51;
-        droplet.position.y = height;
-
-        // Stretch teardrops vertically to look like drips
-        droplet.scale.set(
-            0.6 + Math.random() * 0.8,
-            0.6 + Math.random() * 1.8,
-            0.6 + Math.random() * 0.8
-        );
-        mugModelGroup.add(droplet);
-    }
-
-    // 3. Translucent Beer Liquid Cylinder
-    const liquidGeometry = new THREE.CylinderGeometry(1.42, 1.37, 3.35, 24);
-    const liquidMaterial = new THREE.MeshPhysicalMaterial({
-        color: beerTypes.pilsner.color,
-        emissive: beerTypes.pilsner.emissive,
-        emissiveIntensity: 0.55,
-        transparent: true,
-        opacity: 0.92,
-        roughness: 0.08,
-        metalness: 0.05,
-        transmission: 0.55,
-        ior: 1.343,
-        clearcoat: 0.5
-    });
-    const liquidMesh = new THREE.Mesh(liquidGeometry, liquidMaterial);
-    liquidMesh.position.y = -0.22;
-    mugModelGroup.add(liquidMesh);
-
-    // 4. Double-Layer Creamy Foam Head
-    const foamMaterial = new THREE.MeshStandardMaterial({
-        color: beerTypes.pilsner.foamColor,
-        roughness: 0.95,
-        metalness: 0.02
-    });
-
-    // Lower Foam Collar
-    const foamGeometry = new THREE.CylinderGeometry(1.46, 1.42, 0.8, 24, 2);
-    const foamMesh = new THREE.Mesh(foamGeometry, foamMaterial);
-    foamMesh.position.y = 1.85;
-    mugModelGroup.add(foamMesh);
-
-    // Fluffy Dome Top (representing overflowing head)
-    const foamDomeGeo = new THREE.SphereGeometry(1.42, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2);
-    const foamDome = new THREE.Mesh(foamDomeGeo, foamMaterial);
-    foamDome.position.y = 2.25;
-    foamDome.scale.y = 0.5; // Flatten slightly
-    mugModelGroup.add(foamDome);
-
-    // Tiny frothy foam bubbles on top of the dome for textured foam realism
-    const foamBubbleGeo = new THREE.SphereGeometry(0.11, 8, 8);
-    for (let i = 0; i < 18; i++) {
-        const foamBubble = new THREE.Mesh(foamBubbleGeo, foamMaterial);
-        const angle = Math.random() * Math.PI * 2;
-        const radius = Math.random() * 1.15;
-        foamBubble.position.x = Math.cos(angle) * radius;
-        foamBubble.position.z = Math.sin(angle) * radius;
-        const height = 2.05 + Math.sqrt(Math.max(0, 1.42 * 1.42 - radius * radius)) * 0.5;
-        foamBubble.position.y = height + (Math.random() * 0.06);
-        
-        const size = 0.5 + Math.random() * 0.8;
-        foamBubble.scale.set(size, size * 0.7, size);
-        mugModelGroup.add(foamBubble);
-    }
-
-    // --- Dynamic Bubbles Engine (Natural Air Bubbles) ---
-    const bubblesCount = isMobile ? 35 : 75;
-    const bubbleGeometry = new THREE.SphereGeometry(0.038, 8, 8);
-    const bubbleMaterial = new THREE.MeshPhysicalMaterial({
-        color: 0xffffff,
-        transparent: true,
-        opacity: 0.72,
-        roughness: 0.02,
-        metalness: 0.2,
-        transmission: 0.92,
-        ior: 1.2
-    });
+    // --- 3MF Custom Model Loader Architecture ---
+    let liquidMaterial = null;
+    let foamMaterial = null;
+    let glassMaterial = null;
 
     const bubbles = [];
     const clock = new THREE.Clock();
 
+    // Default liquid boundaries (will be dynamically adjusted after 3MF model loads)
+    let liquidBounds = {
+        minY: -1.8,
+        maxY: 1.4,
+        radius: 1.2
+    };
+
     function resetBubble(mesh) {
         const angle = Math.random() * Math.PI * 2;
-        const radius = Math.random() * 1.15;
+        const radius = Math.random() * liquidBounds.radius;
         
         mesh.userData = {
             baseX: Math.cos(angle) * radius,
@@ -305,21 +163,214 @@ function initDraughtBeerExperience() {
             size: 0.025 + Math.random() * 0.035
         };
         mesh.position.x = mesh.userData.baseX;
-        mesh.position.y = -1.9;
+        mesh.position.y = liquidBounds.minY;
         mesh.position.z = mesh.userData.baseZ;
         mesh.scale.setScalar(mesh.userData.size / 0.038);
     }
 
-    for (let i = 0; i < bubblesCount; i++) {
-        const bubble = new THREE.Mesh(bubbleGeometry, bubbleMaterial);
-        resetBubble(bubble);
-        bubble.position.y = -1.9 + (Math.random() * 3.35);
-        mugModelGroup.add(bubble);
-        bubbles.push(bubble);
+    // Access dynamic loading screen text
+    const loaderOverlay = document.querySelector('.loader-overlay-3d');
+    const loaderText = document.querySelector('.loader-text');
+
+    if (loaderText) {
+        loaderText.innerText = 'Nahrávám kybernetický 3D model...';
     }
 
+    // Load custom multi-color beer mug model
+    const loader = new THREE.ThreeMFLoader();
+    loader.load('beer_2_colours.3mf', function (object) {
+        console.log("3MF model loaded successfully:", object);
+
+        // Gather and enable shadow casting/receiving on all sub-meshes
+        const meshes = [];
+        object.traverse(child => {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+                meshes.push(child);
+            }
+        });
+
+        console.log(`Parsed ${meshes.length} sub-meshes from 3MF.`);
+
+        let glassMesh = null;
+        let liquidMesh = null;
+        let foamMesh = null;
+
+        // Dynamic, robust volume and height-based classification for multi-color models
+        if (meshes.length === 1) {
+            glassMesh = meshes[0];
+        } else if (meshes.length === 2) {
+            const boxA = new THREE.Box3().setFromObject(meshes[0]);
+            const boxB = new THREE.Box3().setFromObject(meshes[1]);
+            const volA = (boxA.max.x - boxA.min.x) * (boxA.max.y - boxA.min.y) * (boxA.max.z - boxA.min.z);
+            const volB = (boxB.max.x - boxB.min.x) * (boxB.max.y - boxB.min.y) * (boxB.max.z - boxB.min.z);
+            
+            if (volA > volB) {
+                glassMesh = meshes[0];
+                liquidMesh = meshes[1];
+            } else {
+                glassMesh = meshes[1];
+                liquidMesh = meshes[0];
+            }
+        } else if (meshes.length >= 3) {
+            let maxVol = -1;
+            let glassIndex = -1;
+            const volumes = meshes.map((m, i) => {
+                const box = new THREE.Box3().setFromObject(m);
+                const vol = (box.max.x - box.min.x) * (box.max.y - box.min.y) * (box.max.z - box.min.z);
+                if (vol > maxVol) {
+                    maxVol = vol;
+                    glassIndex = i;
+                }
+                return { index: i, vol: vol, box: box, center: box.getCenter(new THREE.Vector3()) };
+            });
+            
+            glassMesh = meshes[glassIndex];
+            
+            const remaining = volumes.filter(v => v.index !== glassIndex);
+            remaining.sort((a, b) => a.center.y - b.center.y);
+            
+            if (remaining.length === 1) {
+                liquidMesh = meshes[remaining[0].index];
+            } else {
+                liquidMesh = meshes[remaining[0].index];
+                foamMesh = meshes[remaining[remaining.length - 1].index];
+            }
+        }
+
+        // Apply physical materials to the classified parts
+        if (glassMesh) {
+            glassMaterial = new THREE.MeshPhysicalMaterial({
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.14,
+                roughness: 0.03,
+                metalness: 0.1,
+                transmission: 0.96, // Clear, ultra-premium glass transmission
+                ior: 1.52,
+                thickness: 1.2,
+                depthWrite: true,
+                specularIntensity: 1.0,
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.03
+            });
+            glassMesh.material = glassMaterial;
+            console.log("Premium glass material mounted to outer mesh.");
+        }
+
+        if (liquidMesh) {
+            liquidMaterial = new THREE.MeshPhysicalMaterial({
+                color: beerTypes[activeVariant].color,
+                emissive: beerTypes[activeVariant].emissive,
+                emissiveIntensity: 0.65,
+                transparent: true,
+                opacity: 0.94,
+                roughness: 0.05,
+                metalness: 0.05,
+                transmission: 0.48, // Translucent back-glow effect
+                ior: 1.343,
+                clearcoat: 0.5
+            });
+            liquidMesh.material = liquidMaterial;
+            console.log("Premium glowing liquid material mounted to core mesh.");
+        }
+
+        if (foamMesh) {
+            foamMaterial = new THREE.MeshStandardMaterial({
+                color: beerTypes[activeVariant].foamColor,
+                roughness: 0.98,
+                metalness: 0.02
+            });
+            foamMesh.material = foamMaterial;
+            console.log("Creamy foam material mounted to cap mesh.");
+        }
+
+        // Auto centering & dynamic scaling bounds
+        const box = new THREE.Box3().setFromObject(object);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+
+        console.log("Loaded model dimensions - width:", size.x, "height:", size.y, "depth:", size.z);
+
+        // Offset children locally to center model horizontally, and offset Y so pivot sits perfectly at bottom center
+        object.position.set(-center.x, -box.min.y - (size.y / 2), -center.z);
+
+        const modelWrapper = new THREE.Group();
+        modelWrapper.add(object);
+
+        // Normalize size dynamically to fit perfectly into camera viewport (target height 4.0 units)
+        const targetHeight = 4.0;
+        const scaleFactor = targetHeight / size.y;
+        modelWrapper.scale.setScalar(scaleFactor);
+
+        mugModelGroup.add(modelWrapper);
+
+        // Compute dynamic boundary constraints for rising bubble physics from physical liquid mesh
+        if (liquidMesh) {
+            const lBox = new THREE.Box3().setFromObject(liquidMesh);
+            liquidBounds.minY = lBox.min.y + 0.2;
+            liquidBounds.maxY = lBox.max.y - 0.15;
+            liquidBounds.radius = Math.min(lBox.max.x - lBox.min.x, lBox.max.z - lBox.min.z) * 0.42;
+            console.log("Dynamic bubble boundary calculated:", liquidBounds);
+        } else {
+            liquidBounds.minY = -1.6;
+            liquidBounds.maxY = 1.3;
+            liquidBounds.radius = Math.min(size.x, size.z) * scaleFactor * 0.4;
+        }
+
+        // Initialize rising bubble particle engine inside physical bounds
+        const bubblesCount = isMobile ? 30 : 65;
+        const bubbleGeometry = new THREE.SphereGeometry(0.038, 8, 8);
+        const bubbleMaterial = new THREE.MeshPhysicalMaterial({
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.75,
+            roughness: 0.01,
+            metalness: 0.2,
+            transmission: 0.95,
+            ior: 1.2
+        });
+
+        for (let i = 0; i < bubblesCount; i++) {
+            const bubble = new THREE.Mesh(bubbleGeometry, bubbleMaterial);
+            resetBubble(bubble);
+            // Distribute bubbles randomly on Y axis to start
+            bubble.position.y = liquidBounds.minY + (Math.random() * (liquidBounds.maxY - liquidBounds.minY));
+            mugModelGroup.add(bubble);
+            bubbles.push(bubble);
+        }
+
+        // Smoothly dismiss the loading overlay and execute slow epic entry
+        setTimeout(() => {
+            if (loaderOverlay) {
+                loaderOverlay.classList.add('loaded');
+            }
+            gsap.from(beerMug.position, {
+                y: 6,
+                duration: 1.8,
+                ease: "power3.out"
+            });
+        }, 500);
+
+    }, function (xhr) {
+        if (xhr.total) {
+            const percent = Math.round((xhr.loaded / xhr.total) * 100);
+            if (loaderText) {
+                loaderText.innerText = `Čepujeme 3D model (${percent}%)...`;
+            }
+        }
+    }, function (error) {
+        console.error("3MF loader encountered an error:", error);
+        if (loaderText) {
+            loaderText.innerText = "Chyba při přípravě 3D zobrazení.";
+        }
+        setTimeout(() => {
+            if (loaderOverlay) loaderOverlay.classList.add('loaded');
+        }, 1500);
+    });
+
     // --- Default Coordinates & Positioning ---
-    // Clean sizing: reduced scale by 30% for high elegance
     beerMug.position.set(isMobile ? 0 : 1.8, isMobile ? -0.7 : -0.2, 0);
     
     if (isMobile) {
@@ -335,7 +386,6 @@ function initDraughtBeerExperience() {
         mouseX = (e.clientX / window.innerWidth) * 2 - 1;
         mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
 
-        // subtle coordinate bounds
         targetRotationY = mouseX * 0.18;
         targetRotationX = -mouseY * 0.12;
     });
@@ -343,13 +393,12 @@ function initDraughtBeerExperience() {
     // --- GSAP ScrollTrigger Integration ---
     gsap.registerPlugin(ScrollTrigger);
 
-    // Highly smoothed scroll scrub (1.8s) for buttery smooth clean scroll
     const scrollTimeline = gsap.timeline({
         scrollTrigger: {
             trigger: "#page-home",
             start: "top top",
             end: "bottom bottom",
-            scrub: 2.0, // High scrub factor
+            scrub: 2.0, // Buttery smooth GSAP scroll inertia
             onUpdate: (self) => {
                 speedMultiplier = 1.0 + Math.abs(self.getVelocity() * 0.0025);
             }
@@ -375,7 +424,7 @@ function initDraughtBeerExperience() {
         faqScale: isMobile ? 0.52 : 0.78
     };
 
-    // Step 1: Slide left for features section (Scale & Position only!)
+    // Step 1: Slide left for features section
     scrollTimeline.to(beerMug.position, {
         x: positions.featX,
         y: positions.featY,
@@ -442,7 +491,6 @@ function initDraughtBeerExperience() {
         activeVariant = variantName;
         const info = beerTypes[variantName];
 
-        // 1. Dynamic document root overrides to change whole CSS color variables
         const root = document.documentElement;
         let hexColorString = "#f39c12"; // Pilsner
         let glowColorString = "rgba(243, 156, 18, 0.4)";
@@ -458,31 +506,34 @@ function initDraughtBeerExperience() {
         root.style.setProperty('--active-beer', hexColorString);
         root.style.setProperty('--active-beer-glow', glowColorString);
 
-        // 2. Mesh color transitions via GSAP
-        gsap.to(liquidMaterial.color, {
-            r: new THREE.Color(info.color).r,
-            g: new THREE.Color(info.color).g,
-            b: new THREE.Color(info.color).b,
-            duration: 0.6,
-            ease: "power2.out"
-        });
+        // Transition materials smoothly with GSAP
+        if (liquidMaterial) {
+            gsap.to(liquidMaterial.color, {
+                r: new THREE.Color(info.color).r,
+                g: new THREE.Color(info.color).g,
+                b: new THREE.Color(info.color).b,
+                duration: 0.6,
+                ease: "power2.out"
+            });
 
-        gsap.to(liquidMaterial.emissive, {
-            r: new THREE.Color(info.emissive).r,
-            g: new THREE.Color(info.emissive).g,
-            b: new THREE.Color(info.emissive).b,
-            duration: 0.6,
-            ease: "power2.out"
-        });
+            gsap.to(liquidMaterial.emissive, {
+                r: new THREE.Color(info.emissive).r,
+                g: new THREE.Color(info.emissive).g,
+                b: new THREE.Color(info.emissive).b,
+                duration: 0.6,
+                ease: "power2.out"
+            });
+        }
 
-        // Foam color transition
-        gsap.to(foamMaterial.color, {
-            r: new THREE.Color(info.foamColor).r,
-            g: new THREE.Color(info.foamColor).g,
-            b: new THREE.Color(info.foamColor).b,
-            duration: 0.6,
-            ease: "power2.out"
-        });
+        if (foamMaterial) {
+            gsap.to(foamMaterial.color, {
+                r: new THREE.Color(info.foamColor).r,
+                g: new THREE.Color(info.foamColor).g,
+                b: new THREE.Color(info.foamColor).b,
+                duration: 0.6,
+                ease: "power2.out"
+            });
+        }
     }
 
     // --- Main Animation loop ---
@@ -491,8 +542,8 @@ function initDraughtBeerExperience() {
 
         const elapsedTime = clock.getElapsedTime();
 
-        // 1. Gentle continuous showcase rotation (applied ONLY to the model subgroup)
-        mugModelGroup.rotation.y = elapsedTime * 0.16; // Perfectly slow continuous rotation
+        // 1. Slow continuous spin on the model subgroup
+        mugModelGroup.rotation.y = elapsedTime * 0.16;
 
         // 2. Bobbing floating effect
         const bobbing = Math.sin(elapsedTime * 1.5) * 0.055;
@@ -507,20 +558,19 @@ function initDraughtBeerExperience() {
         // 4. Oscillating Keylight position
         frontLight.position.x = 5 + Math.sin(elapsedTime * 0.4) * 2.5;
 
-        // 5. Rising air bubbles loop (with absolute wobble boundaries)
+        // 5. Rising air bubbles inside dynamic liquid bounds
         const activeSpeed = beerTypes[activeVariant].speed;
         bubbles.forEach(b => {
             b.position.y += b.userData.speed * speedMultiplier * activeSpeed;
 
-            // Wobble calculated relative to baseX/baseZ (NO ACCUMULATION DRIFT BUG!)
             const wobbleX = Math.sin((elapsedTime * b.userData.wobbleSpeed) + b.userData.wobbleOffset) * b.userData.wobbleAmount;
             const wobbleZ = Math.cos((elapsedTime * b.userData.wobbleSpeed) + b.userData.wobbleOffset) * b.userData.wobbleAmount;
 
             b.position.x = b.userData.baseX + wobbleX;
             b.position.z = b.userData.baseZ + wobbleZ;
 
-            // Reset at foam collar boundary (y ≈ 1.45)
-            if (b.position.y >= 1.45) {
+            // Reset at foam boundary height
+            if (b.position.y >= liquidBounds.maxY) {
                 resetBubble(b);
             }
         });
@@ -549,18 +599,4 @@ function initDraughtBeerExperience() {
     });
 
     animate();
-
-    // Hide loader overlay
-    setTimeout(() => {
-        const loader = document.querySelector('.loader-overlay-3d');
-        if (loader) {
-            loader.classList.add('loaded');
-            // Epic slow back entry
-            gsap.from(beerMug.position, {
-                y: 6,
-                duration: 1.8,
-                ease: "power3.out"
-            });
-        }
-    }, 850);
 }

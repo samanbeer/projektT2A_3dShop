@@ -9,6 +9,8 @@ require __DIR__ . '/partials/header.php';
 <!-- Load CDNs, Warm golden styles -->
 <link rel="stylesheet" href="home_3d.css">
 <script src="js/three.min.js"></script>
+<script src="js/fflate.min.js"></script>
+<script src="js/3MFLoader.js"></script>
 <script src="js/gsap.min.js"></script>
 <script src="js/ScrollTrigger.min.js"></script>
 
