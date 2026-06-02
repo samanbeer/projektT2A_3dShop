@@ -296,9 +296,14 @@ require __DIR__ . '/partials/header.php';
                 </tbody>
             </table>
 
-            <div class="cart-summary-box">
-                <span class="cart-total-label">Celková cena zboží:</span>
-                <span class="cart-total-val"><?= number_format($totalPrice, 0, ',', ' ') ?> Kč</span>
+            <div class="cart-summary-box" style="flex-direction: column; align-items: flex-end; gap: 8px;">
+                <div>
+                    <span class="cart-total-label">Celková cena zboží:</span>
+                    <span class="cart-total-val"><?= number_format($totalPrice, 0, ',', ' ') ?> Kč</span>
+                </div>
+                <div style="font-size: 0.95em; color: var(--accent, #ffc107); font-weight: 600;">
+                    Ekvivalent v pivech (25 Kč = 1 pivo): <?= round($totalPrice / 25) ?> piv
+                </div>
             </div>
 
             <div class="cart-actions-row">

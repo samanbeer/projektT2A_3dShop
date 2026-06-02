@@ -216,7 +216,8 @@ try {
     $db->exec("INSERT INTO payment_methods (id, name, price) VALUES
     (1, 'Kartou online', 0.0),
     (2, 'Bankovní převod', 0.0),
-    (3, 'Dobírka', 39.0);");
+    (3, 'Dobírka', 39.0),
+    (4, 'Platba pivem (25 Kč = 1 pivo)', 0.0);");
 
     echo "Seed data úspěšně vložena!\n";
     echo "Databáze je kompletně inicializována.\n";

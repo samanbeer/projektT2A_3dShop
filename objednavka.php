@@ -474,7 +474,13 @@ require __DIR__ . '/partials/header.php';
         // Update summaries
         document.getElementById('summary-shipping-price').textContent = shippingPrice === 0 ? 'Zdarma' : shippingPrice.toLocaleString('cs-CZ') + ' Kč';
         document.getElementById('summary-payment-price').textContent = paymentPrice === 0 ? 'Zdarma' : paymentPrice.toLocaleString('cs-CZ') + ' Kč';
-        document.getElementById('summary-grand-total').textContent = grandTotal.toLocaleString('cs-CZ') + ' Kč';
+        
+        const beerPrice = Math.round(grandTotal / 25);
+        if (selectedPayment && selectedPayment.value === "4") {
+            document.getElementById('summary-grand-total').innerHTML = grandTotal.toLocaleString('cs-CZ') + ' Kč <br><span style="font-size:0.75em; color: var(--accent, #ffc107); display: block; text-align: right; margin-top: 4px;">(' + beerPrice.toLocaleString('cs-CZ') + ' piv)</span>';
+        } else {
+            document.getElementById('summary-grand-total').textContent = grandTotal.toLocaleString('cs-CZ') + ' Kč';
+        }
     }
 
     // Run on initial load
