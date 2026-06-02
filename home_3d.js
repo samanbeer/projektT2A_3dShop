@@ -245,9 +245,16 @@ function initDraughtBeerExperience() {
         // Apply physical materials to the classified parts (optimized for maximum WebGL compatibility)
         if (glassMesh) {
             const isSingleMesh = (meshes.length === 1);
+            const hasVertexColors = !!(glassMesh.geometry.attributes.color);
+            
+            // Retain original base color from 3MF loader if vertex colors are not defined in geometry
+            const originalColor = (glassMesh.material && glassMesh.material.color) ? glassMesh.material.color.clone() : new THREE.Color(0xffffff);
+
+            console.log(`Main mesh check: hasVertexColors=${hasVertexColors}, originalColor=`, originalColor);
+
             glassMaterial = new THREE.MeshPhysicalMaterial({
-                color: 0xffffff,
-                vertexColors: isSingleMesh, // Crucial! Retains original multi-color look of the single-mesh 3D print
+                color: hasVertexColors ? 0xffffff : originalColor,
+                vertexColors: hasVertexColors, // Crucial! Only use vertex colors if they actually exist in geometry to prevent solid black rendering
                 transparent: true,
                 opacity: isSingleMesh ? 0.90 : 0.28, // Semi-translucent for single-mesh print, clear for glass mug
                 roughness: isSingleMesh ? 0.15 : 0.08,
@@ -257,7 +264,7 @@ function initDraughtBeerExperience() {
                 clearcoatRoughness: 0.1
             });
             glassMesh.material = glassMaterial;
-            console.log(`Premium material mounted to main mesh (singleMesh=${isSingleMesh}).`);
+            console.log(`Premium material mounted to main mesh (singleMesh=${isSingleMesh}, vertexColors=${hasVertexColors}).`);
         }
 
         if (liquidMesh) {
@@ -285,15 +292,21 @@ function initDraughtBeerExperience() {
             console.log("Creamy foam material mounted to cap mesh.");
         }
 
+        // Align coordinates: Rotate from CAD/3D printing Z-up standard to WebGL Y-up standard
+        object.rotation.x = -Math.PI / 2;
+        
+        // Force immediate local matrix update so bounding box is measured in rotated coordinate space
+        object.updateMatrix();
+
         // Auto centering & dynamic scaling bounds
         const box = new THREE.Box3().setFromObject(object);
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
-        console.log("Loaded model dimensions - width:", size.x, "height:", size.y, "depth:", size.z);
+        console.log("Rotated model dimensions - width:", size.x, "height:", size.y, "depth:", size.z);
 
-        // Offset children locally to center model horizontally, and offset Y so pivot sits perfectly at bottom center
-        object.position.set(-center.x, -box.min.y - (size.y / 2), -center.z);
+        // Center the rotated object locally inside the wrapper (centering X, Y, and Z)
+        object.position.set(-center.x, -center.y, -center.z);
 
         const modelWrapper = new THREE.Group();
         modelWrapper.add(object);
@@ -313,9 +326,11 @@ function initDraughtBeerExperience() {
             liquidBounds.radius = Math.min(lBox.max.x - lBox.min.x, lBox.max.z - lBox.min.z) * 0.42;
             console.log("Dynamic bubble boundary calculated:", liquidBounds);
         } else {
-            liquidBounds.minY = -1.6;
-            liquidBounds.maxY = 1.3;
-            liquidBounds.radius = Math.min(size.x, size.z) * scaleFactor * 0.4;
+            // Rotated fallback: center Y is 0.0 in local space, so bounds range from -height/2 to height/2
+            liquidBounds.minY = -1.8;
+            liquidBounds.maxY = 1.4;
+            liquidBounds.radius = Math.min(size.x, size.z) * scaleFactor * 0.42;
+            console.log("Rotated dynamic bubble boundary fallback computed:", liquidBounds);
         }
 
         // Initialize rising bubble particle engine inside physical bounds
