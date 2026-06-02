@@ -134,26 +134,6 @@ function initDraughtBeerExperience() {
     const mugModelGroup = new THREE.Group();
     beerMug.add(mugModelGroup);
 
-    // Create the nested animation groups for Bottle 1
-    const bottle1Group = new THREE.Group();
-    const bottle1Bob = new THREE.Group();
-    const bottle1Spin = new THREE.Group();
-    bottle1Bob.add(bottle1Spin);
-    bottle1Group.add(bottle1Bob);
-    mugModelGroup.add(bottle1Group);
-
-    // Create the nested animation groups for Bottle 2
-    const bottle2Group = new THREE.Group();
-    const bottle2Bob = new THREE.Group();
-    const bottle2Spin = new THREE.Group();
-    bottle2Bob.add(bottle2Spin);
-    bottle2Group.add(bottle2Bob);
-    mugModelGroup.add(bottle2Group);
-
-    // Set initial relative offsets
-    bottle1Group.position.set(-0.65, 0.1, 0.2);
-    bottle2Group.position.set(0.65, -0.2, -0.35);
-
     // --- Bottle Model Loader Architecture ---
     let bottleBodyMesh = null;
     let capMesh = null;
@@ -401,15 +381,7 @@ function initDraughtBeerExperience() {
         const scaleFactor = targetHeight / size.y;
         modelWrapper.scale.setScalar(scaleFactor);
 
-        // Clone the model for the second bottle!
-        const object2 = object.clone();
-        const modelWrapper2 = new THREE.Group();
-        modelWrapper2.add(object2);
-        modelWrapper2.scale.setScalar(scaleFactor);
-
-        // Add them to their respective spin/bob groups
-        bottle1Spin.add(modelWrapper);
-        bottle2Spin.add(modelWrapper2);
+        mugModelGroup.add(modelWrapper);
 
         // Smoothly dismiss the loading overlay and execute slow epic entry
         setTimeout(() => {
@@ -526,16 +498,7 @@ function initDraughtBeerExperience() {
         duration: 1.0,
         ease: "power2.inOut"
     }, 0);
-    scrollTimeline.to(bottle1Group.position, {
-        x: -0.4, y: 0.2, z: 0.3,
-        duration: 1.0,
-        ease: "power2.inOut"
-    }, 0);
-    scrollTimeline.to(bottle2Group.position, {
-        x: 0.4, y: -0.3, z: -0.3,
-        duration: 1.0,
-        ease: "power2.inOut"
-    }, 0);
+
 
     // Step 2: Center & Zoom for portfolio variants showcase and rotate further
     scrollTimeline.to(beerMug.position, {
@@ -558,16 +521,7 @@ function initDraughtBeerExperience() {
         duration: 1.0,
         ease: "power2.inOut"
     }, 1.0);
-    scrollTimeline.to(bottle1Group.position, {
-        x: -0.9, y: 0, z: 0,
-        duration: 1.0,
-        ease: "power2.inOut"
-    }, 1.0);
-    scrollTimeline.to(bottle2Group.position, {
-        x: 0.9, y: 0, z: 0,
-        duration: 1.0,
-        ease: "power2.inOut"
-    }, 1.0);
+
 
     // Step 3: Anchor bottom-right for FAQ section and complete spin
     scrollTimeline.to(beerMug.position, {
@@ -591,16 +545,7 @@ function initDraughtBeerExperience() {
         duration: 1.0,
         ease: "power2.inOut"
     }, 2.0);
-    scrollTimeline.to(bottle1Group.position, {
-        x: -0.3, y: 0.1, z: 0.15,
-        duration: 1.0,
-        ease: "power2.inOut"
-    }, 2.0);
-    scrollTimeline.to(bottle2Group.position, {
-        x: 0.3, y: -0.1, z: -0.15,
-        duration: 1.0,
-        ease: "power2.inOut"
-    }, 2.0);
+
 
     // --- Interactive Hover Variant Swapping ---
     const portfolioCards = document.querySelectorAll('.portfolio-card-premium');
@@ -662,13 +607,12 @@ function initDraughtBeerExperience() {
 
         const elapsedTime = clock.getElapsedTime();
 
-        // 1. Continuous spin on individual bottles
-        bottle1Spin.rotation.y = elapsedTime * 0.45;
-        bottle2Spin.rotation.y = -elapsedTime * 0.45 + Math.PI; // Spins opposite direction, offset by 180 deg to show back
+        // 1. Slow continuous spin on the model subgroup (made faster and more active)
+        mugModelGroup.rotation.y = elapsedTime * 0.45;
 
-        // 2. Out-of-phase bobbing floating effect
-        bottle1Bob.position.y = Math.sin(elapsedTime * 2.0) * 0.12;
-        bottle2Bob.position.y = Math.sin(elapsedTime * 2.0 + 1.5) * 0.12;
+        // 2. Bobbing floating effect (made wider and more noticeable)
+        const bobbing = Math.sin(elapsedTime * 2.2) * 0.22;
+        mugModelGroup.position.y = bobbing;
 
         // 3. Smooth mouse tilt (Desktop only)
         if (!isMobile) {
