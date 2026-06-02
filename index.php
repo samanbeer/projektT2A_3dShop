@@ -2,23 +2,20 @@
 declare(strict_types=1);
 require_once __DIR__ . '/src/bootstrap.php';
 
-$pageTitle = 'BEER 3D // Cybernetic Print Manufaktura';
+$pageTitle = 'BEER 3D | Zakázková 3D tisková manufaktura';
 require __DIR__ . '/partials/header.php';
 ?>
 
-<!-- Load CDNs, Cyberpunk grid and styles -->
+<!-- Load CDNs, Warm golden styles -->
 <link rel="stylesheet" href="home_3d.css">
 <script src="js/three.min.js"></script>
 <script src="js/gsap.min.js"></script>
 <script src="js/ScrollTrigger.min.js"></script>
 
-<!-- CRT Scanlines Overlay -->
-<div class="scanlines"></div>
-
 <!-- Interactive 3D Loading Screen -->
 <div class="loader-overlay-3d">
     <div class="loader-pint"></div>
-    <div class="loader-text">Nahrávám kybernetické jádro...</div>
+    <div class="loader-text">Čepujeme 3D zážitek...</div>
 </div>
 
 <!-- Three.js Canvas Element (Fixed backdrop) -->
@@ -29,15 +26,18 @@ require __DIR__ . '/partials/header.php';
 <!-- Active Page Wrapper -->
 <div class="page active" id="page-home" style="opacity: 1; visibility: visible;">
     
+    <!-- Dynamic warm glow backdrop -->
+    <div class="bg-glow-warm"></div>
+
     <!-- 1. Hero 3D Section -->
     <section class="scroll-section hero-3d-section" id="section-hero">
         <div class="hero-3d-content">
-            <span class="badge">BEER 3D // CYBER-CORE</span>
+            <span class="badge">3D TISK & PIVO</span>
             <h1>TISKNEME S<br><span class="gradient-text-gold">CHUTÍ</span></h1>
-            <p>Precizní zakázkový 3D tisk spojený s estetikou neonového věku. Navrhujeme a tiskneme otvíráky, podtácky, taktické stojánky a zakázkové gadgety s integrovanými technologickými detaily.</p>
+            <p>Precizní zakázkový 3D tisk spojený s naší láskou k chmelu. Navrhujeme a tiskneme originální otvíráky, magnetické podtácky, designové stojany a vysoce odolné technické díly na zakázku.</p>
             <div class="hero-3d-actions">
-                <a href="materialy.php" class="btn-cyber-primary" aria-label="Zobrazit sekci s materiály">Materiály</a>
-                <a href="produkty.php" class="btn-cyber-ghost" aria-label="E-shop">E-shop</a>
+                <a href="materialy.php" class="btn-main-premium" aria-label="Zobrazit sekci s materiály">Naše materiály</a>
+                <a href="produkty.php" class="btn-ghost-premium" aria-label="E-shop">E-shop</a>
             </div>
         </div>
     </section>
@@ -48,24 +48,24 @@ require __DIR__ . '/partials/header.php';
             <div class="feature-card-premium glass-effect-premium">
                 <div class="feature-icon-box">🎯</div>
                 <div>
-                    <h3>Mikro-vrstvy 0.05mm</h3>
-                    <p>Tiskneme na vysokorychlostních tiskárnách Bambu Lab a Creality s extrémní hustotou detailů a laserově přesným nanášením vrstev.</p>
+                    <h3>Precizní tisk 0.05mm</h3>
+                    <p>Tiskneme na nejmodernějších tiskárnách Bambu Lab a Creality s extrémní rozměrovou přesností a dokonale hladkým povrchem vrstev.</p>
                 </div>
             </div>
             
             <div class="feature-card-premium glass-effect-premium">
-                <div class="feature-icon-box">⚡</div>
+                <div class="feature-icon-box">🍺</div>
                 <div>
-                    <h3>Neonový design & Pivní Gadgety</h3>
-                    <p>Vlastní designová laboratoř. Vytváříme originální taktické otvíráky, magnetické zachytávače zátky a odolné outdoorové příslušenství.</p>
+                    <h3>Vlastní pivní gadgety</h3>
+                    <p>Náš rukopis poznáte okamžitě. Vyvíjíme originální magnetické otvíráky, stylové držáky plechovek a unikátní doplňky pro chvíle pohody.</p>
                 </div>
             </div>
             
             <div class="feature-card-premium glass-effect-premium">
-                <div class="feature-icon-box">🛠️</div>
+                <div class="feature-icon-box">🇨🇿</div>
                 <div>
-                    <h3>Manufaktura Kopřivnice // CZ-08</h3>
-                    <p>Lokální modelování a tisk. Podporujeme místní komunitu, provádíme bezplatnou optimalizaci STL dat a nabízíme rychlé osobní předání.</p>
+                    <h3>Manufaktura Kopřivnice</h3>
+                    <p>Vše modelujeme a tiskneme přímo v Kopřivnici. Podporujeme místní nadšence, optimálně upravujeme STL data a nabízíme osobní předání zdarma.</p>
                 </div>
             </div>
         </div>
@@ -75,40 +75,40 @@ require __DIR__ . '/partials/header.php';
     <section class="scroll-section portfolio-3d-section" id="section-portfolio">
         <div class="portfolio-header">
             <h2 class="section-title">Čepované portfolio</h2>
-            <p>Přejeďte kurzorem přes naše výrobky a sledujte, jak se mění barva, záře a proudění energie v našem 3D kyber-kontejneru!</p>
+            <p>Přejeďte kurzorem přes naše výrobky a sledujte, jak se mění barva, hustota pěny a stoupání bublinek v našem interaktivním 3D půllitru!</p>
         </div>
         
         <div class="portfolio-3d-grid">
             <div class="portfolio-card-premium glass-effect-premium active" data-variant="pilsner">
-                <span class="beer-flavor-label">Green Acid core</span>
+                <span class="beer-flavor-label">Světlý ležák</span>
                 <div class="portfolio-img-wrapper">
                     <img src="./imgs/phone_holder.png" alt="Stojan na telefon">
                 </div>
                 <div class="portfolio-info">
-                    <h4>Stojánek [HOLDER-01]</h4>
-                    <p>Stolní stojánek s logem na míru, vytištěný z odolného PETG s carbonovým finišem.</p>
+                    <h4>Vlastní stojánek na telefon</h4>
+                    <p>Robustní stolní stojánek s logem na míru, vytištěný z odolného PETG s carbonovým finišem.</p>
                 </div>
             </div>
 
             <div class="portfolio-card-premium glass-effect-premium" data-variant="ipa">
-                <span class="beer-flavor-label">Pink Plasma core</span>
+                <span class="beer-flavor-label">Polotmavá IPA</span>
                 <div class="portfolio-img-wrapper">
                     <img src="./imgs/pingpong_pálky.png" alt="Pingpongové pálky">
                 </div>
                 <div class="portfolio-info">
-                    <h4>Pálky [TACTICAL-02]</h4>
-                    <p>Originální odlehčené pálky na stolní tenis s aerodynamickým včelím vzorem a perfektním gripem.</p>
+                    <h4>Pingpongové pálky</h4>
+                    <p>Originální plně hratelné pálky na stolní tenis s odlehčeným včelím vzorem a perfektním gripem.</p>
                 </div>
             </div>
 
             <div class="portfolio-card-premium glass-effect-premium" data-variant="stout">
-                <span class="beer-flavor-label">Blue Cobalt core</span>
+                <span class="beer-flavor-label">Tmavý Stout</span>
                 <div class="portfolio-img-wrapper">
                     <img src="./imgs/pístalky.png" alt="Píšťalky a doplňky">
                 </div>
                 <div class="portfolio-info">
-                    <h4>Píšťalky [SIGNAL-03]</h4>
-                    <p>Extrémně hlasité dvoukomorové píšťalky a doplňky pro nouzové signály a outdoor použití.</p>
+                    <h4>Hlasité píšťalky a gadgety</h4>
+                    <p>Extrémně výkonné dvoukomorové píšťalky a doplňky pro nouzové signály a outdoor aktivity.</p>
                 </div>
             </div>
         </div>
@@ -117,14 +117,14 @@ require __DIR__ . '/partials/header.php';
     <!-- 4. FAQ Premium Accordions Section -->
     <section class="scroll-section faq-3d-section" id="section-faq">
         <div class="faq-title-box">
-            <h2 class="section-title">Databáze FAQ</h2>
-            <p class="faq-subtitle">Informační centrum o naší 3D tiskové manufaktuře.</p>
+            <h2 class="section-title">Často kladené otázky</h2>
+            <p class="faq-subtitle">Vše, co vás zajímá o naší zakázkové 3D tiskové manufaktuře.</p>
         </div>
 
         <div class="faq-wrapper-3d">
             <div class="faq-item-premium glass-effect-premium">
                 <button class="faq-question-premium" onclick="togglePremiumFAQ(this)">
-                    <span>Jaká je průměrná doba tisku zakázky?</span>
+                    <span>Kolik času zabere tisk zakázky?</span>
                     <span class="faq-trigger-icon">+</span>
                 </button>
                 <div class="faq-answer-premium">
@@ -136,7 +136,7 @@ require __DIR__ . '/partials/header.php';
 
             <div class="faq-item-premium glass-effect-premium">
                 <button class="faq-question-premium" onclick="togglePremiumFAQ(this)">
-                    <span>Podporujete tisk z vlastních 3D modelů?</span>
+                    <span>Tisknete z vlastních 3D modelů?</span>
                     <span class="faq-trigger-icon">+</span>
                 </button>
                 <div class="faq-answer-premium">
@@ -148,7 +148,7 @@ require __DIR__ . '/partials/header.php';
 
             <div class="faq-item-premium glass-effect-premium">
                 <button class="faq-question-premium" onclick="togglePremiumFAQ(this)">
-                    <span>Jaké materiály se hodí pro mechanické součástky?</span>
+                    <span>Které materiály se hodí pro funkční součástky?</span>
                     <span class="faq-trigger-icon">+</span>
                 </button>
                 <div class="faq-answer-premium">
@@ -160,7 +160,7 @@ require __DIR__ . '/partials/header.php';
 
             <div class="faq-item-premium glass-effect-premium">
                 <button class="faq-question-premium" onclick="togglePremiumFAQ(this)">
-                    <span>Jak si mohu vyzvednout zboží v Kopřivnici?</span>
+                    <span>Jak funguje osobní odběr v Kopřivnici?</span>
                     <span class="faq-trigger-icon">+</span>
                 </button>
                 <div class="faq-answer-premium">
@@ -175,7 +175,7 @@ require __DIR__ . '/partials/header.php';
     <!-- Footer Area inside section -->
     <footer class="footer" role="contentinfo" style="margin-top: 5rem; z-index: 5; position: relative;">
         <div class="footer-grid">
-            <div class="foot-col">© 2025 BEER 3D // CYBER-MANUFACTURING SYSTEM. VŠECHNA PRÁVA VYHRAZENA.</div>
+            <div class="foot-col">© 2025 BEER 3D. Vytvořeno s precizností a chutí. Všechna práva vyhrazena.</div>
         </div>
     </footer>
 </div>
