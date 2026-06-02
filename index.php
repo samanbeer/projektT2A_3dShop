@@ -52,7 +52,7 @@ require __DIR__ . '/partials/header.php';
 
 <!-- Load CDNs, Space Grotesk & Outfit typography, Warm styles -->
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="home_3d.css">
+<link rel="stylesheet" href="home_3d.css?v=<?php echo time(); ?>">
 <script src="js/three.min.js"></script>
 <script src="js/GLTFLoader.js"></script>
 <script src="js/gsap.min.js"></script>
