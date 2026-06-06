@@ -35,6 +35,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                 <a href="index.php" id="nav-home" class="nav-link <?= $currentPage === 'index.php' || $currentPage === '' ? 'active' : '' ?>" <?= $currentPage === 'index.php' ? 'aria-current="page"' : '' ?>>DOMŮ</a>
                 <a href="materialy.php" id="nav-materials" class="nav-link <?= $currentPage === 'materialy.php' ? 'active' : '' ?>" <?= $currentPage === 'materialy.php' ? 'aria-current="page"' : '' ?>>MATERIÁLY</a>
                 <a href="produkty.php" id="nav-products" class="nav-link <?= $currentPage === 'produkty.php' || $currentPage === 'produkt.php' ? 'active' : '' ?>" <?= $currentPage === 'produkty.php' ? 'aria-current="page"' : '' ?>>PRODUKTY</a>
+                <a href="recenze/recenze.php" id="nav-reviews" class="nav-link <?= $currentPage === 'recenze.php' ? 'active' : '' ?>">RECENZE</a>
             </nav>
         </div>
     </header>
