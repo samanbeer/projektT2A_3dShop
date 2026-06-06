@@ -6,50 +6,6 @@ $pageTitle = 'BEER 3D | Zakázková 3D tisková manufaktura';
 require __DIR__ . '/partials/header.php';
 ?>
 
-<!-- Temporary Cybernetic Diagnostics Overlay (Hidden for Production Redesign) -->
-<div id="debug-log-overlay" style="position:fixed; top:70px; right:20px; background:rgba(10,10,10,0.92); color:#00ffcc; font-family:monospace; padding:15px; font-size:11px; z-index:999999; max-height:250px; overflow-y:auto; width:340px; border:1px solid #ff0055; border-radius:8px; box-shadow:0 0 15px rgba(255,0,85,0.4); pointer-events:auto; word-break:break-all; display:none;">
-    <div style="font-weight:bold; border-bottom:1px solid #ff0055; padding-bottom:5px; margin-bottom:5px; color:#ff0055; display:flex; justify-content:between; align-items:center;">
-        <span>CYBER DIACNOSTICS CONTROLLER</span>
-        <button onclick="document.getElementById('debug-log-overlay').style.display='none'" style="background:none; border:none; color:#ff0055; cursor:pointer; font-weight:bold;">[X]</button>
-    </div>
-    <div id="debug-log-content" style="max-height:180px; overflow-y:auto;"></div>
-</div>
-<script>
-    (function() {
-        const content = document.getElementById('debug-log-content');
-        function addLog(msg, color = '#00ffcc') {
-            if (!content) return;
-            const item = document.createElement('div');
-            item.style.color = color;
-            item.style.marginBottom = '4px';
-            item.innerText = msg;
-            content.appendChild(item);
-            content.scrollTop = content.scrollHeight;
-        }
-        
-        const _log = console.log;
-        const _warn = console.warn;
-        const _error = console.error;
-        
-        console.log = function(...args) {
-            addLog(args.join(' '), '#00ffcc');
-            _log.apply(console, args);
-        };
-        console.warn = function(...args) {
-            addLog('[WARN] ' + args.join(' '), '#ffcc00');
-            _warn.apply(console, args);
-        };
-        console.error = function(...args) {
-            addLog('[ERROR] ' + args.join(' '), '#ff0055');
-            _error.apply(console, args);
-        };
-        
-        window.addEventListener('error', function(e) {
-            addLog('[UNCAUGHT] ' + e.message + ' at ' + e.filename + ':' + e.lineno, '#ff0055');
-        });
-    })();
-</script>
-
 <!-- Load CDNs, Space Grotesk & Outfit typography, Warm styles -->
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="home_3d.css?v=<?php echo time(); ?>">
@@ -88,6 +44,7 @@ require __DIR__ . '/partials/header.php';
             <div class="hero-3d-actions">
                 <a href="materialy.php" class="btn-main-premium" aria-label="Zobrazit sekci s materiály">Naše materiály</a>
                 <a href="produkty.php" class="btn-ghost-premium" aria-label="E-shop">E-shop</a>
+                <a href="recenze/recenze.php" class="btn-ghost-premium" aria-label="Recenze">Recenze</a>
             </div>
         </div>
     </section>

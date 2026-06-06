@@ -366,28 +366,6 @@
     box-shadow: 0 0 15px var(--orange-glow);
 }
 
-#reply-form input[type="file"] {
-    width: 100%;
-    color: var(--text-secondary);
-}
-
-#reply-form input[type="file"]::file-selector-button {
-    background: var(--bg-surface);
-    border: 1px solid var(--glass-border);
-    color: var(--text-primary);
-    padding: 10px 15px;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: var(--transition-base);
-    margin-right: 15px;
-}
-
-#reply-form input[type="file"]::file-selector-button:hover {
-    background: var(--accent-orange);
-    color: var(--bg-dark);
-    border-color: var(--accent-orange);
-}
-
 #submit-reply {
     width: 100%;
     margin-top: var(--spacing-sm);
@@ -614,6 +592,19 @@
 
     .replies-toggle {
         font-size: 0.85rem;
+        padding: 12px 14px;
+    }
+
+    .review-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+    }
+
+    .reply-btn {
+        align-self: flex-end;
+    }
+}-size: 0.85rem;
         padding: 12px 14px;
     }
 
